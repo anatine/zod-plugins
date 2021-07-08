@@ -50,7 +50,8 @@
           }
         }
       }
-    }
+    },
+    "zod-openapi": "libs/zod-openapi"
   },
   "cli": {
     "defaultCollection": "@nrwl/nest"

@@ -1,0 +1,33 @@
+{
+  "root": "libs/zod-openapi",
+  "sourceRoot": "libs/zod-openapi/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/zod-openapi",
+        "tsConfig": "libs/zod-openapi/tsconfig.lib.json",
+        "packageJson": "libs/zod-openapi/package.json",
+        "main": "libs/zod-openapi/src/index.ts",
+        "assets": ["libs/zod-openapi/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/zod-openapi/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/zod-openapi"],
+      "options": {
+        "jestConfig": "libs/zod-openapi/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["zod", "openapi"]
+}

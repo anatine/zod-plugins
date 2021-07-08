@@ -1,0 +1,7 @@
+{
+  "name": "@anatine/zod-openapi",
+  "version": "0.0.1",
+  "dependencies": {
+    "openapi3-ts": "^2.0.1"
+  }
+}
