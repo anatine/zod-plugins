@@ -22,6 +22,7 @@ describe('zodOpenapi', () => {
       }
     );
     const apiSchema = generateSchema(zodSchema);
+
     expect(apiSchema).toEqual({
       type: 'object',
       properties: {

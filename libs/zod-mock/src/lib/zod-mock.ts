@@ -134,7 +134,6 @@ export function generateMock<T extends ZodTypeAny>(
     if (typeName in workerMap) {
       return workerMap[typeName](zodRef as never, keyName);
     }
-
     return undefined;
   } catch (err) {
     console.error(err);

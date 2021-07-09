@@ -1,3 +1,4 @@
+import { Schema } from 'inspector';
 import { z } from 'zod';
 import { generateMock } from './zod-mock';
 
@@ -16,9 +17,6 @@ describe('zod-mock', () => {
     });
 
     const mockData = generateMock(schema); //?
-
     expect(typeof mockData.uid).toEqual('string');
-
-    schema.shape.stringLength; //?
   });
 });

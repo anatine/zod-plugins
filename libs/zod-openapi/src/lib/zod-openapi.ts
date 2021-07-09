@@ -1,14 +1,19 @@
-// Refactor of  https://github.com/RobinTail/express-zod-api/blob/1fa5991ec12aa461506887ef7de7882d7afe3b48/src/open-api.ts
-
 import { SchemaObject } from 'openapi3-ts';
 import merge from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
 export interface OpenApiZodAny extends ZodTypeAny {
-  metaOpenApi?: SchemaObject;
+  metaOpenApi?: SchemaObject | SchemaObject[];
 }
-export interface OpenApiZodAnyObject extends AnyZodObject {
-  metaOpenApi?: SchemaObject;
+
+interface OpenApiZodAnyObject extends AnyZodObject {
+  metaOpenApi?: SchemaObject | SchemaObject[];
+}
+
+interface ParsingArgs<T> {
+  zodRef: T;
+  schemas: SchemaObject[];
+  useOutput?: boolean;
 }
 
 export function openApi<T extends OpenApiZodAny>(
@@ -19,15 +24,29 @@ export function openApi<T extends OpenApiZodAny>(
   return schema;
 }
 
-function parseZodTransformation(
-  value: z.ZodTransformer<never> | z.ZodEffects<never>,
-  useOutput = false
-) {
-  const input = generateSchema(value._def.schema, useOutput);
+function iterateZodObject({
+  zodRef,
+  useOutput,
+}: ParsingArgs<OpenApiZodAnyObject>) {
+  return Object.keys(zodRef.shape).reduce(
+    (carry, key) => ({
+      ...carry,
+      [key]: generateSchema(zodRef.shape[key], useOutput),
+    }),
+    {} as Record<string, SchemaObject>
+  );
+}
+
+function parseTransformation({
+  zodRef,
+  schemas,
+  useOutput,
+}: ParsingArgs<z.ZodTransformer<never> | z.ZodEffects<never>>): SchemaObject {
+  const input = generateSchema(zodRef._def.schema, useOutput);
 
   let output = 'undefined';
-  if (useOutput && value._def.effects && value._def.effects.length > 0) {
-    const effect = value._def.effects
+  if (useOutput && zodRef._def.effects && zodRef._def.effects.length > 0) {
+    const effect = zodRef._def.effects
       .filter((ef) => ef.type === 'transform')
       .slice(-1)[0];
     if (effect && 'transform' in effect) {
@@ -52,37 +71,27 @@ function parseZodTransformation(
       }
     }
   }
-  return {
-    ...input,
-    ...(['number', 'string', 'boolean', 'null'].includes(output)
-      ? {
-          type: output as 'number' | 'string' | 'boolean' | 'null',
-        }
-      : {}),
-  };
-}
-
-function iterateZodObject(
-  schema: OpenApiZodAnyObject,
-  useOutput = false
-): Record<string, SchemaObject> {
-  return Object.keys(schema.shape).reduce(
-    (carry, key) => ({
-      ...carry,
-      [key]: generateSchema(schema.shape[key], useOutput),
-    }),
-    {} as Record<string, SchemaObject>
+  return merge(
+    {
+      ...input,
+      ...(['number', 'string', 'boolean', 'null'].includes(output)
+        ? {
+            type: output as 'number' | 'string' | 'boolean' | 'null',
+          }
+        : {}),
+    },
+    ...schemas
   );
 }
 
-function parseZodString(item: z.ZodString, metaSchema: SchemaObject = {}) {
+function parseString({
+  zodRef,
+  schemas,
+}: ParsingArgs<z.ZodString>): SchemaObject {
   const baseSchema: SchemaObject = {
     type: 'string',
   };
-  if (item.isNullable()) {
-    baseSchema.nullable = true;
-  }
-  const { checks = [] } = item._def;
+  const { checks = [] } = zodRef._def;
   checks.forEach((item) => {
     switch (item.kind) {
       case 'email':
@@ -105,17 +114,17 @@ function parseZodString(item: z.ZodString, metaSchema: SchemaObject = {}) {
         break;
     }
   });
-  return merge(baseSchema, metaSchema);
+  return merge(baseSchema, ...schemas);
 }
 
-function parseZodNumber(item: z.ZodNumber, metaSchema: SchemaObject = {}) {
+function parseNumber({
+  zodRef,
+  schemas,
+}: ParsingArgs<z.ZodNumber>): SchemaObject {
   const baseSchema: SchemaObject = {
     type: 'number',
   };
-  if (item.isNullable()) {
-    baseSchema.nullable = true;
-  }
-  const { checks = [] } = item._def;
+  const { checks = [] } = zodRef._def;
   checks.forEach((item) => {
     switch (item.kind) {
       case 'max':
@@ -129,159 +138,200 @@ function parseZodNumber(item: z.ZodNumber, metaSchema: SchemaObject = {}) {
         break;
     }
   });
-  return merge(baseSchema, metaSchema);
+  return merge(baseSchema, ...schemas);
 }
+
+function parseObject({
+  zodRef,
+  schemas,
+  useOutput,
+}: ParsingArgs<z.ZodObject<never> | z.ZodRecord>): SchemaObject {
+  return merge(
+    {
+      type: 'object',
+      properties: iterateZodObject({
+        zodRef: zodRef as OpenApiZodAnyObject,
+        schemas,
+        useOutput,
+      }),
+      required: Object.keys((zodRef as z.AnyZodObject).shape).filter(
+        (key) =>
+          !(zodRef as z.AnyZodObject).shape[key].isOptional() &&
+          !((zodRef as z.AnyZodObject).shape[key] instanceof z.ZodNever)
+      ),
+    },
+    ...schemas
+  );
+}
+
+function parseBigInt({ schemas }: ParsingArgs<z.ZodBigInt>): SchemaObject {
+  return merge({ type: 'integer', format: 'int64' }, ...schemas);
+}
+
+function parseBoolean({ schemas }: ParsingArgs<z.ZodBoolean>): SchemaObject {
+  return merge({ type: 'boolean' }, ...schemas);
+}
+
+function parseDate({ schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
+  return merge({ type: 'string', format: 'date-time' }, ...schemas);
+}
+
+function parseNull({ schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
+  return merge(
+    {
+      type: 'string',
+      format: 'null',
+      nullable: true,
+    },
+    ...schemas
+  );
+}
+
+function parseOptionalNullable({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<
+  z.ZodOptional<OpenApiZodAny> | z.ZodNullable<OpenApiZodAny>
+>): SchemaObject {
+  return merge(generateSchema(zodRef.unwrap(), useOutput), ...schemas);
+}
+
+function parseArray({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodArray<OpenApiZodAny>>): SchemaObject {
+  return merge(
+    {
+      type: 'array',
+      items: generateSchema(zodRef._def.type, useOutput),
+    },
+    ...schemas
+  );
+}
+
+function parseLiteral({
+  schemas,
+  zodRef,
+}: ParsingArgs<z.ZodLiteral<OpenApiZodAny>>): SchemaObject {
+  return merge(
+    {
+      type: typeof zodRef._def.value as 'string' | 'number' | 'boolean',
+      enum: [zodRef._def.value],
+    },
+    ...schemas
+  );
+}
+
+function parseEnum({
+  schemas,
+  zodRef,
+}: ParsingArgs<z.ZodEnum<never> | z.ZodNativeEnum<never>>): SchemaObject {
+  return merge(
+    {
+      type: typeof Object.values(zodRef._def.values)[0] as 'string' | 'number',
+      enum: Object.values(zodRef._def.values),
+    },
+    ...schemas
+  );
+}
+
+function parseIntersection({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodIntersection<z.ZodTypeAny, z.ZodTypeAny>>): SchemaObject {
+  return merge(
+    {
+      allOf: [
+        generateSchema(zodRef._def.left, useOutput),
+        generateSchema(zodRef._def.right, useOutput),
+      ],
+    },
+    ...schemas
+  );
+}
+
+function parseUnion({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>>): SchemaObject {
+  return merge(
+    {
+      oneOf: (
+        zodRef as z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>
+      )._def.options.map((schema) => generateSchema(schema, useOutput)),
+    },
+    ...schemas
+  );
+}
+
+function parseNever({ schemas }: ParsingArgs<z.ZodNever>): SchemaObject {
+  return merge({ readOnly: true }, ...schemas);
+}
+
+function catchAllParser({ schemas }: ParsingArgs<ZodTypeAny>): SchemaObject {
+  return merge(...schemas);
+}
+
+const workerMap = {
+  ZodObject: parseObject,
+  ZodRecord: parseObject,
+  ZodString: parseString,
+  ZodNumber: parseNumber,
+  ZodBigInt: parseBigInt,
+  ZodBoolean: parseBoolean,
+  ZodDate: parseDate,
+  ZodNull: parseNull,
+  ZodOptional: parseOptionalNullable,
+  ZodNullable: parseOptionalNullable,
+  ZodArray: parseArray,
+  ZodLiteral: parseLiteral,
+  ZodEnum: parseEnum,
+  ZodNativeEnum: parseEnum,
+  ZodTransformer: parseTransformation,
+  ZodEffects: parseTransformation,
+  ZodIntersection: parseIntersection,
+  ZodUnion: parseUnion,
+  ZodNever: parseNever,
+  // TODO Transform the rest to schemas
+  ZodUndefined: catchAllParser,
+  ZodTuple: catchAllParser,
+  ZodMap: catchAllParser,
+  ZodFunction: catchAllParser,
+  ZodLazy: catchAllParser,
+  ZodPromise: catchAllParser,
+  ZodAny: catchAllParser,
+  ZodUnknown: catchAllParser,
+  ZodVoid: catchAllParser,
+};
+type WorkerKeys = keyof typeof workerMap;
 
 export function generateSchema(
   zodRef: OpenApiZodAny,
-  useOutput = false
+  useOutput?: boolean
 ): SchemaObject {
-  const metaSchema = zodRef.metaOpenApi ?? {};
-  const baseSchema: SchemaObject = {};
+  const { metaOpenApi = {} } = zodRef;
+  const schemas = [
+    zodRef.isNullable && zodRef.isNullable() ? { nullable: true } : {},
+    ...(Array.isArray(metaOpenApi) ? metaOpenApi : [metaOpenApi]),
+  ];
 
-  if (zodRef.isNullable()) {
-    baseSchema.nullable = true;
-  }
+  try {
+    const typeName = zodRef._def.typeName as WorkerKeys;
+    if (typeName in workerMap) {
+      return workerMap[typeName]({
+        zodRef: zodRef as never,
+        schemas,
+        useOutput,
+      });
+    }
 
-  switch (true) {
-    case zodRef instanceof z.ZodObject:
-    case zodRef instanceof z.ZodRecord:
-      return merge(
-        {
-          type: 'object',
-          properties: iterateZodObject(
-            zodRef as OpenApiZodAnyObject,
-            useOutput
-          ),
-          required: Object.keys((zodRef as z.AnyZodObject).shape).filter(
-            (key) =>
-              !(zodRef as z.AnyZodObject).shape[key].isOptional() &&
-              !((zodRef as z.AnyZodObject).shape[key] instanceof z.ZodNever)
-          ),
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodString:
-      return parseZodString(zodRef as z.ZodString, metaSchema);
-    case zodRef instanceof z.ZodNumber:
-      return parseZodNumber(zodRef as z.ZodNumber, metaSchema);
-    case zodRef instanceof z.ZodBigInt:
-      return merge(
-        baseSchema,
-        { type: 'integer', format: 'int64' },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodBoolean:
-      return merge(baseSchema, { type: 'boolean' }, metaSchema);
-    case zodRef instanceof z.ZodDate:
-      return merge(
-        baseSchema,
-        { type: 'string', format: 'date-time' },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodNull:
-      return merge(
-        baseSchema,
-        {
-          type: 'string',
-          format: 'null',
-          nullable: true,
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodOptional:
-    case zodRef instanceof z.ZodNullable:
-      return merge(
-        baseSchema,
-        generateSchema(
-          (
-            zodRef as
-              | z.ZodOptional<OpenApiZodAny>
-              | z.ZodNullable<OpenApiZodAny>
-          ).unwrap()
-        )
-      );
-    case zodRef instanceof z.ZodArray:
-      return merge(
-        baseSchema,
-        {
-          type: 'array',
-          items: generateSchema((zodRef._def as z.ZodArrayDef).type, useOutput),
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodLiteral:
-      return merge(
-        baseSchema,
-        {
-          type: typeof zodRef._def.value as 'string' | 'number' | 'boolean',
-          enum: [zodRef._def.value],
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodEnum:
-    case zodRef instanceof z.ZodNativeEnum:
-      return merge(
-        baseSchema,
-        {
-          type: typeof Object.values(zodRef._def.values)[0] as
-            | 'string'
-            | 'number',
-          enum: Object.values(zodRef._def.values),
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodTransformer:
-    case zodRef instanceof z.ZodEffects:
-      return merge(
-        baseSchema,
-        parseZodTransformation(
-          zodRef as z.ZodEffects<never> | z.ZodTransformer<never>,
-          useOutput
-        ),
-        metaSchema
-      );
-    case zodRef instanceof z.ZodIntersection:
-      return merge(
-        baseSchema,
-        {
-          allOf: [
-            generateSchema(
-              (zodRef as z.ZodIntersection<z.ZodTypeAny, z.ZodTypeAny>)._def
-                .left,
-              useOutput
-            ),
-            generateSchema(
-              (zodRef as z.ZodIntersection<z.ZodTypeAny, z.ZodTypeAny>)._def
-                .right,
-              useOutput
-            ),
-          ],
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodUnion:
-      return merge(
-        baseSchema,
-        {
-          oneOf: (
-            zodRef as z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>
-          )._def.options.map((schema) => generateSchema(schema, useOutput)),
-        },
-        metaSchema
-      );
-    case zodRef instanceof z.ZodNever:
-      return merge(baseSchema, { readOnly: true }, metaSchema);
-    case zodRef instanceof z.ZodUndefined:
-    case zodRef instanceof z.ZodTuple:
-    case zodRef instanceof z.ZodMap:
-    case zodRef instanceof z.ZodFunction:
-    case zodRef instanceof z.ZodLazy:
-    case zodRef instanceof z.ZodPromise:
-    case zodRef instanceof z.ZodAny:
-    case zodRef instanceof z.ZodUnknown:
-    case zodRef instanceof z.ZodVoid:
-    default:
-      return merge(baseSchema, metaSchema);
+    return catchAllParser({ zodRef, schemas });
+  } catch (err) {
+    console.error(err);
+    return catchAllParser({ zodRef, schemas });
   }
 }
