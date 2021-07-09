@@ -1,15 +1,7 @@
-import { inspect } from 'util';
-import { z, ZodString, ZodTypeAny } from 'zod';
-import {
-  OpenApiBuilder,
-  OperationObject,
-  SchemaObject,
-  ReferenceObject,
-  isSchemaObject,
-} from 'openapi3-ts';
+import { SchemaObject } from 'openapi3-ts';
 import validator from 'validator';
-
-import { openApi, generateSchema } from './zod-openapi';
+import { z } from 'zod';
+import { generateSchema, openApi } from './zod-openapi';
 
 describe('zodOpenapi', () => {
   /**
@@ -334,5 +326,24 @@ describe('zodOpenapi', () => {
     // const builder = OpenApiBuilder.create();
     // builder.addSchema('Users', schemaTest);
     // builder;
+  });
+
+  it('Experimentation', () => {
+    const UserZ = z.object({
+      uid: openApi(z.string().nonempty(), {
+        description: 'A firebase generated UUID',
+        format: 'firebase-uuid',
+      }),
+      theme: openApi(z.enum([`light`, `dark`]), {
+        description: 'Defaults to light theme',
+        default: 'light',
+      }),
+      email: z.string().email().optional(),
+      phoneNumber: z.string().min(10).optional(),
+    });
+
+    const openApiSchema: SchemaObject = generateSchema(UserZ); //?
+
+    expect(openApiSchema.properties).toBeDefined();
   });
 });

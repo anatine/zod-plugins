@@ -1,8 +1,8 @@
 // Refactor of  https://github.com/RobinTail/express-zod-api/blob/1fa5991ec12aa461506887ef7de7882d7afe3b48/src/open-api.ts
 
-import merge from 'ts-deepmerge';
-import { z, ZodTypeAny, AnyZodObject } from 'zod';
 import { SchemaObject } from 'openapi3-ts';
+import merge from 'ts-deepmerge';
+import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
 export interface OpenApiZodAny extends ZodTypeAny {
   metaOpenApi?: SchemaObject;
@@ -23,7 +23,8 @@ function parseZodTransformation(
   value: z.ZodTransformer<never> | z.ZodEffects<never>,
   useOutput = false
 ) {
-  const input = parseZodString(value._def.schema);
+  const input = generateSchema(value._def.schema, useOutput);
+
   let output = 'undefined';
   if (useOutput && value._def.effects && value._def.effects.length > 0) {
     const effect = value._def.effects

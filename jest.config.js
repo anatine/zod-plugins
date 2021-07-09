@@ -1,3 +1,7 @@
 module.exports = {
-  projects: ['<rootDir>/apps/example', '<rootDir>/libs/zod-openapi'],
+  projects: [
+    '<rootDir>/apps/example',
+    '<rootDir>/libs/zod-openapi',
+    '<rootDir>/libs/zod-mock',
+  ],
 };

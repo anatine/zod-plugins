@@ -51,6 +51,7 @@
         }
       }
     },
+    "zod-mock": "libs/zod-mock",
     "zod-openapi": "libs/zod-openapi"
   },
   "cli": {

@@ -1,0 +1,33 @@
+{
+  "root": "libs/zod-mock",
+  "sourceRoot": "libs/zod-mock/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/zod-mock",
+        "tsConfig": "libs/zod-mock/tsconfig.lib.json",
+        "packageJson": "libs/zod-mock/package.json",
+        "main": "libs/zod-mock/src/index.ts",
+        "assets": ["libs/zod-mock/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/zod-mock/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/zod-mock"],
+      "options": {
+        "jestConfig": "libs/zod-mock/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["zod", "mock"]
+}
