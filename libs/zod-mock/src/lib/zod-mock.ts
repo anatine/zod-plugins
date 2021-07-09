@@ -12,17 +12,20 @@ function parseObject(zodRef: AnyZodObject): Record<string, ZodTypeAny> {
   );
 }
 
-function findMatchingFaker(keyName: string) {
+type fakerFunction = () => string | number | boolean;
+
+function findMatchingFaker(keyName: string): undefined | fakerFunction {
   let fnName: string | undefined = undefined;
   const sectionName = Object.keys(faker).find((sectionKey) => {
-    Object.keys(faker[sectionKey as never]).find((fnKey) => {
+    return Object.keys(faker[sectionKey as never]).find((fnKey) => {
       fnName =
         fnKey.toLowerCase() === keyName.toLowerCase() ? keyName : undefined;
       return fnName;
     });
-  }) as never;
+  }) as keyof typeof faker;
   if (sectionName && fnName) {
-    return faker[sectionName][fnName];
+    const section = faker[sectionName];
+    return section ? section[fnName] : undefined;
   }
 }
 
@@ -30,14 +33,17 @@ function parseString(zodRef: z.ZodString, keyName?: string): string {
   const { checks = [] } = zodRef._def;
 
   const stringGenerators = {
-    default: keyName
-      ? findMatchingFaker(keyName) ?? faker.random.word
-      : faker.random.word,
+    default: faker.lorem.word,
     email: faker.internet.exampleEmail,
     uuid: faker.datatype.uuid,
     uid: faker.datatype.uuid,
     url: faker.internet.url,
   };
+
+  const foundFaker = keyName ? findMatchingFaker(keyName) : undefined;
+
+  if (foundFaker) return `${foundFaker()}`;
+
   const stringType =
     (Object.keys(stringGenerators).find(
       (genKey) =>
@@ -114,6 +120,7 @@ const workerMap = {
   ZodNumber: parseNumber,
   ZodBigInt: parseNumber,
   ZodBoolean: () => faker.datatype.boolean(),
+  ZodDate: () => faker.date.soon(),
   ZodOptional: parseOptional,
   ZodNullable: parseOptional,
   ZodArray: parseArray,

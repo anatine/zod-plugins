@@ -19,4 +19,17 @@ describe('zod-mock', () => {
     const mockData = generateMock(schema); //?
     expect(typeof mockData.uid).toEqual('string');
   });
+
+  it('should work here', () => {
+    const UserZ = z.object({
+      uid: z.string().uuid().nonempty(),
+      firstName: z.string().nonempty(),
+      lastName: z.string().nonempty(),
+      email: z.string().email(),
+      avatar: z.string().url().optional(),
+      jobTitle: z.string().optional(),
+    });
+
+    const mock = generateMock(UserZ); //?
+  });
 });
