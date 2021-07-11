@@ -1,0 +1,44 @@
+# File for Pull Request on main branch
+name: PR on main
+
+# When a PR is opened to main
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened, synchronize]
+
+jobs:
+  build:
+    # Setup OS and Node Version
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Latest nodes only
+        node-version: [14.x, 16.x]
+
+# Define Steps
+steps:
+  # Checkout code
+  - uses: actions/checkout@v2
+    with:
+      ref: ${{ github.event.pull_request.head.ref }}
+      fetch-depth: 0
+
+  - name: Use Node.js ${{ matrix.node-version }}
+    uses: actions/setup-node@v1
+    with:
+      node-version: ${{ matrix.node-version }}
+
+  # Make sure we have all branches
+  - name: Fetch other branches
+    run: git fetch --no-tags --prune --depth=5 origin main
+
+  - name: Install environment
+    run: npm ci
+
+  - name: Run lint
+    run: npm run affected:lint -- --base="origin/main"
+
+  - name: Tests coverage
+    run: npm run affected:test -- --base="origin/main" --codeCoverage
