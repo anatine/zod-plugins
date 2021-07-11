@@ -5,36 +5,36 @@ on:
       - main
     types: [closed]
 
-steps:
-  # Checkout code
-  - name: Checkout Code
-    if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-    uses: actions/checkout@v2
+  steps:
+    # Checkout code
+    - name: Checkout Code
+      if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
+      uses: actions/checkout@v2
 
-  - name: Deploy
-    if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-    env:
-      NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-    run: |
-      npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
-      ./.github/scripts/publish-libraries.sh
+    - name: Deploy
+      if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      run: |
+        npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
+        ./.github/scripts/publish-libraries.sh
 
-  - name: Build Docs
-    if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-    run: npm run docs
+    - name: Build Docs
+      if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
+      run: npm run docs
 
-  - name: Commit files
-    if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-    run: |
-      git config --local user.email "action@github.com"
-      git config --local user.name "GitHub Action"
-      git add .
-      git commit -m "Release [skip-ci]" -a || true
+    - name: Commit files
+      if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Release [skip-ci]" -a || true
 
-  - name: Push changes
-    if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-    uses: ad-m/github-push-action@main
-    with:
-      github_token: ${{ secrets.ACTION_AUTH_TOKEN }}
-      tags: true
-      force: true
+    - name: Push changes
+      if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
+      uses: ad-m/github-push-action@main
+      with:
+        github_token: ${{ secrets.ACTION_AUTH_TOKEN }}
+        tags: true
+        force: true
