@@ -5,11 +5,27 @@ on:
       - main
     types: [closed]
 
+jobs:
+  deploy:
+    # Setup OS and Node Version
+    runs-on: ubuntu-latest
+
     steps:
       # Checkout code
       - name: Checkout Code
         if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
         uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: Fetch other branches
+        run: git fetch --no-tags --prune --depth=5 origin main
+
+      - name: Install environment
+        run: npm ci
 
       - name: Deploy
         if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
