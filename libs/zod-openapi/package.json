@@ -1,7 +1,30 @@
 {
   "name": "@anatine/zod-openapi",
   "version": "0.0.1",
+  "description": "Zod to OpenAPI converter",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "license": "MIT",
+  "public": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatine/zod-plugins"
+  },
+  "homepage": "https://github.com/anatine/zod-plugins/tree/main/packages/zod-openapi",
+  "author": {
+    "name": "Brian McBride",
+    "url": "https://www.linkedin.com/in/brianmcbride"
+  },
+  "keywords": [
+    "zod",
+    "openapi",
+    "swagger"
+  ],
   "dependencies": {
+    "ts-deepmerge": "^1.0.8"
+  },
+  "peerDependencies": {
+    "zod": "^3.5.1",
     "openapi3-ts": "^2.0.1"
   }
 }

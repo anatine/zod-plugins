@@ -1,14 +1,14 @@
 import { SchemaObject } from 'openapi3-ts';
 import validator from 'validator';
 import { z } from 'zod';
-import { generateSchema, openApi } from './zod-openapi';
+import { generateSchema, extendApi } from './zod-openapi';
 
 describe('zodOpenapi', () => {
   /**
    * Primitives
    */
   it('should support basic primitives', () => {
-    const zodSchema = openApi(
+    const zodSchema = extendApi(
       z.object({
         aString: z.string().optional(),
         aNumber: z.number().optional(),
@@ -38,7 +38,7 @@ describe('zodOpenapi', () => {
   });
 
   it('should support empty types', () => {
-    const zodSchema = openApi(
+    const zodSchema = extendApi(
       z.object({
         aUndefined: z.undefined(),
         aNull: z.null(),
@@ -62,7 +62,7 @@ describe('zodOpenapi', () => {
   });
 
   it('It should support proper transform input/output', () => {
-    const zodTransform = openApi(
+    const zodTransform = extendApi(
       z.string().transform((val) => val.length),
       { description: 'Will take in a string, returning the length' }
     );
@@ -73,7 +73,7 @@ describe('zodOpenapi', () => {
   });
 
   it('should support catch-all types', () => {
-    const zodSchema = openApi(
+    const zodSchema = extendApi(
       z.object({
         aAny: z.any(),
         aUnknown: z.unknown(),
@@ -91,7 +91,7 @@ describe('zodOpenapi', () => {
   });
 
   it('should support never type', () => {
-    const zodSchema = openApi(
+    const zodSchema = extendApi(
       z.object({
         aNever: z.never(),
       }),
@@ -107,7 +107,7 @@ describe('zodOpenapi', () => {
   });
 
   it('should support string and string constraints', () => {
-    const zodSchema = openApi(
+    const zodSchema = extendApi(
       z
         .object({
           aStringMax: z.string().max(5),
@@ -143,7 +143,7 @@ describe('zodOpenapi', () => {
   });
 
   it('should support numbers and number constraints', () => {
-    const zodSchema = openApi(
+    const zodSchema = extendApi(
       z
         .object({
           aNumberMin: z.number().min(3),
@@ -189,10 +189,12 @@ describe('zodOpenapi', () => {
     } as const;
 
     const zodSchema = z.object({
-      name: openApi(z.string(), { description: `User full name` }),
-      email: openApi(z.string().email().min(4), { description: 'User email' }),
+      name: extendApi(z.string(), { description: `User full name` }),
+      email: extendApi(z.string().email().min(4), {
+        description: 'User email',
+      }),
       whatever: z.string().optional(),
-      myCollection: openApi(
+      myCollection: extendApi(
         z.array(z.object({ name: z.string(), count: z.number() })),
         { maxItems: 10 }
       ),
@@ -202,9 +204,9 @@ describe('zodOpenapi', () => {
         numberTwo: z.literal(2).optional(),
         isThisTheEnd: z.literal(false).optional().nullable(),
       }),
-      foodTest: openApi(
+      foodTest: extendApi(
         z.object({
-          fishEnum: openApi(z.enum(['Salmon', 'Tuna', 'Trout']), {
+          fishEnum: extendApi(z.enum(['Salmon', 'Tuna', 'Trout']), {
             description: 'Choose your fish',
             default: 'Salmon',
           }),
@@ -213,7 +215,7 @@ describe('zodOpenapi', () => {
         }),
         { description: 'Have some lunch' }
       ),
-      employedPerson: openApi(
+      employedPerson: extendApi(
         z.intersection(
           z.object({ name: z.string() }),
           z.object({
@@ -223,7 +225,7 @@ describe('zodOpenapi', () => {
         { description: 'Our latest addition' }
       ),
       makeAChoice: z.union([z.literal('One'), z.literal(2)]),
-      openChoice: openApi(z.union([z.string(), z.string()]), {
+      openChoice: extendApi(z.union([z.string(), z.string()]), {
         description: 'Odd pattern here',
       }),
       aNullish: z.string().nullish(),
@@ -331,11 +333,11 @@ describe('zodOpenapi', () => {
 
   it('Experimentation', () => {
     const UserZ = z.object({
-      uid: openApi(z.string().nonempty(), {
+      uid: extendApi(z.string().nonempty(), {
         description: 'A firebase generated UUID',
         format: 'firebase-uuid',
       }),
-      theme: openApi(z.enum([`light`, `dark`]), {
+      theme: extendApi(z.enum([`light`, `dark`]), {
         description: 'Defaults to light theme',
         default: 'light',
       }),
@@ -343,8 +345,79 @@ describe('zodOpenapi', () => {
       phoneNumber: z.string().min(10).optional(),
     });
 
-    const openApiSchema: SchemaObject = generateSchema(UserZ); //?
+    const openApiSchema: SchemaObject = generateSchema(UserZ);
 
     expect(openApiSchema.properties).toBeDefined();
+  });
+
+  it('Take any Zod schema and convert it to an OpenAPI JSON object', () => {
+    const aZodSchema = z.object({
+      uid: z.string().nonempty(),
+      firstName: z.string().min(2),
+      lastName: z.string().optional(),
+      email: z.string().email(),
+      phoneNumber: z.string().min(10).optional(),
+    });
+
+    const myOpenApiSchema = generateSchema(aZodSchema);
+
+    expect(myOpenApiSchema).toEqual({
+      type: 'object',
+      properties: {
+        uid: { type: 'string', minLength: 1 },
+        firstName: { type: 'string', minLength: 2 },
+        lastName: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        phoneNumber: { type: 'string', minLength: 10 },
+      },
+      required: ['uid', 'firstName', 'email'],
+    });
+  });
+  it('Extend a Zod schema with additional OpenAPI schema via a function wrapper', () => {
+    const aZodExtendedSchema = extendApi(
+      z.object({
+        uid: extendApi(z.string().nonempty(), {
+          title: 'Unique ID',
+          description: 'A UUID generated by the server',
+        }),
+        firstName: z.string().min(2),
+        lastName: z.string().optional(),
+        email: z.string().email(),
+        phoneNumber: extendApi(z.string().min(10), {
+          description: 'US Phone numbers only',
+          example: '555-555-5555',
+        }),
+      }),
+      {
+        title: 'User',
+        description: 'A user schema',
+      }
+    );
+
+    const myOpenApiSchema = generateSchema(aZodExtendedSchema);
+
+    expect(myOpenApiSchema).toEqual({
+      type: 'object',
+      properties: {
+        uid: {
+          type: 'string',
+          minLength: 1,
+          title: 'Unique ID',
+          description: 'A UUID generated by the server',
+        },
+        firstName: { type: 'string', minLength: 2 },
+        lastName: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        phoneNumber: {
+          type: 'string',
+          minLength: 10,
+          description: 'US Phone numbers only',
+          example: '555-555-5555',
+        },
+      },
+      required: ['uid', 'firstName', 'email', 'phoneNumber'],
+      title: 'User',
+      description: 'A user schema',
+    });
   });
 });

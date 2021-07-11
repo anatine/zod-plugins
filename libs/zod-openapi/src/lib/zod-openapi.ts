@@ -1,4 +1,4 @@
-import { SchemaObject } from 'openapi3-ts';
+import type { SchemaObject } from 'openapi3-ts';
 import merge from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
@@ -16,7 +16,7 @@ interface ParsingArgs<T> {
   useOutput?: boolean;
 }
 
-export function openApi<T extends OpenApiZodAny>(
+export function extendApi<T extends OpenApiZodAny>(
   schema: T,
   SchemaObject: SchemaObject = {}
 ): T {
