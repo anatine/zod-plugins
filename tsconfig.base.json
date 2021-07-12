@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "@anatine/zod-mock": ["libs/zod-mock/src/index.ts"],
+      "@anatine/zod-nestjs": ["libs/zod-nestjs/src/index.ts"],
       "@anatine/zod-openapi": ["libs/zod-openapi/src/index.ts"]
     }
   },

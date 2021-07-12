@@ -29,6 +29,9 @@
   "projects": {
     "example": {
       "tags": []
+    },
+    "zod-nestjs": {
+      "tags": ["zod", "npm", "package"]
     }
   }
 }

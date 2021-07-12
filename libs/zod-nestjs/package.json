@@ -1,0 +1,32 @@
+{
+  "name": "@anatine/zod-nestjs",
+  "version": "0.0.1",
+  "description": "Zod helper methods for NestJS",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "license": "MIT",
+  "public": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatine/zod-plugins"
+  },
+  "homepage": "https://github.com/anatine/zod-plugins/tree/main/packages/zod-nestjs",
+  "author": {
+    "name": "Brian McBride",
+    "url": "https://www.linkedin.com/in/brianmcbride"
+  },
+  "keywords": [
+    "zod",
+    "openapi",
+    "swagger",
+    "nestjs"
+  ],
+  "dependencies": {
+    "@anatidae/zod-openapi": "^0.2.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.5.1",
+    "openapi3-ts": "^2.0.1",
+    "@nestjs/core": "^8.0.1"
+  }
+}
