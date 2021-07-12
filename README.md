@@ -14,6 +14,10 @@ This is a monorepo project utilizing the tooling [Nx](https://nx.dev).
   - Generates a mock objet for testing.
   - Fake data generated from the peer dependency [faker.js](https://www.npmjs.com/package/faker) 
 
+- ### [@anatine/zod-nestjs](./libs/zod-nestjs/README.md)
+  - Helper tooling to use Zod in [NestJS](https://nestjs.com/).
+  - Patch for [@nestjs/swagger](https://docs.nestjs.com/openapi/introduction) to use `@anatine/zod-openapi` to display schemas.
+
 
 ----
 
