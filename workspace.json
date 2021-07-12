@@ -52,6 +52,38 @@
       }
     },
     "zod-mock": "libs/zod-mock",
+    "zod-nestjs": {
+      "root": "libs/zod-nestjs",
+      "sourceRoot": "libs/zod-nestjs/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/zod-nestjs",
+            "tsConfig": "libs/zod-nestjs/tsconfig.lib.json",
+            "packageJson": "libs/zod-nestjs/package.json",
+            "main": "libs/zod-nestjs/src/index.ts",
+            "assets": ["libs/zod-nestjs/*.md"]
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/zod-nestjs/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/zod-nestjs"],
+          "options": {
+            "jestConfig": "libs/zod-nestjs/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "zod-openapi": "libs/zod-openapi"
   },
   "cli": {

@@ -1,4 +1,3 @@
-import { Schema } from 'inspector';
 import { z } from 'zod';
 import { generateMock } from './zod-mock';
 
@@ -35,20 +34,5 @@ describe('zod-mock', () => {
     expect(typeof mockData.stringLength).toEqual('number');
     expect(typeof mockData.numberCount).toEqual('string');
     expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
-
-    console.log(JSON.stringify(mockData, null, 2));
-  });
-
-  it('should work here', () => {
-    const UserZ = z.object({
-      uid: z.string().uuid().nonempty(),
-      firstName: z.string().nonempty(),
-      lastName: z.string().nonempty(),
-      email: z.string().email(),
-      avatar: z.string().url().optional(),
-      jobTitle: z.string().optional(),
-    });
-
-    const mock = generateMock(UserZ); //?
   });
 });
