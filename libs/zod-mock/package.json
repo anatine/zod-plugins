@@ -1,4 +1,26 @@
 {
   "name": "@anatine/zod-mock",
-  "version": "0.3.0"
+  "version": "0.3.1",
+  "description": "Zod auto-mock object generator using Faker",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "license": "MIT",
+  "public": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatine/zod-plugins"
+  },
+  "homepage": "https://github.com/anatine/zod-plugins/tree/main/packages/zod-mock",
+  "author": {
+    "name": "Brian McBride",
+    "url": "https://www.linkedin.com/in/brianmcbride"
+  },
+  "keywords": [
+    "zod",
+    "mock",
+    "faker"
+  ],
+  "peerDependencies": {
+    "faker": "^4.1.0"
+  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@anatine/zod-nestjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Zod helper methods for NestJS",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -22,7 +22,7 @@
     "nestjs"
   ],
   "dependencies": {
-    "@anatidae/zod-openapi": "^0.2.0"
+    "@anatine/zod-openapi": "^0.2.0"
   },
   "peerDependencies": {
     "zod": "^3.5.1",
