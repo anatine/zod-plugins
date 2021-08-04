@@ -49,12 +49,13 @@ describe('zodOpenapi', () => {
       }
     );
     const apiSchema = generateSchema(zodSchema);
+    console.log(apiSchema);
     expect(apiSchema).toEqual({
       type: 'object',
       properties: {
         aUndefined: {},
-        aNull: { nullable: true, type: 'string', format: 'null' },
-        aVoid: { nullable: true },
+        aNull: { type: 'string', format: 'null', nullable: true },
+        aVoid: {},
       },
       required: ['aNull'],
       description: 'Empty types in a schema',
