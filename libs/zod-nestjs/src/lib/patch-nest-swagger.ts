@@ -34,8 +34,8 @@ export const patchNestjsSwagger = (
       type = (type as Function)();
     }
 
-    if ('zodSchema' in type && !type.zodSchema) {
-      return orgExploreModelSchema(type, schemas, schemaRefsStack);
+    if (!type.zodSchema) {
+      return orgExploreModelSchema.call(this, type, schemas, schemaRefsStack);
     }
 
     const openApiDef = generateSchema(type.zodSchema);
