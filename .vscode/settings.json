@@ -5,11 +5,12 @@
     "titleBar.activeForeground": "#F9FAFD"
   },
   "cSpell.words": [
-    "Nonpositive",
-    "Unprocessable",
     "anatidae",
     "deepmerge",
+    "esbuild",
     "metatype",
-    "openapi"
+    "Nonpositive",
+    "openapi",
+    "Unprocessable"
   ]
 }
