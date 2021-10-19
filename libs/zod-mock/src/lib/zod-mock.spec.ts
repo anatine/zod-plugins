@@ -2,14 +2,7 @@ import { z } from 'zod';
 import { generateMock } from './zod-mock';
 
 describe('zod-mock', () => {
-  it(`Testing individual`, () => {
-    const schema = z.object({
-      name: z.string(),
-    });
-    const mockData = generateMock(schema); //?
-  });
-
-  it.only('should generate a mock object using faker', () => {
+  it('should generate a mock object using faker', () => {
     const schema = z.object({
       uid: z.string().nonempty(),
       theme: z.enum([`light`, `dark`]),
