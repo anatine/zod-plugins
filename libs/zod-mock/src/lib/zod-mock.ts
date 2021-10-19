@@ -29,7 +29,10 @@ function findMatchingFaker(keyName: string): undefined | fakerFunction {
   }
 }
 
-function parseString(zodRef: z.ZodString, keyName?: string): string {
+function parseString(
+  zodRef: z.ZodString,
+  keyName?: string
+): string | number | boolean {
   const { checks = [] } = zodRef._def;
 
   const stringGenerators = {
@@ -38,20 +41,29 @@ function parseString(zodRef: z.ZodString, keyName?: string): string {
     uuid: faker.datatype.uuid,
     uid: faker.datatype.uuid,
     url: faker.internet.url,
+    name: faker.name.findName,
   };
-
-  const foundFaker = keyName ? findMatchingFaker(keyName) : undefined;
-
-  if (foundFaker) return `${foundFaker()}`;
 
   const stringType =
     (Object.keys(stringGenerators).find(
       (genKey) =>
         genKey === keyName?.toLowerCase() ||
         checks.find((item) => item.kind === genKey)
-    ) as keyof typeof stringGenerators) || 'default';
+    ) as keyof typeof stringGenerators) || null;
 
-  return stringGenerators[stringType]();
+  if (stringType) {
+    return stringGenerators[stringType]();
+  } else {
+    const foundFaker = keyName ? findMatchingFaker(keyName) : undefined;
+    if (keyName === 'email') {
+      console.log(foundFaker);
+    }
+    if (foundFaker) {
+      return foundFaker();
+    }
+  }
+
+  return faker.lorem.word();
 }
 
 function parseNumber(zodRef: z.ZodNumber): number {
@@ -104,13 +116,14 @@ function parseTransform(
 ) {
   const input = generateMock(zodRef._def.schema, keyName);
 
+  console.log(zodRef._def.effect);
+
   const effect =
-    zodRef._def.effects &&
-    zodRef._def.effects.filter((ef) => ef.type === 'transform').slice(-1)[0];
+    zodRef._def.effect.type === 'transform'
+      ? zodRef._def.effect
+      : { transform: () => input };
 
-  if (effect && 'transform' in effect) return effect.transform(input);
-
-  return input;
+  return effect.transform(input);
 }
 
 const workerMap = {
