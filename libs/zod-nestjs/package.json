@@ -27,6 +27,6 @@
   "peerDependencies": {
     "zod": "^3.5.1",
     "openapi3-ts": "^2.0.1",
-    "@nestjs/core": "^8.0.1"
+    "@nestjs/core": "^7.0.0 || ^8.0.0"
   }
 }

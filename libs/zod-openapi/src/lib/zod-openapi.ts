@@ -44,11 +44,12 @@ function parseTransformation({
 }: ParsingArgs<z.ZodTransformer<never> | z.ZodEffects<never>>): SchemaObject {
   const input = generateSchema(zodRef._def.schema, useOutput);
 
+  zodRef._def; //?
+
   let output = 'undefined';
-  if (useOutput && zodRef._def.effects && zodRef._def.effects.length > 0) {
-    const effect = zodRef._def.effects
-      .filter((ef) => ef.type === 'transform')
-      .slice(-1)[0];
+  if (useOutput && zodRef._def.effect) {
+    const effect =
+      zodRef._def.effect.type === 'transform' ? zodRef._def.effect : null;
     if (effect && 'transform' in effect) {
       try {
         output = typeof effect.transform(
