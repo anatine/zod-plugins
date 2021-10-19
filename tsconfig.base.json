@@ -9,7 +9,7 @@
     "experimentalDecorators": true,
     "isolatedModules": true,
     "strict": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "target": "es2017",
     "module": "esnext",
     "lib": ["es2017", "dom"],

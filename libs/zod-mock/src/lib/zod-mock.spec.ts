@@ -6,6 +6,8 @@ describe('zod-mock', () => {
     const schema = z.object({
       uid: z.string().nonempty(),
       theme: z.enum([`light`, `dark`]),
+      name: z.string(),
+      firstName: z.string(),
       email: z.string().email().optional(),
       phoneNumber: z.string().min(10).optional(),
       avatar: z.string().url().optional(),
