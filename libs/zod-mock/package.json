@@ -1,6 +1,6 @@
 {
   "name": "@anatine/zod-mock",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Zod auto-mock object generator using Faker",
   "main": "src/index.js",
   "types": "src/index.d.ts",
