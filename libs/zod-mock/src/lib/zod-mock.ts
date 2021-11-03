@@ -42,6 +42,23 @@ function parseString(
     uid: faker.datatype.uuid,
     url: faker.internet.url,
     name: faker.name.findName,
+    colorHex: faker.internet.color,
+    color: faker.internet.color,
+    backgroundColor: faker.internet.color,
+    textShadow: faker.internet.color,
+    textColor: faker.internet.color,
+    textDecorationColor: faker.internet.color,
+    borderColor: faker.internet.color,
+    borderTopColor: faker.internet.color,
+    borderRightColor: faker.internet.color,
+    borderBottomColor: faker.internet.color,
+    borderLeftColor: faker.internet.color,
+    borderBlockStartColor: faker.internet.color,
+    borderBlockEndColor: faker.internet.color,
+    borderInlineStartColor: faker.internet.color,
+    borderInlineEndColor: faker.internet.color,
+    columnRuleColor: faker.internet.color,
+    outlineColor: faker.internet.color,
   };
 
   const stringType =
