@@ -50,7 +50,8 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": []
     },
     "zod-mock": "libs/zod-mock",
     "zod-nestjs": {
@@ -84,12 +85,9 @@
             "passWithNoTests": true
           }
         }
-      }
+      },
+      "tags": ["zod", "npm", "package"]
     },
     "zod-openapi": "libs/zod-openapi"
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/nest"
-  },
-  "defaultProject": "example"
+  }
 }
