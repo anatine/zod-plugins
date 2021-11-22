@@ -177,6 +177,18 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support records', () => {
+    const zodSchema = extendApi(z.record(z.number().min(2).max(42)), {
+      description: 'Record this one for me.',
+    });
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      additionalProperties: { type: 'number', minimum: 2, maximum: 42 },
+      description: 'Record this one for me.',
+    });
+  });
+
   it('Testing large mixed schema', () => {
     enum Fruits {
       Apple,

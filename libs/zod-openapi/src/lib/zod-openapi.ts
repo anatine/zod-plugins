@@ -142,6 +142,7 @@ function parseNumber({
   return merge(baseSchema, ...schemas);
 }
 
+// TODO: passthrough, strict, strip, catchall (make latter override all others)
 function parseObject({
   zodRef,
   schemas,
@@ -160,6 +161,20 @@ function parseObject({
           !(zodRef as z.AnyZodObject).shape[key].isOptional() &&
           !((zodRef as z.AnyZodObject).shape[key] instanceof z.ZodNever)
       ),
+    },
+    ...schemas
+  );
+}
+
+function parseRecord({
+  zodRef,
+  schemas,
+  useOutput,
+}: ParsingArgs<z.ZodRecord>): SchemaObject {
+  return merge(
+    {
+      type: 'object',
+      additionalProperties: generateSchema(zodRef._def.valueType, useOutput),
     },
     ...schemas
   );
@@ -279,7 +294,7 @@ function catchAllParser({ schemas }: ParsingArgs<ZodTypeAny>): SchemaObject {
 
 const workerMap = {
   ZodObject: parseObject,
-  ZodRecord: parseObject,
+  ZodRecord: parseRecord,
   ZodString: parseString,
   ZodNumber: parseNumber,
   ZodBigInt: parseBigInt,
