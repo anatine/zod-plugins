@@ -49,7 +49,6 @@ describe('zodOpenapi', () => {
       }
     );
     const apiSchema = generateSchema(zodSchema);
-    console.log(apiSchema);
     expect(apiSchema).toEqual({
       type: 'object',
       properties: {
@@ -189,6 +188,78 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support schemas with a default', () => {
+    const zodSchema = extendApi(
+      z.object({
+        aString: z.string().default('hello'),
+        aStringWithConstraints: z.string().email().max(100).default('hello'),
+        aNumber: z.number().default(42),
+        aNumberWithRestrictions: z.number().min(2).max(42).default(42),
+        aBoolean: z.boolean().default(false),
+        nonDefaulted: z.string(),
+      }),
+      {
+        description: 'I defaulted on my debt',
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aString: { type: 'string', default: 'hello' },
+        aStringWithConstraints: {
+          type: 'string',
+          format: 'email',
+          maxLength: 100,
+          default: 'hello',
+        },
+        aNumber: { type: 'number', default: 42 },
+        aNumberWithRestrictions: {
+          type: 'number',
+          minimum: 2,
+          maximum: 42,
+          default: 42,
+        },
+        aBoolean: { type: 'boolean', default: false },
+        nonDefaulted: { type: 'string' },
+      },
+      required: ['nonDefaulted'],
+      description: 'I defaulted on my debt',
+    });
+  });
+
+  it('should support an object schema that has a default on itself', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .default({
+          aString: 'hello',
+          aNumber: 42,
+        }),
+      {
+        description: 'I defaulted on my debt',
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      default: {
+        aString: 'hello',
+        aNumber: 42,
+      },
+      required: ['aString', 'aNumber'],
+      description: 'I defaulted on my debt',
+    });
+  });
+
+  // TODO: add default, record, combining default with others
   it('Testing large mixed schema', () => {
     enum Fruits {
       Apple,

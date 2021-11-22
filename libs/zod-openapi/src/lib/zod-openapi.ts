@@ -156,11 +156,13 @@ function parseObject({
         schemas,
         useOutput,
       }),
-      required: Object.keys((zodRef as z.AnyZodObject).shape).filter(
-        (key) =>
-          !(zodRef as z.AnyZodObject).shape[key].isOptional() &&
-          !((zodRef as z.AnyZodObject).shape[key] instanceof z.ZodNever)
-      ),
+      required: Object.keys((zodRef as z.AnyZodObject).shape).filter((key) => {
+        const item = (zodRef as z.AnyZodObject).shape[key];
+        return (
+          !(item.isOptional() || item instanceof z.ZodDefault) &&
+          !(item instanceof z.ZodNever)
+        );
+      }),
     },
     ...schemas
   );
@@ -211,6 +213,20 @@ function parseOptionalNullable({
   z.ZodOptional<OpenApiZodAny> | z.ZodNullable<OpenApiZodAny>
 >): SchemaObject {
   return merge(generateSchema(zodRef.unwrap(), useOutput), ...schemas);
+}
+
+function parseDefault({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodDefault<OpenApiZodAny>>): SchemaObject {
+  return merge(
+    {
+      default: zodRef._def.defaultValue(),
+      ...generateSchema(zodRef._def.innerType, useOutput),
+    },
+    ...schemas
+  );
 }
 
 function parseArray({
@@ -303,6 +319,7 @@ const workerMap = {
   ZodNull: parseNull,
   ZodOptional: parseOptionalNullable,
   ZodNullable: parseOptionalNullable,
+  ZodDefault: parseDefault,
   ZodArray: parseArray,
   ZodLiteral: parseLiteral,
   ZodEnum: parseEnum,
