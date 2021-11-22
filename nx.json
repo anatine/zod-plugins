@@ -14,7 +14,8 @@
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "parallel": 1
       }
     }
   },
@@ -26,12 +27,8 @@
       }
     ]
   },
-  "projects": {
-    "example": {
-      "tags": []
-    },
-    "zod-nestjs": {
-      "tags": ["zod", "npm", "package"]
-    }
-  }
+  "cli": {
+    "defaultCollection": "@nrwl/nest"
+  },
+  "defaultProject": "example"
 }
