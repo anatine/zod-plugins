@@ -259,6 +259,68 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support `catchall` on an object schema', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .catchall(
+          z.object({
+            email: z.string().email(),
+            available: z.boolean(),
+          })
+        ),
+      {
+        description: "Gotta catch 'em all!",
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      required: ['aString', 'aNumber'],
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      additionalProperties: {
+        type: 'object',
+        properties: {
+          email: { type: 'string', format: 'email' },
+          available: { type: 'boolean' },
+        },
+        required: ['email', 'available'],
+      },
+      description: "Gotta catch 'em all!",
+    });
+  });
+
+  it('should support `passthrough` on an object schema', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .passthrough(),
+      {
+        description: "Gotta catch 'em all!",
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      required: ['aString', 'aNumber'],
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      additionalProperties: true,
+      description: "Gotta catch 'em all!",
+    });
+  });
+
   // TODO: add default, record, combining default with others
   it('Testing large mixed schema', () => {
     enum Fruits {

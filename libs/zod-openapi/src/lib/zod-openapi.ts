@@ -142,12 +142,21 @@ function parseNumber({
   return merge(baseSchema, ...schemas);
 }
 
-// TODO: passthrough, strict, strip, catchall (make latter override all others)
 function parseObject({
   zodRef,
   schemas,
   useOutput,
-}: ParsingArgs<z.ZodObject<never> | z.ZodRecord>): SchemaObject {
+}: ParsingArgs<
+  z.ZodObject<never, 'passthrough' | 'strict' | 'strip'>
+>): SchemaObject {
+  let additionalProperties: SchemaObject['additionalProperties'];
+
+  // `catchall` obviates `strict`, `strip`, and `passthrough`
+  if (!(zodRef._def.catchall instanceof z.ZodNever))
+    additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
+  else if (zodRef._def.unknownKeys === 'passthrough')
+    additionalProperties = true;
+
   return merge(
     {
       type: 'object',
@@ -163,6 +172,7 @@ function parseObject({
           !(item instanceof z.ZodNever)
         );
       }),
+      additionalProperties,
     },
     ...schemas
   );
