@@ -140,6 +140,8 @@ function parseNumber({
       case 'int':
         baseSchema.type = 'integer';
         break;
+      case 'multipleOf':
+        baseSchema.multipleOf = item.value;
     }
   });
   return merge(baseSchema, ...schemas);

@@ -155,6 +155,7 @@ describe('zodOpenapi', () => {
           aNumberNonpositive: z.number().nonpositive(),
           aNumberGt: z.number().gt(5),
           aNumberLt: z.number().lt(5),
+          aNumberMultipleOf: z.number().multipleOf(2),
         })
         .partial(),
       {
@@ -174,6 +175,7 @@ describe('zodOpenapi', () => {
         aNumberNonpositive: { type: 'number', maximum: 0 },
         aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: true },
         aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
+        aNumberMultipleOf: { type: 'number', multipleOf: 2 },
       },
       required: [],
       description: 'Look mah, the horse can count higher than me!',
