@@ -49,7 +49,6 @@ describe('zodOpenapi', () => {
       }
     );
     const apiSchema = generateSchema(zodSchema);
-    console.log(apiSchema);
     expect(apiSchema).toEqual({
       type: 'object',
       properties: {
@@ -117,6 +116,7 @@ describe('zodOpenapi', () => {
           aStringEmail: z.string().email(),
           aStringUrl: z.string().url(),
           aStringUUID: z.string().uuid(),
+          aStringCUID: z.string().cuid(),
           aStringRegex: z.string().regex(/^[a-zA-Z]+$/),
           aStringNonEmpty: z.string().nonempty(),
         })
@@ -135,6 +135,7 @@ describe('zodOpenapi', () => {
         aStringEmail: { type: 'string', format: 'email' },
         aStringUrl: { type: 'string', format: 'uri' },
         aStringUUID: { type: 'string', format: 'uuid' },
+        aStringCUID: { type: 'string', format: 'cuid' },
         aStringRegex: { type: 'string', pattern: '^[a-zA-Z]+$' },
         aStringNonEmpty: { type: 'string', minLength: 1 },
       },
@@ -154,6 +155,9 @@ describe('zodOpenapi', () => {
           aNumberNonnegative: z.number().nonnegative(),
           aNumberNegative: z.number().negative(),
           aNumberNonpositive: z.number().nonpositive(),
+          aNumberGt: z.number().gt(5),
+          aNumberLt: z.number().lt(5),
+          aNumberMultipleOf: z.number().multipleOf(2),
         })
         .partial(),
       {
@@ -167,13 +171,205 @@ describe('zodOpenapi', () => {
         aNumberMin: { type: 'number', minimum: 3 },
         aNumberMax: { type: 'number', maximum: 8 },
         aNumberInt: { type: 'integer' },
-        aNumberPositive: { type: 'number', minimum: 1 },
+        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: true },
         aNumberNonnegative: { type: 'number', minimum: 0 },
-        aNumberNegative: { type: 'number', maximum: -1 },
+        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: true },
         aNumberNonpositive: { type: 'number', maximum: 0 },
+        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: true },
+        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
+        aNumberMultipleOf: { type: 'number', multipleOf: 2 },
       },
       required: [],
       description: 'Look mah, the horse can count higher than me!',
+    });
+  });
+
+  it('should support arrays and array constraints', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aArrayMin: z.array(z.string()).min(3),
+          aArrayMax: z.array(z.number()).max(8),
+          aArrayLength: z.array(z.boolean()).length(10),
+          aArrayNonempty: z.array(z.null()).nonempty(),
+          aArrayMinAndMax: z.array(z.number()).min(3).max(8),
+        })
+        .partial(),
+      {
+        description: 'I need arrays',
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aArrayMin: { type: 'array', minItems: 3, items: { type: 'string' } },
+        aArrayMax: { type: 'array', maxItems: 8, items: { type: 'number' } },
+        aArrayLength: {
+          type: 'array',
+          minItems: 10,
+          maxItems: 10,
+          items: { type: 'boolean' },
+        },
+        aArrayNonempty: {
+          type: 'array',
+          minItems: 1,
+          items: { type: 'string', format: 'null', nullable: true },
+        },
+        aArrayMinAndMax: {
+          type: 'array',
+          minItems: 3,
+          maxItems: 8,
+          items: { type: 'number' },
+        },
+      },
+      required: [],
+      description: 'I need arrays',
+    });
+  });
+
+  it('should support records', () => {
+    const zodSchema = extendApi(z.record(z.number().min(2).max(42)), {
+      description: 'Record this one for me.',
+    });
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      additionalProperties: { type: 'number', minimum: 2, maximum: 42 },
+      description: 'Record this one for me.',
+    });
+  });
+
+  it('should support schemas with a default', () => {
+    const zodSchema = extendApi(
+      z.object({
+        aString: z.string().default('hello'),
+        aStringWithConstraints: z.string().email().max(100).default('hello'),
+        aNumber: z.number().default(42),
+        aNumberWithRestrictions: z.number().min(2).max(42).default(42),
+        aBoolean: z.boolean().default(false),
+        nonDefaulted: z.string(),
+      }),
+      {
+        description: 'I defaulted on my debt',
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aString: { type: 'string', default: 'hello' },
+        aStringWithConstraints: {
+          type: 'string',
+          format: 'email',
+          maxLength: 100,
+          default: 'hello',
+        },
+        aNumber: { type: 'number', default: 42 },
+        aNumberWithRestrictions: {
+          type: 'number',
+          minimum: 2,
+          maximum: 42,
+          default: 42,
+        },
+        aBoolean: { type: 'boolean', default: false },
+        nonDefaulted: { type: 'string' },
+      },
+      required: ['nonDefaulted'],
+      description: 'I defaulted on my debt',
+    });
+  });
+
+  it('should support an object schema that has a default on itself', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .default({
+          aString: 'hello',
+          aNumber: 42,
+        }),
+      {
+        description: 'I defaulted on my debt',
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      default: {
+        aString: 'hello',
+        aNumber: 42,
+      },
+      required: ['aString', 'aNumber'],
+      description: 'I defaulted on my debt',
+    });
+  });
+
+  it('should support `catchall` on an object schema', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .catchall(
+          z.object({
+            email: z.string().email(),
+            available: z.boolean(),
+          })
+        ),
+      {
+        description: "Gotta catch 'em all!",
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      required: ['aString', 'aNumber'],
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      additionalProperties: {
+        type: 'object',
+        properties: {
+          email: { type: 'string', format: 'email' },
+          available: { type: 'boolean' },
+        },
+        required: ['email', 'available'],
+      },
+      description: "Gotta catch 'em all!",
+    });
+  });
+
+  it('should support `passthrough` on an object schema', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .passthrough(),
+      {
+        description: "Gotta catch 'em all!",
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      required: ['aString', 'aNumber'],
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      additionalProperties: true,
+      description: "Gotta catch 'em all!",
     });
   });
 
@@ -205,13 +401,19 @@ describe('zodOpenapi', () => {
         numberTwo: z.literal(2).optional(),
         isThisTheEnd: z.literal(false).optional().nullable(),
       }),
+      catchall: z
+        .object({
+          email: z.string().email(),
+          joined: z.date().optional(),
+        })
+        .catchall(z.object({ name: z.string(), value: z.string() })),
       foodTest: extendApi(
         z.object({
           fishEnum: extendApi(z.enum(['Salmon', 'Tuna', 'Trout']), {
             description: 'Choose your fish',
             default: 'Salmon',
           }),
-          fruitEnum: z.nativeEnum(Fruits),
+          fruitEnum: z.nativeEnum(Fruits).default(Fruits.Banana),
           moreFruitsEnum: z.nativeEnum(MoreFruits),
         }),
         { description: 'Have some lunch' }
@@ -231,6 +433,15 @@ describe('zodOpenapi', () => {
       }),
       aNullish: z.string().nullish(),
       stringLengthOutput: z.string().transform((val) => val.length),
+      favourites: z.record(
+        z.object({ name: z.string(), watchCount: z.number() })
+      ),
+      limit: z.number().default(200),
+      freeform: z
+        .object({
+          name: z.string(),
+        })
+        .passthrough(),
     });
 
     const schemaTest = generateSchema(zodSchema, true);
@@ -265,6 +476,22 @@ describe('zodOpenapi', () => {
           },
           required: ['wordOne'],
         },
+        catchall: {
+          type: 'object',
+          properties: {
+            email: { type: 'string', format: 'email' },
+            joined: { type: 'string', format: 'date-time' },
+          },
+          required: ['email'],
+          additionalProperties: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              value: { type: 'string' },
+            },
+            required: ['name', 'value'],
+          },
+        },
         foodTest: {
           type: 'object',
           properties: {
@@ -274,10 +501,14 @@ describe('zodOpenapi', () => {
               description: 'Choose your fish',
               default: 'Salmon',
             },
-            fruitEnum: { type: 'string', enum: ['Apple', 'Banana', 0, 1] },
+            fruitEnum: {
+              type: 'string',
+              enum: ['Apple', 'Banana', 0, 1],
+              default: 1,
+            },
             moreFruitsEnum: { type: 'string', enum: ['pear', 'plumb', 3] },
           },
-          required: ['fishEnum', 'fruitEnum', 'moreFruitsEnum'],
+          required: ['fishEnum', 'moreFruitsEnum'],
           description: 'Have some lunch',
         },
         employedPerson: {
@@ -312,6 +543,26 @@ describe('zodOpenapi', () => {
         },
         aNullish: { nullable: true, type: 'string' },
         stringLengthOutput: { type: 'number' },
+        favourites: {
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              watchCount: { type: 'number' },
+            },
+            required: ['name', 'watchCount'],
+          },
+        },
+        limit: { type: 'number', default: 200 },
+        freeform: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+          additionalProperties: true,
+          required: ['name'],
+        },
       },
       required: [
         'name',
@@ -319,11 +570,14 @@ describe('zodOpenapi', () => {
         'myCollection',
         'timeStamp',
         'literals',
+        'catchall',
         'foodTest',
         'employedPerson',
         'makeAChoice',
         'openChoice',
         'stringLengthOutput',
+        'favourites',
+        'freeform',
       ],
     });
 
@@ -374,6 +628,7 @@ describe('zodOpenapi', () => {
       required: ['uid', 'firstName', 'email'],
     });
   });
+
   it('Extend a Zod schema with additional OpenAPI schema via a function wrapper', () => {
     const aZodExtendedSchema = extendApi(
       z.object({

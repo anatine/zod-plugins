@@ -101,6 +101,9 @@ function parseString({
       case 'uuid':
         baseSchema.format = 'uuid';
         break;
+      case 'cuid':
+        baseSchema.format = 'cuid';
+        break;
       case 'url':
         baseSchema.format = 'uri';
         break;
@@ -129,14 +132,19 @@ function parseNumber({
   checks.forEach((item) => {
     switch (item.kind) {
       case 'max':
-        baseSchema.maximum = item.value - (item.inclusive ? 0 : 1);
+        baseSchema.maximum = item.value;
+        // TODO: option to make this always explicit? (false instead of non-existent)
+        if (!item.inclusive) baseSchema.exclusiveMaximum = true;
         break;
       case 'min':
-        baseSchema.minimum = item.value + (item.inclusive ? 0 : 1);
+        baseSchema.minimum = item.value;
+        if (!item.inclusive) baseSchema.exclusiveMinimum = true;
         break;
       case 'int':
         baseSchema.type = 'integer';
         break;
+      case 'multipleOf':
+        baseSchema.multipleOf = item.value;
     }
   });
   return merge(baseSchema, ...schemas);
@@ -146,7 +154,20 @@ function parseObject({
   zodRef,
   schemas,
   useOutput,
-}: ParsingArgs<z.ZodObject<never> | z.ZodRecord>): SchemaObject {
+}: ParsingArgs<
+  z.ZodObject<never, 'passthrough' | 'strict' | 'strip'>
+>): SchemaObject {
+  let additionalProperties: SchemaObject['additionalProperties'];
+
+  // `catchall` obviates `strict`, `strip`, and `passthrough`
+  if (!(zodRef._def.catchall instanceof z.ZodNever))
+    additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
+  else if (zodRef._def.unknownKeys === 'passthrough')
+    additionalProperties = true;
+
+  // So that `undefined` values don't end up in the schema and be weird
+  additionalProperties = additionalProperties ? { additionalProperties } : {};
+
   return merge(
     {
       type: 'object',
@@ -155,11 +176,28 @@ function parseObject({
         schemas,
         useOutput,
       }),
-      required: Object.keys((zodRef as z.AnyZodObject).shape).filter(
-        (key) =>
-          !(zodRef as z.AnyZodObject).shape[key].isOptional() &&
-          !((zodRef as z.AnyZodObject).shape[key] instanceof z.ZodNever)
-      ),
+      required: Object.keys((zodRef as z.AnyZodObject).shape).filter((key) => {
+        const item = (zodRef as z.AnyZodObject).shape[key];
+        return (
+          !(item.isOptional() || item instanceof z.ZodDefault) &&
+          !(item instanceof z.ZodNever)
+        );
+      }),
+      ...additionalProperties,
+    },
+    ...schemas
+  );
+}
+
+function parseRecord({
+  zodRef,
+  schemas,
+  useOutput,
+}: ParsingArgs<z.ZodRecord>): SchemaObject {
+  return merge(
+    {
+      type: 'object',
+      additionalProperties: generateSchema(zodRef._def.valueType, useOutput),
     },
     ...schemas
   );
@@ -198,15 +236,37 @@ function parseOptionalNullable({
   return merge(generateSchema(zodRef.unwrap(), useOutput), ...schemas);
 }
 
+function parseDefault({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodDefault<OpenApiZodAny>>): SchemaObject {
+  return merge(
+    {
+      default: zodRef._def.defaultValue(),
+      ...generateSchema(zodRef._def.innerType, useOutput),
+    },
+    ...schemas
+  );
+}
+
 function parseArray({
   schemas,
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodArray<OpenApiZodAny>>): SchemaObject {
+  const constraints: SchemaObject = {};
+
+  if (zodRef._def.minLength != null)
+    constraints.minItems = zodRef._def.minLength.value;
+  if (zodRef._def.maxLength != null)
+    constraints.maxItems = zodRef._def.maxLength.value;
+
   return merge(
     {
       type: 'array',
-      items: generateSchema(zodRef._def.type, useOutput),
+      items: generateSchema(zodRef.element, useOutput),
+      ...constraints,
     },
     ...schemas
   );
@@ -279,7 +339,7 @@ function catchAllParser({ schemas }: ParsingArgs<ZodTypeAny>): SchemaObject {
 
 const workerMap = {
   ZodObject: parseObject,
-  ZodRecord: parseObject,
+  ZodRecord: parseRecord,
   ZodString: parseString,
   ZodNumber: parseNumber,
   ZodBigInt: parseBigInt,
@@ -288,6 +348,7 @@ const workerMap = {
   ZodNull: parseNull,
   ZodOptional: parseOptionalNullable,
   ZodNullable: parseOptionalNullable,
+  ZodDefault: parseDefault,
   ZodArray: parseArray,
   ZodLiteral: parseLiteral,
   ZodEnum: parseEnum,
@@ -299,6 +360,7 @@ const workerMap = {
   ZodNever: parseNever,
   // TODO Transform the rest to schemas
   ZodUndefined: catchAllParser,
+  // TODO: `prefixItems` is allowed in OpenAPI 3.1 which can be used to create tuples
   ZodTuple: catchAllParser,
   ZodMap: catchAllParser,
   ZodFunction: catchAllParser,
