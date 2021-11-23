@@ -153,6 +153,8 @@ describe('zodOpenapi', () => {
           aNumberNonnegative: z.number().nonnegative(),
           aNumberNegative: z.number().negative(),
           aNumberNonpositive: z.number().nonpositive(),
+          aNumberGt: z.number().gt(5),
+          aNumberLt: z.number().lt(5),
         })
         .partial(),
       {
@@ -166,10 +168,12 @@ describe('zodOpenapi', () => {
         aNumberMin: { type: 'number', minimum: 3 },
         aNumberMax: { type: 'number', maximum: 8 },
         aNumberInt: { type: 'integer' },
-        aNumberPositive: { type: 'number', minimum: 1 },
+        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: true },
         aNumberNonnegative: { type: 'number', minimum: 0 },
-        aNumberNegative: { type: 'number', maximum: -1 },
+        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: true },
         aNumberNonpositive: { type: 'number', maximum: 0 },
+        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: true },
+        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
       },
       required: [],
       description: 'Look mah, the horse can count higher than me!',
