@@ -321,7 +321,6 @@ describe('zodOpenapi', () => {
     });
   });
 
-  // TODO: add default, record, combining default with others
   it('Testing large mixed schema', () => {
     enum Fruits {
       Apple,
@@ -350,13 +349,19 @@ describe('zodOpenapi', () => {
         numberTwo: z.literal(2).optional(),
         isThisTheEnd: z.literal(false).optional().nullable(),
       }),
+      catchall: z
+        .object({
+          email: z.string().email(),
+          joined: z.date().optional(),
+        })
+        .catchall(z.object({ name: z.string(), value: z.string() })),
       foodTest: extendApi(
         z.object({
           fishEnum: extendApi(z.enum(['Salmon', 'Tuna', 'Trout']), {
             description: 'Choose your fish',
             default: 'Salmon',
           }),
-          fruitEnum: z.nativeEnum(Fruits),
+          fruitEnum: z.nativeEnum(Fruits).default(Fruits.Banana),
           moreFruitsEnum: z.nativeEnum(MoreFruits),
         }),
         { description: 'Have some lunch' }
@@ -376,6 +381,15 @@ describe('zodOpenapi', () => {
       }),
       aNullish: z.string().nullish(),
       stringLengthOutput: z.string().transform((val) => val.length),
+      favourites: z.record(
+        z.object({ name: z.string(), watchCount: z.number() })
+      ),
+      limit: z.number().default(200),
+      freeform: z
+        .object({
+          name: z.string(),
+        })
+        .passthrough(),
     });
 
     const schemaTest = generateSchema(zodSchema, true);
@@ -410,6 +424,22 @@ describe('zodOpenapi', () => {
           },
           required: ['wordOne'],
         },
+        catchall: {
+          type: 'object',
+          properties: {
+            email: { type: 'string', format: 'email' },
+            joined: { type: 'string', format: 'date-time' },
+          },
+          required: ['email'],
+          additionalProperties: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              value: { type: 'string' },
+            },
+            required: ['name', 'value'],
+          },
+        },
         foodTest: {
           type: 'object',
           properties: {
@@ -419,10 +449,14 @@ describe('zodOpenapi', () => {
               description: 'Choose your fish',
               default: 'Salmon',
             },
-            fruitEnum: { type: 'string', enum: ['Apple', 'Banana', 0, 1] },
+            fruitEnum: {
+              type: 'string',
+              enum: ['Apple', 'Banana', 0, 1],
+              default: 1,
+            },
             moreFruitsEnum: { type: 'string', enum: ['pear', 'plumb', 3] },
           },
-          required: ['fishEnum', 'fruitEnum', 'moreFruitsEnum'],
+          required: ['fishEnum', 'moreFruitsEnum'],
           description: 'Have some lunch',
         },
         employedPerson: {
@@ -457,6 +491,26 @@ describe('zodOpenapi', () => {
         },
         aNullish: { nullable: true, type: 'string' },
         stringLengthOutput: { type: 'number' },
+        favourites: {
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              watchCount: { type: 'number' },
+            },
+            required: ['name', 'watchCount'],
+          },
+        },
+        limit: { type: 'number', default: 200 },
+        freeform: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+          additionalProperties: true,
+          required: ['name'],
+        },
       },
       required: [
         'name',
@@ -464,11 +518,14 @@ describe('zodOpenapi', () => {
         'myCollection',
         'timeStamp',
         'literals',
+        'catchall',
         'foodTest',
         'employedPerson',
         'makeAChoice',
         'openChoice',
         'stringLengthOutput',
+        'favourites',
+        'freeform',
       ],
     });
 

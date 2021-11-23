@@ -157,6 +157,9 @@ function parseObject({
   else if (zodRef._def.unknownKeys === 'passthrough')
     additionalProperties = true;
 
+  // So that `undefined` values don't end up in the schema and be weird
+  additionalProperties = additionalProperties ? { additionalProperties } : {};
+
   return merge(
     {
       type: 'object',
@@ -172,7 +175,7 @@ function parseObject({
           !(item instanceof z.ZodNever)
         );
       }),
-      additionalProperties,
+      ...additionalProperties,
     },
     ...schemas
   );
