@@ -101,6 +101,9 @@ function parseString({
       case 'uuid':
         baseSchema.format = 'uuid';
         break;
+      case 'cuid':
+        baseSchema.format = 'cuid';
+        break;
       case 'url':
         baseSchema.format = 'uri';
         break;

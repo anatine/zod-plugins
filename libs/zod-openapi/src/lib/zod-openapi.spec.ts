@@ -116,6 +116,7 @@ describe('zodOpenapi', () => {
           aStringEmail: z.string().email(),
           aStringUrl: z.string().url(),
           aStringUUID: z.string().uuid(),
+          aStringCUID: z.string().cuid(),
           aStringRegex: z.string().regex(/^[a-zA-Z]+$/),
           aStringNonEmpty: z.string().nonempty(),
         })
@@ -134,6 +135,7 @@ describe('zodOpenapi', () => {
         aStringEmail: { type: 'string', format: 'email' },
         aStringUrl: { type: 'string', format: 'uri' },
         aStringUUID: { type: 'string', format: 'uuid' },
+        aStringCUID: { type: 'string', format: 'cuid' },
         aStringRegex: { type: 'string', pattern: '^[a-zA-Z]+$' },
         aStringNonEmpty: { type: 'string', minLength: 1 },
       },
