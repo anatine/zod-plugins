@@ -176,6 +176,50 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support arrays and array constraints', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aArrayMin: z.array(z.string()).min(3),
+          aArrayMax: z.array(z.number()).max(8),
+          aArrayLength: z.array(z.boolean()).length(10),
+          aArrayNonempty: z.array(z.null()).nonempty(),
+          aArrayMinAndMax: z.array(z.number()).min(3).max(8),
+        })
+        .partial(),
+      {
+        description: 'I need arrays',
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aArrayMin: { type: 'array', minItems: 3, items: { type: 'string' } },
+        aArrayMax: { type: 'array', maxItems: 8, items: { type: 'number' } },
+        aArrayLength: {
+          type: 'array',
+          minItems: 10,
+          maxItems: 10,
+          items: { type: 'boolean' },
+        },
+        aArrayNonempty: {
+          type: 'array',
+          minItems: 1,
+          items: { type: 'string', format: 'null', nullable: true },
+        },
+        aArrayMinAndMax: {
+          type: 'array',
+          minItems: 3,
+          maxItems: 8,
+          items: { type: 'number' },
+        },
+      },
+      required: [],
+      description: 'I need arrays',
+    });
+  });
+
   it('should support records', () => {
     const zodSchema = extendApi(z.record(z.number().min(2).max(42)), {
       description: 'Record this one for me.',
@@ -576,6 +620,7 @@ describe('zodOpenapi', () => {
       required: ['uid', 'firstName', 'email'],
     });
   });
+
   it('Extend a Zod schema with additional OpenAPI schema via a function wrapper', () => {
     const aZodExtendedSchema = extendApi(
       z.object({

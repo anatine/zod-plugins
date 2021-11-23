@@ -247,10 +247,18 @@ function parseArray({
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodArray<OpenApiZodAny>>): SchemaObject {
+  const constraints: SchemaObject = {};
+
+  if (zodRef._def.minLength != null)
+    constraints.minItems = zodRef._def.minLength.value;
+  if (zodRef._def.maxLength != null)
+    constraints.maxItems = zodRef._def.maxLength.value;
+
   return merge(
     {
       type: 'array',
-      items: generateSchema(zodRef._def.type, useOutput),
+      items: generateSchema(zodRef.element, useOutput),
+      ...constraints,
     },
     ...schemas
   );
@@ -344,6 +352,7 @@ const workerMap = {
   ZodNever: parseNever,
   // TODO Transform the rest to schemas
   ZodUndefined: catchAllParser,
+  // TODO: `prefixItems` is allowed in OpenAPI 3.1 which can be used to create tuples
   ZodTuple: catchAllParser,
   ZodMap: catchAllParser,
   ZodFunction: catchAllParser,
