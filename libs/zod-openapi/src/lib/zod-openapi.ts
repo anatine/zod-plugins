@@ -111,7 +111,7 @@ function parseString({
         baseSchema.minLength = item.value;
         break;
       case 'regex':
-        baseSchema.regex = item.regex;
+        baseSchema.pattern = item.regex.source;
         break;
     }
   });
