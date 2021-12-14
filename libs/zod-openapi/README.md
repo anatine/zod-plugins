@@ -71,7 +71,7 @@ This will generate an OpenAPI schema for `myOpenApiSchema`
 ### Extend a Zod schema with additional OpenAPI schema via a function wrapper
 
 ```typescript
-import { generateSchema } from '@anatine/zod-openapi';
+import { extendApi, generateSchema } from '@anatine/zod-openapi';
 
 const aZodExtendedSchema = extendApi(
       z.object({
