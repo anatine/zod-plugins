@@ -1,0 +1,47 @@
+import {
+  BadGatewayException,
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  GatewayTimeoutException,
+  GoneException,
+  HttpStatus,
+  ImATeapotException,
+  InternalServerErrorException,
+  MethodNotAllowedException,
+  NotAcceptableException,
+  NotFoundException,
+  NotImplementedException,
+  PayloadTooLargeException,
+  PreconditionFailedException,
+  RequestTimeoutException,
+  ServiceUnavailableException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+  UnsupportedMediaTypeException,
+} from '@nestjs/common';
+
+// This is the same list of HTTP errors as used by the NestJS ValidationPipe.
+// https://github.com/nestjs/nest/blob/85b0dc84953802d33ae8753df02adb84d6d0f0e8/packages/common/utils/http-error-by-code.util.ts#L46
+
+export const HTTP_ERRORS_BY_CODE = {
+  [HttpStatus.BAD_GATEWAY]: BadGatewayException,
+  [HttpStatus.BAD_REQUEST]: BadRequestException,
+  [HttpStatus.CONFLICT]: ConflictException,
+  [HttpStatus.FORBIDDEN]: ForbiddenException,
+  [HttpStatus.GATEWAY_TIMEOUT]: GatewayTimeoutException,
+  [HttpStatus.GONE]: GoneException,
+  [HttpStatus.I_AM_A_TEAPOT]: ImATeapotException,
+  [HttpStatus.INTERNAL_SERVER_ERROR]: InternalServerErrorException,
+  [HttpStatus.METHOD_NOT_ALLOWED]: MethodNotAllowedException,
+  [HttpStatus.NOT_ACCEPTABLE]: NotAcceptableException,
+  [HttpStatus.NOT_FOUND]: NotFoundException,
+  [HttpStatus.NOT_IMPLEMENTED]: NotImplementedException,
+  [HttpStatus.PAYLOAD_TOO_LARGE]: PayloadTooLargeException,
+  [HttpStatus.PRECONDITION_FAILED]: PreconditionFailedException,
+  [HttpStatus.REQUEST_TIMEOUT]: RequestTimeoutException,
+  [HttpStatus.SERVICE_UNAVAILABLE]: ServiceUnavailableException,
+  [HttpStatus.UNAUTHORIZED]: UnauthorizedException,
+  [HttpStatus.UNPROCESSABLE_ENTITY]: UnprocessableEntityException,
+  [HttpStatus.UNSUPPORTED_MEDIA_TYPE]: UnsupportedMediaTypeException,
+} as const;

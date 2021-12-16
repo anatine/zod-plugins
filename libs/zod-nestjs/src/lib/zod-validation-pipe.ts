@@ -7,13 +7,26 @@ import {
   PipeTransform,
   Injectable,
   ArgumentMetadata,
-  UnprocessableEntityException,
+  HttpStatus,
+  Optional,
 } from '@nestjs/common';
 
 import { ZodDtoStatic } from './create-zod-dto';
+import { HTTP_ERRORS_BY_CODE } from './http-errors';
+
+export interface ZodValidationPipeOptions {
+  errorHttpStatusCode?: keyof typeof HTTP_ERRORS_BY_CODE;
+}
 
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
+  private readonly errorHttpStatusCode: keyof typeof HTTP_ERRORS_BY_CODE;
+
+  constructor(@Optional() options?: ZodValidationPipeOptions) {
+    this.errorHttpStatusCode =
+      options?.errorHttpStatusCode || HttpStatus.UNPROCESSABLE_ENTITY;
+  }
+
   public transform(value: unknown, metadata: ArgumentMetadata): unknown {
     const zodSchema = (metadata?.metatype as ZodDtoStatic<unknown>)?.zodSchema;
 
@@ -26,7 +39,7 @@ export class ZodValidationPipe implements PipeTransform {
           (error) => `${error.path.join('.')}: ${error.message}`
         );
 
-        throw new UnprocessableEntityException(message);
+        throw new HTTP_ERRORS_BY_CODE[this.errorHttpStatusCode](message);
       }
 
       return parseResult.data;
