@@ -1,5 +1,5 @@
 /**
- * This file is taken directly from:
+ * This file was originally taken directly from:
  *   https://github.com/kbkk/abitia/blob/master/packages/zod-dto/src/ZodValidationPipe.ts
  */
 
@@ -22,13 +22,11 @@ export class ZodValidationPipe implements PipeTransform {
 
       if (!parseResult.success) {
         const { error } = parseResult;
-        const message = error.errors
-          .map((error) => `${error.path.join('.')}: ${error.message}`)
-          .join(', ');
-
-        throw new UnprocessableEntityException(
-          `Input validation failed: ${message}`
+        const message = error.errors.map(
+          (error) => `${error.path.join('.')}: ${error.message}`
         );
+
+        throw new UnprocessableEntityException(message);
       }
 
       return parseResult.data;
