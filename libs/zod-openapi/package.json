@@ -1,6 +1,6 @@
 {
   "name": "@anatine/zod-openapi",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Zod to OpenAPI converter",
   "main": "src/index.js",
   "types": "src/index.d.ts",
