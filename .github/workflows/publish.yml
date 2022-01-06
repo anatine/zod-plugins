@@ -34,13 +34,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Deploy
-        if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-        run: |
-          npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
-          ./.github/scripts/publish-libraries.sh
+      # - name: Deploy
+      #   if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
+      #   env:
+      #     NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      #   run: |
+      #     npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
+      #     ./.github/scripts/publish-libraries.sh
 
       # - name: Build Docs
       #   if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
