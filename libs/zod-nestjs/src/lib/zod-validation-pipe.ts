@@ -28,7 +28,7 @@ export class ZodValidationPipe implements PipeTransform {
   }
 
   public transform(value: unknown, metadata: ArgumentMetadata): unknown {
-    const zodSchema = (metadata?.metatype as ZodDtoStatic<unknown>)?.zodSchema;
+    const zodSchema = (metadata?.metatype as ZodDtoStatic)?.zodSchema;
 
     if (zodSchema) {
       const parseResult = zodSchema.safeParse(value);

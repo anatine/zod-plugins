@@ -20,3 +20,15 @@ describe('static create()', () => {
     expect(() => TestDto.create({ val: 123 })).toThrow(ZodError);
   });
 });
+
+describe('static zodSchema', () => {
+  it('should allow using the zodSchema field to construct other types', () => {
+    expect(
+      TestDto.zodSchema.extend({ extraField: z.string() }).parse({
+        val: 'test',
+        extraField: 'extra',
+        unrecognizedField: 'unrecognized',
+      })
+    ).toEqual({ val: 'test', extraField: 'extra' });
+  });
+});
