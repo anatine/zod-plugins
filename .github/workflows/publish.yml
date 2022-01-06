@@ -25,7 +25,14 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin main
 
       - name: Install environment
-        run: npm ci
+        run: npm install
+
+      - name: Configure npm
+        run: |
+          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc
+          cat .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Deploy
         if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
