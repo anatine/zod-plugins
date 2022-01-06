@@ -58,6 +58,6 @@ jobs:
         if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.ACTION_AUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           tags: true
           force: true
