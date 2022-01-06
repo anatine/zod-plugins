@@ -8,6 +8,9 @@ on:
       - main
     types: [opened, reopened, synchronize]
 
+env:
+  BEFORE_SHA: ${{ github.event.before }}
+
 jobs:
   build:
     # Setup OS and Node Version
@@ -23,7 +26,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Use Node.js ${{ matrix.node-version }}
