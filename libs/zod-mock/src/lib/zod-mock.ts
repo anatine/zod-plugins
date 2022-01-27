@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
 function parseObject(zodRef: AnyZodObject): Record<string, ZodTypeAny> {
