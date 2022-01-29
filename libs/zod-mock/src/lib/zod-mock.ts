@@ -2,11 +2,17 @@
 import { faker } from '@faker-js/faker';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
-function parseObject(zodRef: AnyZodObject): Record<string, ZodTypeAny> {
+function parseObject(
+  zodRef: AnyZodObject,
+  options?: GenerateMockOptions
+): Record<string, ZodTypeAny> {
   return Object.keys(zodRef.shape).reduce(
     (carry, key) => ({
       ...carry,
-      [key]: generateMock<ZodTypeAny>(zodRef.shape[key], key),
+      [key]: generateMock<ZodTypeAny>(zodRef.shape[key], {
+        ...options,
+        keyName: key,
+      }),
     }),
     {} as Record<string, ZodTypeAny>
   );
@@ -31,7 +37,7 @@ function findMatchingFaker(keyName: string): undefined | fakerFunction {
 
 function parseString(
   zodRef: z.ZodString,
-  keyName?: string
+  options?: GenerateMockOptions
 ): string | number | boolean {
   const { checks = [] } = zodRef._def;
 
@@ -59,22 +65,22 @@ function parseString(
     borderInlineEndColor: faker.internet.color,
     columnRuleColor: faker.internet.color,
     outlineColor: faker.internet.color,
+    ...options?.stringMap,
   };
 
   const stringType =
     (Object.keys(stringGenerators).find(
       (genKey) =>
-        genKey === keyName?.toLowerCase() ||
+        genKey === options?.keyName?.toLowerCase() ||
         checks.find((item) => item.kind === genKey)
     ) as keyof typeof stringGenerators) || null;
 
   if (stringType) {
     return stringGenerators[stringType]();
   } else {
-    const foundFaker = keyName ? findMatchingFaker(keyName) : undefined;
-    if (keyName === 'email') {
-      console.log(foundFaker);
-    }
+    const foundFaker = options?.keyName
+      ? findMatchingFaker(options?.keyName)
+      : undefined;
     if (foundFaker) {
       return foundFaker();
     }
@@ -105,15 +111,15 @@ function parseNumber(zodRef: z.ZodNumber): number {
 
 function parseOptional(
   zodRef: z.ZodOptional<ZodTypeAny> | z.ZodNullable<ZodTypeAny>,
-  keyName?: string
+  options?: GenerateMockOptions
 ) {
-  return generateMock<ZodTypeAny>(zodRef.unwrap(), keyName);
+  return generateMock<ZodTypeAny>(zodRef.unwrap(), options);
 }
 
-function parseArray(zodRef: z.ZodArray<never>, keyName?: string) {
-  const s = generateMock<ZodTypeAny>(zodRef._def.type, keyName);
+function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
+  const s = generateMock<ZodTypeAny>(zodRef._def.type, options);
   return [s, s, s, s, s].map(() =>
-    generateMock<ZodTypeAny>(zodRef._def.type, keyName)
+    generateMock<ZodTypeAny>(zodRef._def.type, options)
   );
 }
 
@@ -129,9 +135,9 @@ function parseLiteral(zodRef: z.ZodLiteral<any>) {
 
 function parseTransform(
   zodRef: z.ZodTransformer<never> | z.ZodEffects<never>,
-  keyName?: string
+  options?: GenerateMockOptions
 ) {
-  const input = generateMock(zodRef._def.schema, keyName);
+  const input = generateMock(zodRef._def.schema, options);
 
   console.log(zodRef._def.effect);
 
@@ -162,14 +168,19 @@ const workerMap = {
 };
 type WorkerKeys = keyof typeof workerMap;
 
+export interface GenerateMockOptions {
+  keyName?: string;
+  stringMap?: Record<string, (args: any) => string>;
+}
+
 export function generateMock<T extends ZodTypeAny>(
   zodRef: T,
-  keyName?: string
+  options?: GenerateMockOptions
 ): z.infer<typeof zodRef> {
   try {
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
-      return workerMap[typeName](zodRef as never, keyName);
+      return workerMap[typeName](zodRef as never, options);
     }
     return undefined;
   } catch (err) {

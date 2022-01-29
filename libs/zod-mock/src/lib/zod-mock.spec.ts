@@ -37,4 +37,33 @@ describe('zod-mock', () => {
     expect(typeof mockData.numberCount).toEqual('string');
     expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
   });
+
+  it('Should manually mock string key names to set values', () => {
+    const schema = z.object({
+      uid: z.string().nonempty(),
+      theme: z.enum([`light`, `dark`]),
+      locked: z.string(),
+      email: z.string().email(),
+    });
+
+    const mockData = generateMock(schema, {
+      stringMap: {
+        locked: () => `value set`,
+        email: () => `not a email anymore`,
+      },
+    }); //?
+
+    expect(mockData.uid).toEqual(
+      expect.stringMatching(
+        /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/
+      )
+    );
+    expect(mockData.theme).toEqual(expect.stringMatching(/light|dark/));
+    expect(mockData.locked).toEqual('value set');
+    expect(mockData.email).toEqual(
+      expect.stringMatching('not a email anymore')
+    );
+
+    return;
+  });
 });

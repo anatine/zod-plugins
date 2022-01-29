@@ -71,6 +71,31 @@ This will generate mock data similar to:
 ```
 
 ----
+
+## Overriding string mocks
+
+Sometimes there might be a reason to have a more specific mock for a string value.
+
+You can supply an options field to generate specific mock data that will be triggered by the matching key.
+
+```typescript
+const schema = z.object({
+  locked: z.string(),
+  email: z.string().email(),
+  primaryColor: z.string(),
+});
+
+const mockData = generateMock(schema, {
+  stringMap: {
+    locked: () => `this return set to the locked value`,
+    email: () => `not a email anymore`,
+    primaryColor: faker.internet.color,
+  },
+});
+```
+
+----
+
 ## Behind the Scenes
 
 **`zod-mock`** tries to generate mock data from two sources.
