@@ -139,8 +139,6 @@ function parseTransform(
 ) {
   const input = generateMock(zodRef._def.schema, options);
 
-  console.log(zodRef._def.effect);
-
   const effect =
     zodRef._def.effect.type === 'transform'
       ? zodRef._def.effect
