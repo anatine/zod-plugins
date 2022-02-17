@@ -1,6 +1,6 @@
 {
-  "name": "@ezlogic/zod-mock",
-  "version": "3.0.0",
+  "name": "@anatine/zod-mock",
+  "version": "3.0.1",
   "description": "Zod auto-mock object generator using Faker at @faker-js/faker",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -8,17 +8,16 @@
   "public": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gustavopedroni/zod-plugins"
+    "url": "git+https://github.com/anatine/zod-plugins"
   },
-  "homepage": "https://github.com/gustavopedroni/zod-plugins/tree/main/packages/zod-mock",
+  "homepage": "https://github.com/anatine/zod-plugins/tree/main/packages/zod-mock",
   "author": {
-    "name": "Ezlogic",
-    "url": "http://www.ezlogic.com.br/"
+    "name": "Brian McBride",
+    "url": "https://www.linkedin.com/in/brianmcbride"
   },
   "keywords": [
     "zod",
     "mock",
-    "faker",
     "faker-js"
   ],
   "peerDependencies": {
