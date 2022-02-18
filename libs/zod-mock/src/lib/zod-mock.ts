@@ -21,12 +21,32 @@ function parseObject(
 type fakerFunction = () => string | number | boolean;
 
 function findMatchingFaker(keyName: string): undefined | fakerFunction {
+  const lowerCaseKeyName = keyName.toLowerCase();
+  const withoutDashesUnderscores = lowerCaseKeyName.replace(/_|-/g, '');
   let fnName: string | undefined = undefined;
   const sectionName = Object.keys(faker).find((sectionKey) => {
-    return Object.keys(faker[sectionKey as never]).find((fnKey) => {
+    return Object.keys(faker[sectionKey as keyof typeof faker]).find((fnKey) => {
+      const lower = fnKey.toLowerCase();
       fnName =
-        fnKey.toLowerCase() === keyName.toLowerCase() ? keyName : undefined;
-      return fnName;
+        lower === lowerCaseKeyName || lower === withoutDashesUnderscores ? keyName : undefined;
+      if (fnName) {
+        const fn = faker[sectionKey as keyof typeof faker]?.[fnName];
+        if (typeof fn === 'function') {
+          try {
+            // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
+            // with incorrect parameters
+            const mock = fn();
+            return typeof mock === 'string'
+            || typeof mock === 'number'
+            || typeof mock === 'boolean'
+            ? fnName
+            : undefined;
+          } catch (_error) {
+            // do nothing. undefined will be returned eventually.
+          }
+        }
+      }
+      return undefined;
     });
   }) as keyof typeof faker;
   if (sectionName && fnName) {
