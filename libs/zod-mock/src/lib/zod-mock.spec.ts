@@ -38,7 +38,7 @@ describe('zod-mock', () => {
     expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
   });
 
-  it('should generate generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
+  it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
     const schema = z.object({
       // the following fields represent non function properties in Faker
       lorem: z.string(),
