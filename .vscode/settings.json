@@ -1,4 +1,9 @@
 {
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#22285C",
+    "titleBar.activeBackground": "#303981",
+    "titleBar.activeForeground": "#F9FAFD"
+  },
   "cSpell.words": [
     "Nonpositive",
     "Unprocessable",
