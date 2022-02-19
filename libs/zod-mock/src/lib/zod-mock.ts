@@ -188,7 +188,11 @@ type WorkerKeys = keyof typeof workerMap;
 
 export interface GenerateMockOptions {
   keyName?: string;
-  stringMap?: Record<string, (args: any) => string>;
+  /**
+   * Note: callback functions are not called with any
+   * parameters at this time.
+   */
+  stringMap?: Record<string, (...args: any[]) => string>;
 }
 
 export function generateMock<T extends ZodTypeAny>(
