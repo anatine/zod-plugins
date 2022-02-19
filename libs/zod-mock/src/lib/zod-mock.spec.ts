@@ -38,6 +38,28 @@ describe('zod-mock', () => {
     expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
   });
 
+  it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
+    const schema = z.object({
+      // the following fields represent non function properties in Faker
+      lorem: z.string(),
+      phone_number: z.string().min(10).optional(),
+
+      // 'shuffle', located at `faker.helpers.shuffle`, is a function, but does not
+      // produce the appropriate return type to match `fakerFunction`
+      shuffle: z.string(),
+
+      // 'seed', located at `faker.mersenne.seed` is a function but will throw an error
+      // if it is called with the wrong parameter
+      seed: z.string()
+    });
+
+    const mockData = generateMock(schema);
+    expect(typeof mockData.lorem).toEqual('string');
+    expect(typeof mockData.phone_number).toEqual('string');
+    expect(typeof mockData.shuffle).toEqual('string');
+    expect(typeof mockData.seed).toEqual('string');
+  });
+
   it('Should manually mock string key names to set values', () => {
     const schema = z.object({
       uid: z.string().nonempty(),
