@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { generateMock } from './zod-mock';
-
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
     const schema = z.object({
@@ -91,4 +90,68 @@ describe('zod-mock', () => {
 
     return;
   });
+
+  it('should convert values produced by Faker to string when the schema type is string.', () => {
+    const schema = z.object({
+      number: z.string(),
+      boolean: z.string(),
+      date: z.string()
+    });
+    const mockData = generateMock(schema);
+    expect(typeof mockData.number === 'string').toBeTruthy();
+    expect(typeof mockData.boolean === 'string').toBeTruthy();
+    expect(typeof mockData.date === 'string').toBeTruthy();
+  });
+
+  it("supports generating date strings via Faker for keys of 'date' and 'dateTime'.", () => {
+    const schema = z.object({
+      date: z.string(),
+    });
+    const mockData = generateMock(schema);
+    expect(new Date(mockData.date).getTime()).not.toBeNaN();
+  });
+
+  describe('when handling min and max string lengths', () => {
+    const createSchema = (min: number, max: number) => z.object({
+      default: z.string().min(min).max(max),
+      email: z.string().min(min).max(max),
+      uuid: z.string().min(min).max(max),
+      url: z.string().min(min).max(max),
+      name: z.string().min(min).max(max),
+      color: z.string().min(min).max(max),
+      notFound: z.string().min(min).max(max),
+    })
+    it('should create mock strings that respect the specified min and max lengths (inclusive)', () => {
+      const min = 1;
+      const max = 5;
+      const mockData = generateMock(createSchema(min, max));
+
+      Object.values(mockData).forEach((val) => {
+        expect(val.length).toBeGreaterThanOrEqual(min);
+        expect(val.length).toBeLessThanOrEqual(max);
+      });
+    });
+
+    it('should respect the max length when the min is greater than the max', () => {
+      const min = 5;
+      const max = 2;
+      const mockData = generateMock(createSchema(min, max));
+
+      Object.values(mockData).forEach((val) => {
+        expect(val.length).toBeLessThanOrEqual(max);
+      });
+    });
+
+    it('should append extra string content to meet a minimum length', () => {
+      const min = 100;
+      const max = 100;
+      const mockData = generateMock(createSchema(min, max));
+
+      Object.values(mockData).forEach((val) => {
+        expect(val.length).toBeGreaterThanOrEqual(min);
+        expect(val.length).toBeLessThanOrEqual(max);
+      });
+    });
+  });
+
 });

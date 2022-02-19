@@ -113,7 +113,6 @@ const mockData = generateMock(schema, {
 
 ## Missing Features
 
-- String length constraints are not taken into account
 - No pattern for passing options into `faker`, such as setting phone number formatting
 
 ----
