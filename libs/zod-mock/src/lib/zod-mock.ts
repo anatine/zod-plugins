@@ -60,7 +60,14 @@ function parseString(
   options?: GenerateMockOptions
 ): string | number | boolean {
   const { checks = [] } = zodRef._def;
-
+  const lowerCaseKeyName = options?.keyName?.toLowerCase();
+  // prioritize user provided generators
+  // if(options?.keyName && options.stringMap) {
+  //   const generator = options.stringMap[options.keyName];
+  //   if (generator) {
+  //     return generator();
+  //   }
+  // }
   const stringGenerators = {
     default: faker.lorem.word,
     email: faker.internet.exampleEmail,
@@ -91,7 +98,7 @@ function parseString(
   const stringType =
     (Object.keys(stringGenerators).find(
       (genKey) =>
-        genKey === options?.keyName?.toLowerCase() ||
+        genKey.toLowerCase() === lowerCaseKeyName ||
         checks.find((item) => item.kind === genKey)
     ) as keyof typeof stringGenerators) || null;
 

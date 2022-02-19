@@ -66,14 +66,16 @@ describe('zod-mock', () => {
       theme: z.enum([`light`, `dark`]),
       locked: z.string(),
       email: z.string().email(),
+      camelCase: z.string()
     });
 
-    const mockData = generateMock(schema, {
-      stringMap: {
-        locked: () => `value set`,
-        email: () => `not a email anymore`,
-      },
-    }); //?
+    const stringMap = {
+      locked: () => `value set`,
+      email: () => `not a email anymore`,
+      camelCase: () => 'Exact case works',
+    }
+
+    const mockData = generateMock(schema, { stringMap }); //?
 
     expect(mockData.uid).toEqual(
       expect.stringMatching(
@@ -85,6 +87,7 @@ describe('zod-mock', () => {
     expect(mockData.email).toEqual(
       expect.stringMatching('not a email anymore')
     );
+    expect(mockData.camelCase).toEqual(stringMap.camelCase())
 
     return;
   });
