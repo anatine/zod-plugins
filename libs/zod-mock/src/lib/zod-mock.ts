@@ -250,6 +250,15 @@ export interface GenerateMockOptions {
    * parameters at this time.
    */
   stringMap?: Record<string, (...args: any[]) => string>;
+
+   /**
+   * This is a mapping of field name to mock generator function.
+   * This mapping can be used to provide backup mock
+   * functions for Zod types not yet implemented in {@link WorkerKeys}.
+   * The functions in this map will only be used if this library
+   * is unable to find an appropriate mocking function to use.
+   */
+  backupMocks?:  Record<string, (() => any | undefined)>;
 }
 
 export function generateMock<T extends ZodTypeAny>(
@@ -260,6 +269,13 @@ export function generateMock<T extends ZodTypeAny>(
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
       return workerMap[typeName](zodRef as never, options);
+    } else {
+      // check for a generator match in the options.
+      // workaround for unimplemented Zod types
+      const generator = options?.backupMocks?.[typeName];
+      if (generator) {
+        return generator();
+      }
     }
     return undefined;
   } catch (err) {

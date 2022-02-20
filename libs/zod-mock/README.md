@@ -113,6 +113,20 @@ const mockData = generateMock(schema, {
 
   Some zod filter types (email, uuid, url, min, max, length) will also modify the results.
 
+  If **`zod-mock`** does not yet support a Zod type used in your schema, you may provide a backup mock function to use for that particular type.
+
+  ``` typescript
+  const schema = z.object({
+    anyVal: z.any()
+  });
+
+  const mockData = generateMock(schema, {
+    backupMocks: {
+      ZodAny: () => 'a value'
+    }
+  });
+  ```
+
 ----
 
 ## Missing Features

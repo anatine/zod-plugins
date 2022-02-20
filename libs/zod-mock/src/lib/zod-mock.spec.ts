@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generateMock } from './zod-mock';
+import { generateMock, GenerateMockOptions } from './zod-mock';
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
     const schema = z.object({
@@ -212,6 +212,36 @@ describe('zod-mock', () => {
     });
   });
 
+  describe('backup mocks', () => {
+    const notUndefined = () => 'not undefined';
+    it('should use a user provided generator when a generator for the schema type cannot be found',() => {
+      // undefined is used because we have no reason to create a generator for it because the net result
+      // will be undefined.
+      const mock = generateMock(z.undefined(), { backupMocks: { ZodUndefined: notUndefined }});
+      expect(mock).toEqual(notUndefined());
+    });
+
+    it('should work with objects and arrays', () => {
+      const schema = z.object({
+        data: z.array(z.undefined()).length(1)
+      });
+      const mock = generateMock(schema, { backupMocks: { ZodUndefined: notUndefined }});
+      expect(mock.data[0]).toEqual(notUndefined());
+    });
+
+    it('should work with the README example', () => {
+      const schema = z.object({
+        anyVal: z.any()
+      });
+
+      const mockData = generateMock(schema, {
+        backupMocks: {
+          ZodAny: () => 'any value'
+        }
+      });
+      expect(mockData.anyVal).toEqual('any value');
+    });
+  });
 
   // TODO: enable tests as their test types are implemented
   xdescribe('missing types', () => {
