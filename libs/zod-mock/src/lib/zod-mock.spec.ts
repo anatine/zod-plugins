@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generateMock, GenerateMockOptions } from './zod-mock';
+import { generateMock } from './zod-mock';
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
     const schema = z.object({

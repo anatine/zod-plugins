@@ -147,7 +147,6 @@ function parseString(
   // will never parse without producing errors, we will prioritize
   // the max value because exceeding it represents a potential security
   // vulnerability (buffer overflows).
-  // return generator().toString();
   let val = generator().toString();
   const delta = targetStringLength - val.length;
   if (stringOptions.min != null && val.length < stringOptions.min) {
