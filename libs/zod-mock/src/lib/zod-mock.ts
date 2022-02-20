@@ -18,7 +18,7 @@ function parseObject(
   );
 }
 
-type fakerFunction = () => string | number | boolean;
+type fakerFunction = () => string | number | boolean | Date;
 
 function findMatchingFaker(keyName: string): undefined | fakerFunction {
   const lowerCaseKeyName = keyName.toLowerCase();
@@ -39,6 +39,7 @@ function findMatchingFaker(keyName: string): undefined | fakerFunction {
             return typeof mock === 'string'
             || typeof mock === 'number'
             || typeof mock === 'boolean'
+            || mock instanceof Date
             ? fnName
             : undefined;
           } catch (_error) {
@@ -60,14 +61,48 @@ function parseString(
   options?: GenerateMockOptions
 ): string | number | boolean {
   const { checks = [] } = zodRef._def;
+  const lowerCaseKeyName = options?.keyName?.toLowerCase();
+  // Prioritize user provided generators.
+  if(options?.keyName && options.stringMap) {
+    // min/max length handling is not applied here
+    const generator = options.stringMap[options.keyName];
+    if (generator) {
+      return generator();
+    }
+  }
+  const stringOptions: {
+    min?: number,
+    max?: number,
+  } = {};
 
+  checks.forEach((item) => {
+    switch (item.kind) {
+      case 'min':
+        stringOptions.min = item.value;
+        break;
+      case 'max':
+        stringOptions.max = item.value;
+        break;
+    }
+  });
+
+  const targetStringLength = faker.datatype.number(stringOptions);
+  /**
+   * Returns a random lorem word using `faker.lorem.word(length)`.
+   * This method can return undefined for large word lengths. If undefined is returned
+   * when specifying a large word length, will return `faker.lorem.word()` instead.
+   */
+  const defaultGenerator = () => faker.lorem.word(targetStringLength) || faker.lorem.word();
+  const dateGenerator = () => faker.date.recent().toISOString();
   const stringGenerators = {
-    default: faker.lorem.word,
+    default: defaultGenerator,
     email: faker.internet.exampleEmail,
     uuid: faker.datatype.uuid,
     uid: faker.datatype.uuid,
     url: faker.internet.url,
     name: faker.name.findName,
+    date: dateGenerator,
+    dateTime: dateGenerator,
     colorHex: faker.internet.color,
     color: faker.internet.color,
     backgroundColor: faker.internet.color,
@@ -85,28 +120,40 @@ function parseString(
     borderInlineEndColor: faker.internet.color,
     columnRuleColor: faker.internet.color,
     outlineColor: faker.internet.color,
-    ...options?.stringMap,
   };
 
   const stringType =
     (Object.keys(stringGenerators).find(
       (genKey) =>
-        genKey === options?.keyName?.toLowerCase() ||
+        genKey.toLowerCase() === lowerCaseKeyName ||
         checks.find((item) => item.kind === genKey)
     ) as keyof typeof stringGenerators) || null;
 
+  let generator: fakerFunction = defaultGenerator;
+
   if (stringType) {
-    return stringGenerators[stringType]();
+    generator = stringGenerators[stringType];
   } else {
     const foundFaker = options?.keyName
       ? findMatchingFaker(options?.keyName)
       : undefined;
     if (foundFaker) {
-      return foundFaker();
+      generator = foundFaker;
     }
   }
 
-  return faker.lorem.word();
+  // it's possible for a zod schema to be defined with a
+  // min that is greater than the max. While that schema
+  // will never parse without producing errors, we will prioritize
+  // the max value because exceeding it represents a potential security
+  // vulnerability (buffer overflows).
+  let val = generator().toString();
+  const delta = targetStringLength - val.length;
+  if (stringOptions.min != null && val.length < stringOptions.min) {
+    val = val + faker.random.alpha(delta);
+  }
+
+  return val.slice(0, stringOptions.max);
 }
 
 function parseNumber(zodRef: z.ZodNumber): number {
@@ -137,10 +184,19 @@ function parseOptional(
 }
 
 function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
-  const s = generateMock<ZodTypeAny>(zodRef._def.type, options);
-  return [s, s, s, s, s].map(() =>
-    generateMock<ZodTypeAny>(zodRef._def.type, options)
-  );
+  let min = zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
+  const max = zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
+
+  // prevents arrays from exceeding the max regardless of the min.
+  if (min > max){
+    min = max;
+  }
+  const targetLength = faker.datatype.number({min, max});
+  const results: ZodTypeAny[] = [];
+  for (let index = 0; index < targetLength; index++) {
+    results.push(generateMock<ZodTypeAny>(zodRef._def.type, options))
+  }
+  return results;
 }
 
 function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
@@ -188,7 +244,20 @@ type WorkerKeys = keyof typeof workerMap;
 
 export interface GenerateMockOptions {
   keyName?: string;
-  stringMap?: Record<string, (args: any) => string>;
+  /**
+   * Note: callback functions are not called with any
+   * parameters at this time.
+   */
+  stringMap?: Record<string, (...args: any[]) => string>;
+
+   /**
+   * This is a mapping of field name to mock generator function.
+   * This mapping can be used to provide backup mock
+   * functions for Zod types not yet implemented in {@link WorkerKeys}.
+   * The functions in this map will only be used if this library
+   * is unable to find an appropriate mocking function to use.
+   */
+  backupMocks?:  Record<string, (() => any | undefined)>;
 }
 
 export function generateMock<T extends ZodTypeAny>(
@@ -199,6 +268,13 @@ export function generateMock<T extends ZodTypeAny>(
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
       return workerMap[typeName](zodRef as never, options);
+    } else {
+      // check for a generator match in the options.
+      // workaround for unimplemented Zod types
+      const generator = options?.backupMocks?.[typeName];
+      if (generator) {
+        return generator();
+      }
     }
     return undefined;
   } catch (err) {
