@@ -42,6 +42,7 @@ const mockData = generateMock(schema);
 ```
 
 This will generate mock data similar to:
+
 ```json
 {
   "uid": "3f46b40e-95ed-43d0-9165-0b8730de8d14",
@@ -101,24 +102,40 @@ const mockData = generateMock(schema, {
 **`zod-mock`** tries to generate mock data from two sources.
 
 - ### Object key name ie(`{ firstName: z.string() }`)
+  
   This will check the string name of the key against all the available `faker` function names.
   Upon a match, it uses that function to generate a mock value.
+
 - ### Zodtype ie(`const something =  z.string()`)
+  
   In the case there is no key name (the schema doesn't contain an object) or there is no key name match,
   `zod-mock` will use the primitive type provided by `zod`.
 
-  Some zod filter types (email, uuid, url) and number's (min, max) will also modify the results.
+  Some zod filter types (email, uuid, url, min, max, length) will also modify the results.
 
 ----
 
 ## Missing Features
 
 - No pattern for passing options into `faker`, such as setting phone number formatting
+- Does not handle the following Zod types:
+  - ZodAny
+  - ZodDefault
+  - ZodFunction
+  - ZodIntersection
+  - ZodMap
+  - ZodPromise
+  - ZodSet
+  - ZodTuple
+  - ZodUnion
+  - ZodUnknown
 
 ----
+
 ## Credits
 
 - ### [express-zod-api](https://github.com/RobinTail/express-zod-api)
+  
   A great lib that provided some insights on dealing with various zod types.
 
 ----

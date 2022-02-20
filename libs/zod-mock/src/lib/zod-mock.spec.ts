@@ -103,7 +103,7 @@ describe('zod-mock', () => {
     expect(typeof mockData.date === 'string').toBeTruthy();
   });
 
-  it("supports generating date strings via Faker for keys of 'date' and 'dateTime'.", () => {
+  it("should support generating date strings via Faker for keys of 'date' and 'dateTime'.", () => {
     const schema = z.object({
       date: z.string(),
     });
@@ -154,4 +154,113 @@ describe('zod-mock', () => {
     });
   });
 
+  describe('arrays', () => {
+    it('should mock an array without min or max', () => {
+      const schema = z.object({
+        data: z.array(z.string()),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.length).toBeTruthy();
+      expect(typeof mockData.data[0] === 'string');
+    });
+
+    it('should mock an array with a min, but no max', () => {
+      const schema = z.object({
+        data: z.array(z.string()).min(3),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.length).toBeGreaterThanOrEqual(3);
+      expect(typeof mockData.data[0] === 'string');
+    });
+
+    it('should mock an array with a max, but no min', () => {
+      const schema = z.object({
+        data: z.array(z.string()).max(1),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.length).toEqual(1);
+      expect(typeof mockData.data[0] === 'string');
+    });
+
+    it('should mock an array of length 10', () => {
+      const schema = z.object({
+        data: z.array(z.string()).length(10),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.length).toEqual(10);
+      expect(typeof mockData.data[0] === 'string');
+    });
+
+    it('should accurately mock a zero length array', () => {
+      const schema = z.object({
+        alwaysEmpty: z.array(z.string()).max(0),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.alwaysEmpty.length).toEqual(0);
+    });
+
+    it('should generate different value instances per array element', () => {
+      const schema = z.object({
+        data: z.array(z.date()).length(2),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.length).toEqual(2);
+      // even if the two dates represent the same instant in time,
+      // they should not be the same instance if we are mocking each
+      // array element separately.
+      expect(mockData.data[0] === mockData.data[1]).toBeFalsy();
+    });
+  });
+
+
+  // TODO: enable tests as their test types are implemented
+  xdescribe('missing types', () => {
+    it('ZodAny', () => {
+      expect(generateMock(z.any())).toBeTruthy();
+    })
+    it('ZodDefault', () => {
+      expect(generateMock(z.string().default('a'))).toBeTruthy();
+    })
+
+    it('ZodFunction', () => {
+      expect(generateMock(z.function())).toBeTruthy();
+    })
+
+    it('ZodIntersection', () => {
+      const Person = z.object({
+        name: z.string(),
+      });
+
+      const Employee = z.object({
+        role: z.string(),
+      });
+
+      const EmployedPerson = z.intersection(Person, Employee);
+      expect(generateMock(EmployedPerson)).toBeTruthy();
+    })
+
+    it('ZodMap', () => {
+      expect(generateMock(z.map(z.string(), z.string()))).toBeTruthy();
+    })
+
+    it('ZodPromise', () => {
+      expect(generateMock(z.promise(z.string()))).toBeTruthy();
+    })
+
+    it('ZodSet', () => {
+      expect(generateMock(z.set(z.string()))).toBeTruthy();
+    })
+    it('ZodTuple', () => {
+      expect(generateMock(z.tuple([z.string()]))).toBeTruthy();
+    })
+
+    it('ZodUnion', () => {
+      expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
+    })
+
+    it('ZodUnknown', () => {
+      expect(generateMock(z.unknown())).toBeTruthy();
+    })
+
+  });
 });

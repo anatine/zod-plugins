@@ -185,10 +185,19 @@ function parseOptional(
 }
 
 function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
-  const s = generateMock<ZodTypeAny>(zodRef._def.type, options);
-  return [s, s, s, s, s].map(() =>
-    generateMock<ZodTypeAny>(zodRef._def.type, options)
-  );
+  let min = zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
+  const max = zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
+
+  // prevents arrays from exceeding the max regardless of the min.
+  if (min > max){
+    min = max;
+  }
+  const targetLength = faker.datatype.number({min, max});
+  const results: ZodTypeAny[] = [];
+  for (let index = 0; index < targetLength; index++) {
+    results.push(generateMock<ZodTypeAny>(zodRef._def.type, options))
+  }
+  return results;
 }
 
 function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
