@@ -25,30 +25,56 @@ function findMatchingFaker(keyName: string): undefined | fakerFunction {
   const withoutDashesUnderscores = lowerCaseKeyName.replace(/_|-/g, '');
   let fnName: string | undefined = undefined;
   const sectionName = Object.keys(faker).find((sectionKey) => {
-    return Object.keys(faker[sectionKey as keyof typeof faker]).find((fnKey) => {
-      const lower = fnKey.toLowerCase();
-      fnName =
-        lower === lowerCaseKeyName || lower === withoutDashesUnderscores ? keyName : undefined;
-      if (fnName) {
-        const fn = faker[sectionKey as keyof typeof faker]?.[fnName];
-        if (typeof fn === 'function') {
-          try {
-            // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
-            // with incorrect parameters
-            const mock = fn();
-            return typeof mock === 'string'
-            || typeof mock === 'number'
-            || typeof mock === 'boolean'
-            || mock instanceof Date
-            ? fnName
+    return Object.keys(faker[sectionKey as keyof typeof faker]).find(
+      (fnKey) => {
+        const lower = fnKey.toLowerCase();
+        fnName =
+          lower === lowerCaseKeyName || lower === withoutDashesUnderscores
+            ? keyName
             : undefined;
-          } catch (_error) {
-            // do nothing. undefined will be returned eventually.
+
+        // Skipping depreciated items
+        const depreciated: Record<string, string[]> = {
+          random: [
+            'image',
+            'number',
+            'float',
+            'uuid',
+            'boolean',
+            'hexaDecimal',
+          ],
+        };
+        if (
+          Object.keys(depreciated).find((key) =>
+            key === sectionKey
+              ? depreciated[key].find((fn) => fn === fnName)
+              : false
+          )
+        ) {
+          return undefined;
+        }
+
+        if (fnName) {
+          const fn = faker[sectionKey as keyof typeof faker]?.[fnName];
+          if (typeof fn === 'function') {
+            try {
+              // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
+              // with incorrect parameters
+              const mock = fn();
+              return typeof mock === 'string' ||
+                typeof mock === 'number' ||
+                typeof mock === 'boolean' ||
+                mock instanceof Date
+                ? fnName
+                : undefined;
+            } catch (_error) {
+              // do nothing. undefined will be returned eventually.
+            }
           }
         }
+        return undefined;
       }
-      return undefined;
-    });
+    );
   }) as keyof typeof faker;
   if (sectionName && fnName) {
     const section = faker[sectionName];
@@ -63,7 +89,7 @@ function parseString(
   const { checks = [] } = zodRef._def;
   const lowerCaseKeyName = options?.keyName?.toLowerCase();
   // Prioritize user provided generators.
-  if(options?.keyName && options.stringMap) {
+  if (options?.keyName && options.stringMap) {
     // min/max length handling is not applied here
     const generator = options.stringMap[options.keyName];
     if (generator) {
@@ -71,8 +97,8 @@ function parseString(
     }
   }
   const stringOptions: {
-    min?: number,
-    max?: number,
+    min?: number;
+    max?: number;
   } = {};
 
   checks.forEach((item) => {
@@ -92,7 +118,8 @@ function parseString(
    * This method can return undefined for large word lengths. If undefined is returned
    * when specifying a large word length, will return `faker.lorem.word()` instead.
    */
-  const defaultGenerator = () => faker.lorem.word(targetStringLength) || faker.lorem.word();
+  const defaultGenerator = () =>
+    faker.lorem.word(targetStringLength) || faker.lorem.word();
   const dateGenerator = () => faker.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
@@ -184,17 +211,19 @@ function parseOptional(
 }
 
 function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
-  let min = zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
-  const max = zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
+  let min =
+    zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
+  const max =
+    zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
 
   // prevents arrays from exceeding the max regardless of the min.
-  if (min > max){
+  if (min > max) {
     min = max;
   }
-  const targetLength = faker.datatype.number({min, max});
+  const targetLength = faker.datatype.number({ min, max });
   const results: ZodTypeAny[] = [];
   for (let index = 0; index < targetLength; index++) {
-    results.push(generateMock<ZodTypeAny>(zodRef._def.type, options))
+    results.push(generateMock<ZodTypeAny>(zodRef._def.type, options));
   }
   return results;
 }
@@ -250,14 +279,14 @@ export interface GenerateMockOptions {
    */
   stringMap?: Record<string, (...args: any[]) => string>;
 
-   /**
+  /**
    * This is a mapping of field name to mock generator function.
    * This mapping can be used to provide backup mock
    * functions for Zod types not yet implemented in {@link WorkerKeys}.
    * The functions in this map will only be used if this library
    * is unable to find an appropriate mocking function to use.
    */
-  backupMocks?:  Record<string, (() => any | undefined)>;
+  backupMocks?: Record<string, () => any | undefined>;
 }
 
 export function generateMock<T extends ZodTypeAny>(

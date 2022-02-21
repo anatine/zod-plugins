@@ -49,7 +49,7 @@ describe('zod-mock', () => {
 
       // 'seed', located at `faker.mersenne.seed` is a function but will throw an error
       // if it is called with the wrong parameter
-      seed: z.string()
+      seed: z.string(),
     });
 
     const mockData = generateMock(schema);
@@ -65,14 +65,14 @@ describe('zod-mock', () => {
       theme: z.enum([`light`, `dark`]),
       locked: z.string(),
       email: z.string().email(),
-      camelCase: z.string()
+      camelCase: z.string(),
     });
 
     const stringMap = {
       locked: () => `value set`,
       email: () => `not a email anymore`,
       camelCase: () => 'Exact case works',
-    }
+    };
 
     const mockData = generateMock(schema, { stringMap }); //?
 
@@ -86,7 +86,7 @@ describe('zod-mock', () => {
     expect(mockData.email).toEqual(
       expect.stringMatching('not a email anymore')
     );
-    expect(mockData.camelCase).toEqual(stringMap.camelCase())
+    expect(mockData.camelCase).toEqual(stringMap.camelCase());
 
     return;
   });
@@ -95,7 +95,7 @@ describe('zod-mock', () => {
     const schema = z.object({
       number: z.string(),
       boolean: z.string(),
-      date: z.string()
+      date: z.string(),
     });
     const mockData = generateMock(schema);
     expect(typeof mockData.number === 'string').toBeTruthy();
@@ -112,15 +112,16 @@ describe('zod-mock', () => {
   });
 
   describe('when handling min and max string lengths', () => {
-    const createSchema = (min: number, max: number) => z.object({
-      default: z.string().min(min).max(max),
-      email: z.string().min(min).max(max),
-      uuid: z.string().min(min).max(max),
-      url: z.string().min(min).max(max),
-      name: z.string().min(min).max(max),
-      color: z.string().min(min).max(max),
-      notFound: z.string().min(min).max(max),
-    })
+    const createSchema = (min: number, max: number) =>
+      z.object({
+        default: z.string().min(min).max(max),
+        email: z.string().min(min).max(max),
+        uuid: z.string().min(min).max(max),
+        url: z.string().min(min).max(max),
+        name: z.string().min(min).max(max),
+        color: z.string().min(min).max(max),
+        notFound: z.string().min(min).max(max),
+      });
     it('should create mock strings that respect the specified min and max lengths (inclusive)', () => {
       const min = 1;
       const max = 5;
@@ -214,30 +215,34 @@ describe('zod-mock', () => {
 
   describe('backup mocks', () => {
     const notUndefined = () => 'not undefined';
-    it('should use a user provided generator when a generator for the schema type cannot be found',() => {
+    it('should use a user provided generator when a generator for the schema type cannot be found', () => {
       // undefined is used because we have no reason to create a generator for it because the net result
       // will be undefined.
-      const mock = generateMock(z.undefined(), { backupMocks: { ZodUndefined: notUndefined }});
+      const mock = generateMock(z.undefined(), {
+        backupMocks: { ZodUndefined: notUndefined },
+      });
       expect(mock).toEqual(notUndefined());
     });
 
     it('should work with objects and arrays', () => {
       const schema = z.object({
-        data: z.array(z.undefined()).length(1)
+        data: z.array(z.undefined()).length(1),
       });
-      const mock = generateMock(schema, { backupMocks: { ZodUndefined: notUndefined }});
+      const mock = generateMock(schema, {
+        backupMocks: { ZodUndefined: notUndefined },
+      });
       expect(mock.data[0]).toEqual(notUndefined());
     });
 
     it('should work with the README example', () => {
       const schema = z.object({
-        anyVal: z.any()
+        anyVal: z.any(),
       });
 
       const mockData = generateMock(schema, {
         backupMocks: {
-          ZodAny: () => 'any value'
-        }
+          ZodAny: () => 'any value',
+        },
       });
       expect(mockData.anyVal).toEqual('any value');
     });
@@ -247,14 +252,14 @@ describe('zod-mock', () => {
   xdescribe('missing types', () => {
     it('ZodAny', () => {
       expect(generateMock(z.any())).toBeTruthy();
-    })
+    });
     it('ZodDefault', () => {
       expect(generateMock(z.string().default('a'))).toBeTruthy();
-    })
+    });
 
     it('ZodFunction', () => {
       expect(generateMock(z.function())).toBeTruthy();
-    })
+    });
 
     it('ZodIntersection', () => {
       const Person = z.object({
@@ -267,30 +272,46 @@ describe('zod-mock', () => {
 
       const EmployedPerson = z.intersection(Person, Employee);
       expect(generateMock(EmployedPerson)).toBeTruthy();
-    })
+    });
 
     it('ZodMap', () => {
       expect(generateMock(z.map(z.string(), z.string()))).toBeTruthy();
-    })
+    });
 
     it('ZodPromise', () => {
       expect(generateMock(z.promise(z.string()))).toBeTruthy();
-    })
+    });
 
     it('ZodSet', () => {
       expect(generateMock(z.set(z.string()))).toBeTruthy();
-    })
+    });
     it('ZodTuple', () => {
       expect(generateMock(z.tuple([z.string()]))).toBeTruthy();
-    })
+    });
 
     it('ZodUnion', () => {
       expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
-    })
+    });
 
     it('ZodUnknown', () => {
       expect(generateMock(z.unknown())).toBeTruthy();
-    })
+    });
+  });
 
+  it.only(`Avoid depreciations in strings`, () => {
+    const warn = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+    generateMock(
+      z.object({
+        image: z.string(),
+        number: z.string(),
+        float: z.string(),
+        uuid: z.string(),
+        boolean: z.string(),
+        hexaDecimal: z.string(),
+      })
+    );
+    expect(warn).toBeCalledTimes(0);
   });
 });
