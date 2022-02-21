@@ -21,6 +21,6 @@
     "faker-js"
   ],
   "peerDependencies": {
-    "@faker-js/faker": "^6.0.0-alpha.6"
+    "@faker-js/faker": "^6.0.0-alpha.7"
   }
 }
