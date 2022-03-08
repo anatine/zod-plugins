@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { faker } from '@faker-js/faker';
+import { inspect } from 'util';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
+import * as randExp from 'randexp';
 
 function parseObject(
   zodRef: AnyZodObject,
@@ -25,7 +27,7 @@ function findMatchingFaker(keyName: string): undefined | fakerFunction {
   const withoutDashesUnderscores = lowerCaseKeyName.replace(/_|-/g, '');
   let fnName: string | undefined = undefined;
   const sectionName = Object.keys(faker).find((sectionKey) => {
-    return Object.keys(faker[sectionKey as keyof typeof faker]).find(
+    return Object.keys(faker[sectionKey as keyof typeof faker] || {}).find(
       (fnKey) => {
         const lower = fnKey.toLowerCase();
         fnName =
@@ -55,7 +57,10 @@ function findMatchingFaker(keyName: string): undefined | fakerFunction {
         }
 
         if (fnName) {
-          const fn = faker[sectionKey as keyof typeof faker]?.[fnName];
+          // TODO: it would be good to clean up these type castings
+          const fn = faker[sectionKey as keyof typeof faker]?.[
+            fnName as never
+          ] as any;
           if (typeof fn === 'function') {
             try {
               // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
@@ -87,6 +92,18 @@ function parseString(
   options?: GenerateMockOptions
 ): string | number | boolean {
   const { checks = [] } = zodRef._def;
+
+  const regexCheck = checks.find((check) => check.kind === 'regex');
+  if (regexCheck && 'regex' in regexCheck) {
+    const generator = new randExp(regexCheck.regex);
+    const max = checks.find((check) => check.kind === 'max');
+    if (max && 'value' in max) {
+      generator.max = max.value;
+    }
+    const genRegString = generator.gen();
+    return genRegString;
+  }
+
   const lowerCaseKeyName = options?.keyName?.toLowerCase();
   // Prioritize user provided generators.
   if (options?.keyName && options.stringMap) {
@@ -252,6 +269,17 @@ function parseTransform(
   return effect.transform(input);
 }
 
+function parseUnion(
+  zodRef: z.ZodUnion<Readonly<[ZodTypeAny, ...ZodTypeAny[]]>>,
+  options?: GenerateMockOptions
+) {
+  // Map the options to various possible mock values
+  const mockOptions = zodRef._def.options.map((option) =>
+    generateMock(option, options)
+  );
+  return faker.helpers.randomize(mockOptions);
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseObject,
@@ -268,6 +296,7 @@ const workerMap = {
   ZodLiteral: parseLiteral,
   ZodTransformer: parseTransform,
   ZodEffects: parseTransform,
+  ZodUnion: parseUnion,
 };
 type WorkerKeys = keyof typeof workerMap;
 

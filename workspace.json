@@ -7,17 +7,13 @@
       "projectType": "application",
       "targets": {
         "build": {
-          "executor": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "executor": "@nrwl/node:webpack",
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/example",
             "main": "apps/example/src/main.ts",
             "tsConfig": "apps/example/tsconfig.app.json",
-            "assets": [
-              "apps/example/src/assets"
-            ]
+            "assets": ["apps/example/src/assets"]
           },
           "configurations": {
             "production": {
@@ -34,7 +30,7 @@
           }
         },
         "serve": {
-          "executor": "@nrwl/node:execute",
+          "executor": "@nrwl/node:node",
           "options": {
             "buildTarget": "example:build"
           }
@@ -42,19 +38,13 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/example/**/*.ts"
-            ]
+            "lintFilePatterns": ["apps/example/**/*.ts"]
           },
-          "outputs": [
-            "{options.outputFile}"
-          ]
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/example"
-          ],
+          "outputs": ["coverage/apps/example"],
           "options": {
             "jestConfig": "apps/example/jest.config.js",
             "passWithNoTests": true
@@ -70,47 +60,33 @@
       "projectType": "library",
       "targets": {
         "build": {
-          "executor": "@nrwl/node:package",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "executor": "@nrwl/js:tsc",
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/zod-nestjs",
             "tsConfig": "libs/zod-nestjs/tsconfig.lib.json",
             "packageJson": "libs/zod-nestjs/package.json",
             "main": "libs/zod-nestjs/src/index.ts",
-            "assets": [
-              "libs/zod-nestjs/*.md"
-            ]
+            "assets": ["libs/zod-nestjs/*.md"]
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/zod-nestjs/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/zod-nestjs/**/*.ts"]
           },
-          "outputs": [
-            "{options.outputFile}"
-          ]
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/zod-nestjs"
-          ],
+          "outputs": ["coverage/libs/zod-nestjs"],
           "options": {
             "jestConfig": "libs/zod-nestjs/jest.config.js",
             "passWithNoTests": true
           }
         }
       },
-      "tags": [
-        "zod",
-        "npm",
-        "package"
-      ]
+      "tags": ["zod", "npm", "package"]
     },
     "zod-openapi": "libs/zod-openapi"
   }

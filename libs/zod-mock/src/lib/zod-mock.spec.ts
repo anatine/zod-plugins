@@ -298,7 +298,7 @@ describe('zod-mock', () => {
     });
   });
 
-  it.only(`Avoid depreciations in strings`, () => {
+  it(`Avoid depreciations in strings`, () => {
     const warn = jest
       .spyOn(console, 'warn')
       .mockImplementation(() => undefined);
@@ -313,5 +313,41 @@ describe('zod-mock', () => {
       })
     );
     expect(warn).toBeCalledTimes(0);
+  });
+
+  it('should generate strings from regex', () => {
+    const regResult = generateMock(
+      z.object({
+        data: z.string().regex(/^[A-Z0-9+_.-]+@[A-Z0-9.-]+$/),
+      })
+    );
+    expect(regResult.data).toMatch(/^[A-Z0-9+_.-]+@[A-Z0-9.-]+$/);
+  });
+
+  it.only('should handle complex unions', () => {
+    const result = generateMock(z.object({ date: z.date() }));
+    expect(result.date).toBeInstanceOf(Date);
+
+    // Date
+    const variousTypes = z.union([
+      z
+        .string()
+        .min(1)
+        .max(100)
+        .transform((v) => v.length),
+      z.number().gt(1).lt(100),
+      z
+        .string()
+        .regex(/^(100|[1-9][0-9]?)$/)
+        .transform((v) => parseInt(v)),
+    ]);
+    const TransformItem = z.object({
+      id: z.string().nonempty({ message: 'Missing ID' }),
+      name: z.string().optional(),
+      items: variousTypes,
+    });
+    const transformResult = generateMock(TransformItem); //?
+    expect(transformResult.items).toBeGreaterThan(0);
+    expect(transformResult.items).toBeLessThan(101);
   });
 });
