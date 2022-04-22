@@ -1,6 +1,6 @@
 # @anatine/zod-mock
 
-Generates a mock data object using [faker.js](https://www.npmjs.com/package/faker) from a [Zod](https://github.com/colinhacks/zod) schema.
+Generates a mock data object using [faker.js](https://www.npmjs.com/package/@faker-js/faker) from a [Zod](https://github.com/colinhacks/zod) schema.
 
 ----
 
@@ -10,7 +10,7 @@ Both openapi3-ts and zod are peer dependencies instead of dependant packages.
 While `zod` is necessary for operation, `openapi3-ts` is for type-casting.
 
 ```shell
-npm install faker zod @anatine/zod-mock
+npm install @faker-js/faker zod @anatine/zod-mock
 ```
 
 ----
