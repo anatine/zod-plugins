@@ -1,5 +1,6 @@
-module.exports = {
-  displayName: 'zod-nestjs',
+/* eslint-disable */
+export default {
+  displayName: 'zod-openapi',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/zod-nestjs',
+  coverageDirectory: '../../coverage/libs/zod-openapi',
 };

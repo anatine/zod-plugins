@@ -1,0 +1,34 @@
+{
+  "name": "@anatine/graphql-codegen-zod",
+  "version": "0.0.3",
+  "description": "Its a library to parse from Graphql Schema to a Zod Schema",
+  "license": "MIT",
+  "public": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatine/zod-plugins"
+  },
+  "homepage": "https://github.com/anatine/zod-plugins/tree/main/packages/graphql-codegen-zod",
+  "author": {
+    "name": "Brian McBride",
+    "url": "https://www.linkedin.com/in/brianmcbride"
+  },
+  "contributors": [
+    {
+      "name": "withshepherd",
+      "url": "https://github.com/withshepherd/graphql-codegen-zod/"
+    }
+  ],
+  "keywords": [
+    "zod",
+    "graphql",
+    "graphql-codegen"
+  ],
+  "dependencies": {
+    "@graphql-tools/utils": "^8.2.5"
+  },
+  "peerDependencies": {
+    "@graphql-tools/utils": "^8.2.5",
+    "graphql-code-generator": "^0.18.2"
+  }
+}

@@ -1,7 +1,9 @@
 {
   "version": 2,
   "projects": {
+    "codegen-e2e": "apps/codegen-e2e",
     "example": {
+      "$schema": "../../node_modules/nx/schemas/project-schema.json",
       "root": "apps/example",
       "sourceRoot": "apps/example/src",
       "projectType": "application",
@@ -46,15 +48,17 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/apps/example"],
           "options": {
-            "jestConfig": "apps/example/jest.config.js",
+            "jestConfig": "apps/example/jest.config.ts",
             "passWithNoTests": true
           }
         }
       },
       "tags": []
     },
+    "graphql-codegen-zod": "libs/graphql-codegen-zod",
     "zod-mock": "libs/zod-mock",
     "zod-nestjs": {
+      "$schema": "../../node_modules/nx/schemas/project-schema.json",
       "root": "libs/zod-nestjs",
       "sourceRoot": "libs/zod-nestjs/src",
       "projectType": "library",
@@ -81,7 +85,7 @@
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/zod-nestjs"],
           "options": {
-            "jestConfig": "libs/zod-nestjs/jest.config.js",
+            "jestConfig": "libs/zod-nestjs/jest.config.ts",
             "passWithNoTests": true
           }
         }
@@ -89,5 +93,6 @@
       "tags": ["zod", "npm", "package"]
     },
     "zod-openapi": "libs/zod-openapi"
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }

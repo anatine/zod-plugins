@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/codegen-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "commands": [
+          "echo \"Cleaning previously generated files...\"",
+          "rm -rf ./apps/codegen-e2e/generated"
+        ]
+      }
+    }
+  },
+  "tags": ["test"]
+}

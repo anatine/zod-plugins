@@ -1,0 +1,17 @@
+schema: './apps/codegen-e2e/src/*.graphql'
+generates:
+  './apps/codegen-e2e/generated/output.ts':
+    plugins:
+      - ./dist/libs/graphql-codegen-zod/src/index.js
+    config:
+      allowEnumStringTypes: true
+      onlyWithValidation: false
+      lazy: true
+      zodSchemasMap:
+        EmailAddress: z.string().email()
+        IPAddress: z.string()
+        DateTime: z.string()
+        JSON: z.object()
+        Date: z.string()
+      zodTypesMap:
+        EmailAddress: string

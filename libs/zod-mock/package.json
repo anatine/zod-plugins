@@ -1,6 +1,6 @@
 {
   "name": "@anatine/zod-mock",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Zod auto-mock object generator using Faker at @faker-js/faker",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -22,6 +22,9 @@
   ],
   "peerDependencies": {
     "@faker-js/faker": "^6.0.0-beta.0",
+    "randexp": "^0.5.3"
+  },
+  "dependencies": {
     "randexp": "^0.5.3"
   }
 }

@@ -1,0 +1,51 @@
+directive @validation(
+  pattern: String
+  min: Int
+  max: Int
+  requiredMessage: String
+  typeOf: String
+) on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
+enum TestEnum {
+  ENUM1
+  ENUM2
+}
+
+type TestSampleType {
+  id: ID!
+  name: String!
+  email: String
+}
+
+input TestInput {
+  string: String
+  stringRequired: String!
+  enum: TestEnum
+  enumRequired: TestEnum!
+  scalar: EmailAddress
+  scalarRequired: EmailAddress!
+  enumArray: [TestEnum]
+  enumArrayRequired: [TestEnum]!
+  emailArray: [EmailAddress]
+  emailArrayRequired: [EmailAddress]!
+  emailRequiredArray: [EmailAddress!]
+  emailRequiredArrayRequired: [EmailAddress!]!
+  stringArray: [String]
+  stringArrayRequired: [String]!
+  stringRequiredArray: [String!]
+  stringRequiredArrayRequired: [String!]!
+}
+
+input RegisterAddressInput {
+  postalCode: TestInput!
+  state: [String]!
+  city: String!
+  someNumber: Int @validation(min: 10, max: 20)
+  someNumberFloat: Float @validation(min: 10.50, max: 20.50)
+  someBoolean: Boolean
+  ipAddress: IPAddress
+  line2: String @validation(min: 10, max: 20)
+}
+
+scalar EmailAddress
+scalar IPAddress

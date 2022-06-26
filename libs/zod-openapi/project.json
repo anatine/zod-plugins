@@ -1,5 +1,5 @@
 {
-  "root": "libs/zod-openapi",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/zod-openapi/src",
   "projectType": "library",
   "targets": {
@@ -25,7 +25,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/zod-openapi"],
       "options": {
-        "jestConfig": "libs/zod-openapi/jest.config.js",
+        "jestConfig": "libs/zod-openapi/jest.config.ts",
         "passWithNoTests": true
       }
     }

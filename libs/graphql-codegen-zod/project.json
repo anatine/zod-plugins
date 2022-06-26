@@ -1,0 +1,43 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/graphql-codegen-zod/src",
+  "projectType": "library",
+  "targets": {
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/libs/graphql-codegen-zod",
+        "commands": ["npm publish --access public"]
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/graphql-codegen-zod",
+        "tsConfig": "libs/graphql-codegen-zod/tsconfig.lib.json",
+        "packageJson": "libs/graphql-codegen-zod/package.json",
+        "main": "libs/graphql-codegen-zod/src/index.ts",
+        "assets": ["libs/graphql-codegen-zod/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/graphql-codegen-zod/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/graphql-codegen-zod"],
+      "options": {
+        "jestConfig": "libs/graphql-codegen-zod/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
