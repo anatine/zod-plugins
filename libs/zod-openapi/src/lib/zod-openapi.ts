@@ -1,6 +1,7 @@
 import type { SchemaObject } from 'openapi3-ts';
 import merge from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
+import {ZodDiscriminatedUnionOption} from "zod/lib/types";
 
 export interface OpenApiZodAny extends ZodTypeAny {
   metaOpenApi?: SchemaObject | SchemaObject[];
@@ -338,6 +339,23 @@ function parseUnion({
   );
 }
 
+function parseDiscriminatedUnion({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodDiscriminatedUnion<string, z.Primitive, z.ZodDiscriminatedUnionOption<string, z.Primitive>>>): SchemaObject {
+  return merge(
+    {
+      discriminator: {
+        propertyName: (zodRef as z.ZodDiscriminatedUnion<string, z.Primitive, z.ZodDiscriminatedUnionOption<string, z.Primitive>>)._def.discriminator
+      },
+      oneOf: Array.from((zodRef as z.ZodDiscriminatedUnion<string, z.Primitive, z.ZodDiscriminatedUnionOption<string, z.Primitive>>
+      )._def.options.values()).map((schema) => generateSchema(schema, useOutput)),
+    },
+    ...schemas
+  );
+}
+
 function parseNever({ schemas }: ParsingArgs<z.ZodNever>): SchemaObject {
   return merge({ readOnly: true }, ...schemas);
 }
@@ -366,6 +384,7 @@ const workerMap = {
   ZodEffects: parseTransformation,
   ZodIntersection: parseIntersection,
   ZodUnion: parseUnion,
+  ZodDiscriminatedUnion: parseDiscriminatedUnion,
   ZodNever: parseNever,
   // TODO Transform the rest to schemas
   ZodUndefined: catchAllParser,
