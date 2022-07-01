@@ -65,7 +65,8 @@ function parseTransformation({
             ? null
             : 'array' === input.type
             ? []
-            : undefined
+            : undefined,
+          { addIssue: () => undefined, path: [] } // TODO: Discover if context is necessary here
         );
       } catch (e) {
         /**/

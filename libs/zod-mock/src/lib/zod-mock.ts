@@ -266,7 +266,7 @@ function parseTransform(
       ? zodRef._def.effect
       : { transform: () => input };
 
-  return effect.transform(input);
+  return effect.transform(input, { addIssue: () => undefined, path: [] }); // TODO : Discover if context is necessary here
 }
 
 function parseUnion(
@@ -277,7 +277,7 @@ function parseUnion(
   const mockOptions = zodRef._def.options.map((option) =>
     generateMock(option, options)
   );
-  return faker.helpers.randomize(mockOptions);
+  return faker.helpers.arrayElement(mockOptions);
 }
 
 const workerMap = {

@@ -1,6 +1,6 @@
 {
   "name": "@anatine/zod-openapi",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Zod to OpenAPI converter",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -21,7 +21,7 @@
     "swagger"
   ],
   "dependencies": {
-    "ts-deepmerge": "^1.1.0"
+    "ts-deepmerge": "^2.0.1"
   },
   "peerDependencies": {
     "zod": "^3.11.6",
