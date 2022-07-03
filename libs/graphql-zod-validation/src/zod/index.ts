@@ -91,6 +91,8 @@ export const ZodSchemaVisitor = (
     },
     ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
       if (!config.useObjectTypes) return;
+      if (node.name.value.toLowerCase() === 'query') return;
+      if (node.name.value.toLowerCase() === 'mutation') return;
       const name = tsVisitor.convertName(node.name.value);
       importTypes.push(name);
 
@@ -234,12 +236,15 @@ const generateNameNodeZodSchema = (
 ): string => {
   const typ = schema.getType(node.value);
 
-  if (typ && typ.astNode?.kind === 'InputObjectTypeDefinition') {
+  if (
+    typ?.astNode?.kind === 'InputObjectTypeDefinition' ||
+    typ?.astNode?.kind === 'ObjectTypeDefinition'
+  ) {
     const enumName = tsVisitor.convertName(typ.astNode.name.value);
     return `${enumName}Schema()`;
   }
 
-  if (typ && typ.astNode?.kind === 'EnumTypeDefinition') {
+  if (typ?.astNode?.kind === 'EnumTypeDefinition') {
     const enumName = tsVisitor.convertName(typ.astNode.name.value);
     return `${enumName}Schema`;
   }
