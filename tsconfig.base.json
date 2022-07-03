@@ -18,6 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@anatine/graphql-codegen-zod": ["libs/graphql-codegen-zod/src/index.ts"],
+      "@anatine/graphql-zod-validation": [
+        "libs/graphql-zod-validation/src/index.ts"
+      ],
       "@anatine/zod-mock": ["libs/zod-mock/src/index.ts"],
       "@anatine/zod-nestjs": ["libs/zod-nestjs/src/index.ts"],
       "@anatine/zod-openapi": ["libs/zod-openapi/src/index.ts"]

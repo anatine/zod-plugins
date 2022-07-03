@@ -1,9 +1,12 @@
-import { InputValueDefinitionNode } from 'graphql';
+import { FieldDefinitionNode, InputValueDefinitionNode } from 'graphql';
 import { IConfig } from '../../types';
 import directiveHandler from '../directives/index';
 import fieldKindHandler from './kindsHandler';
 
-const fieldHandler = (field: InputValueDefinitionNode, config: IConfig) => {
+const fieldHandler = (
+  field: InputValueDefinitionNode | FieldDefinitionNode,
+  config: IConfig
+) => {
   const fieldName = field.name.value;
   const fieldType = field.type;
 

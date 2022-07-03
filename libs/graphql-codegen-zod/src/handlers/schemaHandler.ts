@@ -1,12 +1,7 @@
 /* eslint-disable no-console */
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
-import {
-  GraphQLSchema,
-  InputValueDefinitionNode,
-  Kind,
-  parse,
-  visit,
-} from 'graphql';
+import { GraphQLSchema, parse, visit } from 'graphql';
+import { inspect } from 'util';
 import { IConfig, IEnums, INodes, IScalars, ITypes } from '../types/index';
 import { DIRECTIVE_NAME } from '../utils/constants';
 
@@ -23,9 +18,12 @@ const schemaHandler = (schema: GraphQLSchema, config: IConfig) => {
   visit(astNode, {
     InputObjectTypeDefinition: {
       leave: (node) => {
+        // console.log(
+        //   inspect({ source: 'InputObjectTypeDefinition', node }, false, 5, true)
+        // );
         let hasValidation = Boolean(!config.onlyWithValidation);
         if (!hasValidation) {
-          node.fields?.forEach((field: InputValueDefinitionNode) => {
+          node.fields?.forEach((field) => {
             const validation = field.directives?.find(
               (directive) => directive.name.value === DIRECTIVE_NAME
             );
@@ -40,6 +38,36 @@ const schemaHandler = (schema: GraphQLSchema, config: IConfig) => {
             fields: [...(node.fields || [])],
           });
 
+        if (config.zodTypesMap[node.name.value]) {
+          types[node.name.value] = config.zodTypesMap[node.name.value];
+        }
+      },
+    },
+    ObjectTypeDefinition: {
+      leave: (node) => {
+        // console.log(
+        //   inspect({ source: 'ObjectTypeDefinition', node }, false, 5, true)
+        // );
+        let hasValidation = Boolean(!config.onlyWithValidation);
+        if (!hasValidation) {
+          node.fields?.forEach((field) => {
+            const validation = field.directives?.find(
+              (directive) => directive.name.value === DIRECTIVE_NAME
+            );
+            if (validation) {
+              hasValidation = true;
+            }
+          });
+        }
+        if (hasValidation) {
+          console.log(`Pushing ${node.name.value}`);
+          nodes.push({
+            name: node.name.value,
+            fields: [...(node.fields || [])],
+          });
+        }
+
+        console.log(`types: ${node.name.value}`);
         if (config.zodTypesMap[node.name.value]) {
           types[node.name.value] = config.zodTypesMap[node.name.value];
         }

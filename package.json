@@ -30,6 +30,8 @@
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^7.3.0",
+    "@graphql-codegen/schema-ast": "^2.4.1",
+    "@graphql-codegen/visitor-plugin-common": "^2.9.1",
     "@graphql-tools/utils": "^8.8.0",
     "@nestjs/common": "^8.4.7",
     "@nestjs/core": "^8.4.7",

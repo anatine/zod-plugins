@@ -8,7 +8,7 @@ import { NamedTypeNode, TypeNode } from 'graphql';
 
 export interface INodes {
   name: string;
-  fields: InputValueDefinitionNode[];
+  fields: (InputValueDefinitionNode | FieldDefinitionNode)[];
 }
 
 export interface IEnums {

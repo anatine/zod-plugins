@@ -1,0 +1,96 @@
+enum PageType {
+  LP
+  SERVICE
+  RESTRICTED
+  BASIC_AUTH
+}
+
+input PageInput {
+  id: ID!
+  title: String!
+  description: String
+  show: Boolean!
+  width: Int!
+  height: Float!
+  layout: LayoutInput!
+  tags: [String]
+  attributes: [AttributeInput!]
+  pageType: PageType!
+  date: Date
+  postIDs: [ID!]
+}
+
+input AttributeInput {
+  key: String
+  val: String
+}
+
+input LayoutInput {
+  dropdown: DropDownComponentInput
+}
+
+input DropDownComponentInput {
+  getEvent: EventInput!
+  dropdownComponent: ComponentInput
+}
+
+enum ButtonComponentType {
+  BUTTON
+  SUBMIT
+}
+
+input ComponentInput {
+  type: ButtonComponentType!
+  name: String!
+  event: EventInput
+  child: ComponentInput
+  childrens: [ComponentInput]
+}
+
+input EventInput {
+  arguments: [EventArgumentInput!]!
+  options: [EventOptionType!]
+}
+
+enum EventOptionType {
+  RETRY
+  RELOAD
+}
+
+input EventArgumentInput {
+  name: String! @constraint(minLength: 5)
+  value: String! @constraint(startsWith: "foo")
+}
+
+input HTTPInput {
+  method: HTTPMethod
+  url: URL!
+}
+
+enum HTTPMethod {
+  GET
+  POST
+}
+
+scalar Date
+scalar URL
+
+# https://github.com/confuser/graphql-constraint-directive
+directive @constraint(
+  # String constraints
+  minLength: Int
+  maxLength: Int
+  startsWith: String
+  endsWith: String
+  contains: String
+  notContains: String
+  pattern: String
+  format: String
+  # Number constraints
+  min: Float
+  max: Float
+  exclusiveMin: Float
+  exclusiveMax: Float
+  multipleOf: Float
+  uniqueTypeName: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION

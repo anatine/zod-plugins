@@ -1,6 +1,11 @@
-schema: './apps/codegen-e2e/src/*.graphql'
+schema: './apps/codegen-e2e/example/*.graphql'
 generates:
-  './apps/codegen-e2e/generated/output.ts':
+  './apps/codegen-e2e/src/types.ts':
+    plugins:
+      - typescript
+
+  # Configuration example for graphql-codegen-zod
+  './apps/codegen-e2e/src/graphql-codegen-zod/output.ts':
     plugins:
       - ./dist/libs/graphql-codegen-zod/src/index.js
     config:
@@ -13,5 +18,30 @@ generates:
         DateTime: z.string()
         JSON: z.object()
         Date: z.string()
+        URL: z.string()
       zodTypesMap:
         EmailAddress: string
+
+  # Configuration example for graphql-zod-validation
+  './apps/codegen-e2e/src/graphql-zod-validation/zod-generated.ts':
+    plugins:
+      - './dist/libs/graphql-zod-validation/src/index.js'
+    config:
+      schema: zod
+      importFrom: ../types
+      useObjectTypes: true
+      directives:
+        # Write directives like
+        #
+        # directive:
+        #   arg1: schemaApi
+        #   arg2: ["schemaApi2", "Hello $1"]
+        #
+        # See more examples in `./tests/directive.spec.ts`
+        # https://github.com/Code-Hex/graphql-codegen-typescript-validation-schema/blob/main/tests/directive.spec.ts
+      constraint:
+        minLength: min
+        # Replace $1 with specified `startsWith` argument value of the constraint directive
+        startsWith: ['regex', '/^$1/', 'message']
+        format:
+          email: email

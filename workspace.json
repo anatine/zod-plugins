@@ -56,6 +56,7 @@
       "tags": []
     },
     "graphql-codegen-zod": "libs/graphql-codegen-zod",
+    "graphql-zod-validation": "libs/graphql-zod-validation",
     "zod-mock": "libs/zod-mock",
     "zod-nestjs": {
       "$schema": "../../node_modules/nx/schemas/project-schema.json",

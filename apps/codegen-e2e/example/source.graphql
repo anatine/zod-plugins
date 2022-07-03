@@ -11,7 +11,7 @@ enum TestEnum {
   ENUM2
 }
 
-type TestSampleType {
+type TestExample {
   id: ID!
   name: String!
   email: String
@@ -37,7 +37,7 @@ input TestInput {
 }
 
 input RegisterAddressInput {
-  postalCode: TestInput!
+  # postalCode: TestInput!
   state: [String]!
   city: String!
   someNumber: Int @validation(min: 10, max: 20)
