@@ -3,6 +3,15 @@
   "sourceRoot": "libs/zod-mock/src",
   "projectType": "library",
   "targets": {
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/libs/zod-mock",
+        "commands": ["npm publish --access public"]
+      }
+    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],

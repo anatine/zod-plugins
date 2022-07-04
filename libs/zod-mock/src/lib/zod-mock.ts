@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { faker } from '@faker-js/faker';
-import { inspect } from 'util';
-import { AnyZodObject, z, ZodTypeAny } from 'zod';
 import * as randExp from 'randexp';
+import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
 function parseObject(
   zodRef: AnyZodObject,
@@ -164,6 +163,7 @@ function parseString(
     borderInlineEndColor: faker.internet.color,
     columnRuleColor: faker.internet.color,
     outlineColor: faker.internet.color,
+    phoneNumber: faker.phone.number,
   };
 
   const stringType =
