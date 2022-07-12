@@ -20,7 +20,7 @@ export function extendApi<T extends OpenApiZodAny>(
   schema: T,
   SchemaObject: SchemaObject = {}
 ): T {
-  schema.metaOpenApi = SchemaObject;
+  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, SchemaObject);
   return schema;
 }
 
