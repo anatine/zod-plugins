@@ -8,6 +8,15 @@
       "sourceRoot": "apps/example/src",
       "projectType": "application",
       "targets": {
+        "publish": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "color": true,
+            "parallel": false,
+            "cwd": "./apps/example",
+            "commands": ["echo 'Example app does not publish'"]
+          }
+        },
         "build": {
           "executor": "@nrwl/node:webpack",
           "outputs": ["{options.outputPath}"],

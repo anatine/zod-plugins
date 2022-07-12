@@ -25,6 +25,7 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "codegen": "graphql-codegen",
+    "publish:zod-openapi": "nx run zod-openapi:publish",
     "publish:graphql-codgen-zod": "nx run graphql-codegen-zod:publish"
   },
   "private": true,
