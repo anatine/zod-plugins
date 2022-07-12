@@ -676,4 +676,25 @@ describe('zodOpenapi', () => {
       description: 'A user schema',
     });
   });
+
+  it('merges openapi metadata when extendApi is used more than one', () => {
+    const timestampSchema = extendApi(z.string(), {
+      format: 'date-time',
+      description: 'A timestamp.',
+    });
+
+    const newDescription = 'A more specific timestamp.';
+
+    const overriddenSchema = extendApi(timestampSchema, {
+      description: newDescription,
+    });
+
+    const openapiSchema = generateSchema(overriddenSchema);
+
+    expect(openapiSchema).toMatchObject({
+      type: 'string',
+      format: 'date-time',
+      description: newDescription,
+    });
+  });
 });
