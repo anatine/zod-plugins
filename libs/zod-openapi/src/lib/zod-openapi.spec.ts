@@ -428,6 +428,16 @@ describe('zodOpenapi', () => {
         { description: 'Our latest addition' }
       ),
       makeAChoice: z.union([z.literal('One'), z.literal(2)]),
+      chooseAPet: z.discriminatedUnion('animal', [
+        z.object({
+          animal: z.literal('dog'),
+          theBestQuality: z.literal('fleas'),
+        }),
+        z.object({
+          animal: z.literal('cat'),
+          theBestQuality: z.literal('stink'),
+        }),
+      ]),
       openChoice: extendApi(z.union([z.string(), z.string()]), {
         description: 'Odd pattern here',
       }),
@@ -537,6 +547,41 @@ describe('zodOpenapi', () => {
             { type: 'number', enum: [2] },
           ],
         },
+        chooseAPet: {
+          discriminator: {
+            propertyName: 'animal',
+          },
+          oneOf: [
+            {
+              properties: {
+                animal: {
+                  enum: ['dog'],
+                  type: 'string',
+                },
+                theBestQuality: {
+                  enum: ['fleas'],
+                  type: 'string',
+                },
+              },
+              required: ['animal', 'theBestQuality'],
+              type: 'object',
+            },
+            {
+              properties: {
+                animal: {
+                  enum: ['cat'],
+                  type: 'string',
+                },
+                theBestQuality: {
+                  enum: ['stink'],
+                  type: 'string',
+                },
+              },
+              required: ['animal', 'theBestQuality'],
+              type: 'object',
+            },
+          ],
+        },
         openChoice: {
           oneOf: [{ type: 'string' }, { type: 'string' }],
           description: 'Odd pattern here',
@@ -574,6 +619,7 @@ describe('zodOpenapi', () => {
         'foodTest',
         'employedPerson',
         'makeAChoice',
+        'chooseAPet',
         'openChoice',
         'stringLengthOutput',
         'favourites',
