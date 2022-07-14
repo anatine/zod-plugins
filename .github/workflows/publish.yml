@@ -42,7 +42,7 @@ jobs:
 
       - name: Version
         shell: bash
-        run: npm run release:affected --base=last-release
+        run: npm run release:affected
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

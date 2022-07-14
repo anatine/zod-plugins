@@ -31,7 +31,7 @@
     "publish:graphql-codgen-zod": "nx run graphql-codegen-zod:publish",
     "pretest:affected": "nx affected --target=build",
     "test:affected": "nx affected --target=test",
-    "release:affected": "nx affected --target=version"
+    "release:affected": "nx affected --base=last-release --target=version"
   },
   "private": true,
   "dependencies": {
