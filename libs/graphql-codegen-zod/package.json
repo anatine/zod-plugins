@@ -1,6 +1,6 @@
 {
   "name": "@anatine/graphql-codegen-zod",
-  "version": "0.0.6",
+  "version": "0.0.3",
   "description": "Its a library to parse from Graphql Schema to a Zod Schema",
   "license": "MIT",
   "public": true,
