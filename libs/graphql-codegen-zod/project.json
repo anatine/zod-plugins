@@ -3,6 +3,12 @@
   "sourceRoot": "libs/graphql-codegen-zod/src",
   "projectType": "library",
   "targets": {
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["my-project:publish", "my-project:github"]
+      }
+    },
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
