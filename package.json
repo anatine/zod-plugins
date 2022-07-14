@@ -28,8 +28,8 @@
     "version:graphql-codegen-zod": "nx run graphql-codegen-zod:version",
     "publish:graphql-codegen-zod": "nx run graphql-codegen-zod:publish",
     "publish:zod-openapi": "nx run zod-openapi:publish",
-    "publish:graphql-codgen-zod": "nx run graphql-codegen-zod:publish",
-    "pretest:affected": "nx affected --target=build",
+    "build:affected": "nx affected --target=build",
+    "pretest:affected": "npm run build:affected",
     "test:affected": "nx affected --target=test",
     "release:affected": "nx affected --base=last-release --target=version"
   },
@@ -86,7 +86,6 @@
     "esbuild": "^0.14.49",
     "eslint": "8.15.0",
     "eslint-config-prettier": "8.3.0",
-    "graphql-code-generator": "^0.18.2",
     "install-peerdeps": "^3.0.3",
     "jest": "27.5.1",
     "ngx-deploy-npm": "^4.1.1",

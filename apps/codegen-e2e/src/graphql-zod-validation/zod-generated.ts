@@ -56,7 +56,7 @@ export const EventOptionTypeSchema = z.nativeEnum(EventOptionType);
 export function HttpInputSchema(): z.ZodObject<Properties<HttpInput>> {
   return z.object({
     method: HttpMethodSchema.nullish(),
-    url: definedNonNullAnySchema
+    url: z.string()
   })
 }
 
@@ -71,7 +71,7 @@ export function LayoutInputSchema(): z.ZodObject<Properties<LayoutInput>> {
 export function PageInputSchema(): z.ZodObject<Properties<PageInput>> {
   return z.object({
     attributes: z.array(z.lazy(() => AttributeInputSchema())).nullish(),
-    date: definedNonNullAnySchema.nullish(),
+    date: z.string().nullish(),
     description: z.string().nullish(),
     height: z.number(),
     id: z.string(),
@@ -90,7 +90,7 @@ export const PageTypeSchema = z.nativeEnum(PageType);
 export function RegisterAddressInputSchema(): z.ZodObject<Properties<RegisterAddressInput>> {
   return z.object({
     city: z.string(),
-    ipAddress: definedNonNullAnySchema.nullish(),
+    ipAddress: z.string().nullish(),
     line2: z.string().nullish(),
     someBoolean: z.boolean().nullish(),
     someNumber: z.number().nullish(),
@@ -112,16 +112,16 @@ export function TestExampleSchema(): z.ZodObject<Properties<TestExample>> {
 
 export function TestInputSchema(): z.ZodObject<Properties<TestInput>> {
   return z.object({
-    emailArray: z.array(definedNonNullAnySchema.nullable()).nullish(),
-    emailArrayRequired: z.array(definedNonNullAnySchema.nullable()),
-    emailRequiredArray: z.array(definedNonNullAnySchema).nullish(),
-    emailRequiredArrayRequired: z.array(definedNonNullAnySchema),
+    emailArray: z.array(z.string().email().nullable()).nullish(),
+    emailArrayRequired: z.array(z.string().email().nullable()),
+    emailRequiredArray: z.array(z.string().email()).nullish(),
+    emailRequiredArrayRequired: z.array(z.string().email()),
     enum: TestEnumSchema.nullish(),
     enumArray: z.array(TestEnumSchema.nullable()).nullish(),
     enumArrayRequired: z.array(TestEnumSchema.nullable()),
     enumRequired: TestEnumSchema,
-    scalar: definedNonNullAnySchema.nullish(),
-    scalarRequired: definedNonNullAnySchema,
+    scalar: z.string().email().nullish(),
+    scalarRequired: z.string().email(),
     string: z.string().nullish(),
     stringArray: z.array(z.string().nullable()).nullish(),
     stringArrayRequired: z.array(z.string().nullable()),

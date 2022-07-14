@@ -30,6 +30,13 @@ generates:
       schema: zod
       importFrom: ../types
       useObjectTypes: true
+      scalarSchemas:
+        EmailAddress: z.string().email()
+        IPAddress: z.string()
+        DateTime: z.string()
+        JSON: z.object()
+        Date: z.string()
+        URL: z.string()
       directives:
         # Write directives like
         #
