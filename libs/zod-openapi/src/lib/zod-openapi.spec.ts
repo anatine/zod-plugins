@@ -228,15 +228,33 @@ describe('zodOpenapi', () => {
     });
   });
 
-  it('should support records', () => {
-    const zodSchema = extendApi(z.record(z.number().min(2).max(42)), {
-      description: 'Record this one for me.',
+  describe('record support', () => {
+    describe('with a value type', () => {
+      it('adds the value type to additionalProperties', () => {
+        const zodSchema = extendApi(z.record(z.number().min(2).max(42)), {
+          description: 'Record this one for me.',
+        });
+        const apiSchema = generateSchema(zodSchema);
+        expect(apiSchema).toEqual({
+          type: 'object',
+          additionalProperties: { type: 'number', minimum: 2, maximum: 42 },
+          description: 'Record this one for me.',
+        });
+      });
     });
-    const apiSchema = generateSchema(zodSchema);
-    expect(apiSchema).toEqual({
-      type: 'object',
-      additionalProperties: { type: 'number', minimum: 2, maximum: 42 },
-      description: 'Record this one for me.',
+
+    describe('with unknown value types', () => {
+      it('leaves additionalProperties blank', () => {
+        const zodSchema = extendApi(z.record(z.unknown()), {
+          description: 'Record this one for me.',
+        });
+        const apiSchema = generateSchema(zodSchema);
+        expect(apiSchema).toEqual({
+          type: 'object',
+          additionalProperties: {},
+          description: 'Record this one for me.',
+        });
+      });
     });
   });
 
