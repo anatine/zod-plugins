@@ -9,7 +9,6 @@ import {
   ObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
-  visit,
 } from 'graphql';
 import {
   DeclarationBlock,
@@ -20,9 +19,6 @@ import { buildApi, formatDirectiveConfig } from '../directive';
 
 const importZod = `import { z } from 'zod'`;
 const anySchema = `definedNonNullAnySchema`;
-
-declare type VisitFn = typeof visit;
-type NewVisitor = Partial<Parameters<VisitFn>[1]>;
 
 export const ZodSchemaVisitor = (
   schema: GraphQLSchema,

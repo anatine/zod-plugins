@@ -24,6 +24,15 @@ jobs:
         run: |
           git config user.name "GitHub Bot"
           git config user.email "Brian-McBride@users.noreply.github.com"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # - name: Configure npm
+      #   run: |
+      #     echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc
+      #   env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install environment
         run: npm install
@@ -33,6 +42,7 @@ jobs:
         run: yarn nx affected --base=last-release --target=version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           
       - name: Tag last-release
         shell: bash
