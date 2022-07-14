@@ -6,7 +6,7 @@
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
-        "postTargets": ["my-project:publish", "my-project:github"]
+        "skipCommitTypes": ["docs", "ci"]
       }
     },
     "publish": {
