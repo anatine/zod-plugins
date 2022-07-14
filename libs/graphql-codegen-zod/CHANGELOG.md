@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.0.7](https://github.com/anatine/zod-plugins/compare/graphql-codegen-zod-0.0.6...graphql-codegen-zod-0.0.7) (2022-07-14)
+
+
+### Bug Fixes
+
+* release tags broken with new CI/CD ([451a761](https://github.com/anatine/zod-plugins/commit/451a7614564fa214a5a39137ac8c38beacfcf970))
+
+
+
 ## [0.0.3](https://github.com/anatine/zod-plugins/compare/graphql-codegen-zod-0.0.2...graphql-codegen-zod-0.0.3) (2022-07-14)
 
 ## [0.0.2](https://github.com/anatine/zod-plugins/compare/graphql-codegen-zod-0.0.1...graphql-codegen-zod-0.0.2) (2022-07-14)
