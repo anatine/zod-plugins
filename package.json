@@ -1,6 +1,6 @@
 {
   "name": "zod-plugins",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "license": "MIT",
   "scripts": {
     "nx": "nx",
@@ -28,6 +28,7 @@
     "version:graphql-codegen-zod": "nx run graphql-codegen-zod:version",
     "publish:graphql-codegen-zod": "nx run graphql-codegen-zod:publish",
     "publish:zod-openapi": "nx run zod-openapi:publish",
+    "publish:zod-mock": "nx run zod-openapi:mock",
     "build:affected": "nx affected --target=build",
     "pretest:affected": "npm run build:affected",
     "test:affected": "nx affected --target=test",
