@@ -207,7 +207,10 @@ function parseRecord({
   return merge(
     {
       type: 'object',
-      additionalProperties: generateSchema(zodRef._def.valueType, useOutput),
+      additionalProperties:
+        zodRef._def.valueType instanceof z.ZodUnknown
+          ? {}
+          : generateSchema(zodRef._def.valueType, useOutput),
     },
     ...schemas
   );
