@@ -67,41 +67,7 @@
     "graphql-codegen-zod": "libs/graphql-codegen-zod",
     "graphql-zod-validation": "libs/graphql-zod-validation",
     "zod-mock": "libs/zod-mock",
-    "zod-nestjs": {
-      "$schema": "../../node_modules/nx/schemas/project-schema.json",
-      "root": "libs/zod-nestjs",
-      "sourceRoot": "libs/zod-nestjs/src",
-      "projectType": "library",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/js:tsc",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/libs/zod-nestjs",
-            "tsConfig": "libs/zod-nestjs/tsconfig.lib.json",
-            "packageJson": "libs/zod-nestjs/package.json",
-            "main": "libs/zod-nestjs/src/index.ts",
-            "assets": ["libs/zod-nestjs/*.md"]
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/zod-nestjs/**/*.ts"]
-          },
-          "outputs": ["{options.outputFile}"]
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/zod-nestjs"],
-          "options": {
-            "jestConfig": "libs/zod-nestjs/jest.config.ts",
-            "passWithNoTests": true
-          }
-        }
-      },
-      "tags": ["zod", "npm", "package"]
-    },
+    "zod-nestjs": "libs/zod-nestjs",
     "zod-openapi": "libs/zod-openapi"
   },
   "$schema": "./node_modules/nx/schemas/workspace-schema.json"

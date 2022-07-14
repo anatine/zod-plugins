@@ -1,9 +1,7 @@
-name: Merge on main
+name: Release
+
 on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
+  - workflow_dispatch
 
 jobs:
   deploy:
@@ -13,51 +11,33 @@ jobs:
     steps:
       # Checkout code
       - name: Checkout Code
-        if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-        uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/checkout@v3
         with:
-          node-version: '16.x'
+          fetch-depth: 0
+      # Install deps
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin main
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Bot"
+          git config user.email "Brian-McBride@users.noreply.github.com"
 
       - name: Install environment
         run: npm install
 
-      - name: Configure npm
-        run: |
-          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc
-          cat .npmrc
+      - name: Version
+        shell: bash
+        run: yarn nx affected --base=last-release --target=version
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Deploy
-        if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Tag last-release
+        shell: bash
         run: |
-          npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
-          ./.github/scripts/publish-libraries.sh
+          git tag -f last-release
+          git push origin last-release --force
 
-      # - name: Build Docs
-      #   if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-      #   run: npm run docs
 
-      - name: Commit files
-        if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Release [skip-ci]" -a || true
-
-      - name: Push changes
-        if: github.event.pull_request.merged == true && contains(github.event.commits[0].message, '[skip-ci]') == false
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tags: true
-          force: true

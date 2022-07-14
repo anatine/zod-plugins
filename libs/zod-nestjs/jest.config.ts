@@ -1,16 +1,14 @@
 /* eslint-disable */
 export default {
-  displayName: 'zod-nestjs',
+  displayName: 'graphql-codegen-zod',
   preset: '../../jest.preset.js',
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json',
-    },
-  },
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest',
+    '^.+\\.[tj]sx?$': [
+      '@swc/jest',
+      { jsc: { transform: { react: { runtime: 'automatic' } } } },
+    ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/zod-nestjs',
+  coverageDirectory: '../../coverage/libs/graphql-codegen-zod',
 };
