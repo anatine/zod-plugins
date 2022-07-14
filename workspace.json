@@ -2,68 +2,7 @@
   "version": 2,
   "projects": {
     "codegen-e2e": "apps/codegen-e2e",
-    "example": {
-      "$schema": "../../node_modules/nx/schemas/project-schema.json",
-      "root": "apps/example",
-      "sourceRoot": "apps/example/src",
-      "projectType": "application",
-      "targets": {
-        "publish": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "color": true,
-            "parallel": false,
-            "cwd": "./apps/example",
-            "commands": ["echo 'Example app does not publish'"]
-          }
-        },
-        "build": {
-          "executor": "@nrwl/node:webpack",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/apps/example",
-            "main": "apps/example/src/main.ts",
-            "tsConfig": "apps/example/tsconfig.app.json",
-            "assets": ["apps/example/src/assets"]
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/example/src/environments/environment.ts",
-                  "with": "apps/example/src/environments/environment.prod.ts"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "executor": "@nrwl/node:node",
-          "options": {
-            "buildTarget": "example:build"
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/example/**/*.ts"]
-          },
-          "outputs": ["{options.outputFile}"]
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/example"],
-          "options": {
-            "jestConfig": "apps/example/jest.config.ts",
-            "passWithNoTests": true
-          }
-        }
-      },
-      "tags": []
-    },
+    "example": "apps/example",
     "graphql-codegen-zod": "libs/graphql-codegen-zod",
     "graphql-zod-validation": "libs/graphql-zod-validation",
     "zod-mock": "libs/zod-mock",

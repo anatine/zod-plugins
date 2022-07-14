@@ -2,6 +2,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/codegen-e2e/src",
   "projectType": "application",
+  "implicitDependencies": ["graphql-codegen-zod", "graphql-zod-validation"],
   "targets": {
     "test": {
       "executor": "@nrwl/workspace:run-commands",

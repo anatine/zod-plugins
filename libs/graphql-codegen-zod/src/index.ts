@@ -1,4 +1,4 @@
-import type { PluginFunction } from '@graphql-codegen/plugin-helpers/types';
+import type { PluginFunction } from '@graphql-codegen/plugin-helpers';
 import enumsHandler from './handlers/enumsHandler';
 import nodesHandler from './handlers/nodesHandler';
 import scalarsHandler from './handlers/scalarsHandler';
