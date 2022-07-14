@@ -37,9 +37,12 @@ jobs:
       - name: Install environment
         run: npm install
 
+      - name: Test
+        run: npm run test:affected
+
       - name: Version
         shell: bash
-        run: yarn nx affected --base=last-release --target=version
+        run: npm run release:affected
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
