@@ -1,6 +1,6 @@
 {
   "name": "zod-plugins",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "license": "MIT",
   "scripts": {
     "nx": "nx",
@@ -32,7 +32,7 @@
     "build:affected": "nx affected --target=build",
     "pretest:affected": "npm run build:affected",
     "test:affected": "nx affected --target=test",
-    "release:affected": "nx affected --base=last-release --target=version"
+    "release:affected": "nx affected --base=last-release --target=version --releaseAs=minor"
   },
   "private": true,
   "dependencies": {
