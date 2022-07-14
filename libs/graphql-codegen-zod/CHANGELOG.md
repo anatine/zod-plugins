@@ -2,6 +2,10 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [0.1.0](https://github.com/anatine/zod-plugins/compare/graphql-codegen-zod-0.0.7...graphql-codegen-zod-0.1.0) (2022-07-14)
+
+
+
 ## [0.0.7](https://github.com/anatine/zod-plugins/compare/graphql-codegen-zod-0.0.6...graphql-codegen-zod-0.0.7) (2022-07-14)
 
 
