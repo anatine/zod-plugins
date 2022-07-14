@@ -71,7 +71,12 @@ export const ZodSchemaVisitor = (
           .withName(`${anySchema}`)
           .withContent(`z.any().refine((v) => isDefinedNonNullAny(v))`).string,
       ].join('\n'),
-    InputObjectTypeDefinition: (node: InputObjectTypeDefinitionNode) => {
+
+    // Type Definitions
+
+    InputObjectTypeDefinition: (
+      node: InputObjectTypeDefinitionNode
+    ): string => {
       const name = tsVisitor.convertName(node.name.value);
       importTypes.push(name);
 
@@ -89,6 +94,7 @@ export const ZodSchemaVisitor = (
           [indent(`return z.object({`), shape, indent('})')].join('\n')
         ).string;
     },
+
     ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
       if (!config.useObjectTypes) return;
       if (node.name.value.toLowerCase() === 'query') return;
@@ -114,6 +120,7 @@ export const ZodSchemaVisitor = (
           ].join('\n')
         ).string;
     },
+
     EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
       const enumname = tsVisitor.convertName(node.name.value);
       importTypes.push(enumname);

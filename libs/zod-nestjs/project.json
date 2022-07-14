@@ -1,14 +1,15 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/graphql-codegen-zod/src",
+  "sourceRoot": "libs/zod-nestjs/src",
   "projectType": "library",
+  "implicitDependencies": ["zod-openapi"],
   "targets": {
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "color": true,
         "parallel": false,
-        "cwd": "./dist/libs/graphql-codegen-zod",
+        "cwd": "./dist/libs/zod-nestjs",
         "commands": ["npm publish --access public"]
       }
     },
@@ -16,25 +17,25 @@
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/graphql-codegen-zod",
-        "tsConfig": "libs/graphql-codegen-zod/tsconfig.lib.json",
-        "packageJson": "libs/graphql-codegen-zod/package.json",
-        "main": "libs/graphql-codegen-zod/src/index.ts",
-        "assets": ["libs/graphql-codegen-zod/*.md"]
+        "outputPath": "dist/libs/zod-nestjs",
+        "tsConfig": "libs/zod-nestjs/tsconfig.lib.json",
+        "packageJson": "libs/zod-nestjs/package.json",
+        "main": "libs/zod-nestjs/src/index.ts",
+        "assets": ["libs/zod-nestjs/*.md"]
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/graphql-codegen-zod/**/*.ts"]
+        "lintFilePatterns": ["libs/zod-nestjs/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/graphql-codegen-zod"],
+      "outputs": ["coverage/libs/zod-nestjs"],
       "options": {
-        "jestConfig": "libs/graphql-codegen-zod/jest.config.ts",
+        "jestConfig": "libs/zod-nestjs/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -42,10 +43,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "skipCommitTypes": ["ci"],
-        "postTargets": [
-          "graphql-codegen-zod:deploy",
-          "graphql-codegen-zod:github"
-        ]
+        "postTargets": ["zod-nestjs:deploy", "zod-nestjs:github"]
       }
     },
     "github": {
