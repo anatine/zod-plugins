@@ -23,7 +23,7 @@ npm install openapi3-ts zod @anatine/zod-nestjs
 ### Generate a schema
 
 Use [Zod](https://github.com/colinhacks/zod) to generate a schema.
-Additionally, use [@anatidae/zod-openapi](https://github.com/anatine/zod-plugins/tree/main/packages/zod-openapi) to extend a schema for OpenAPI and Swagger UI.
+Additionally, use [@anatidae/zod-openapi](https://github.com/anatine/zod-plugins/tree/main/libs/zod-openapi) to extend a schema for OpenAPI and Swagger UI.
 
 Example schema:
 ```typescript
