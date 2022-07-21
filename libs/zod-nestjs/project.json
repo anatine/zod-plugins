@@ -2,7 +2,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/zod-nestjs/src",
   "projectType": "library",
-  "implicitDependencies": ["zod-openapi"],
+  "implicitDependencies": [],
   "targets": {
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
