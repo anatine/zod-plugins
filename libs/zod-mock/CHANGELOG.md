@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [3.5.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.4.0...zod-mock-3.5.0) (2022-07-24)
+
+
+### Bug Fixes
+
+* release pipeline ([bb0ad83](https://github.com/anatine/zod-plugins/commit/bb0ad836a954659b778f1181dff4fe99daf35447)), closes [PR#46](https://github.com/PR/issues/46)
+
+
+
 # [3.4.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.3.0...zod-mock-3.4.0) (2022-07-24)
 
 
