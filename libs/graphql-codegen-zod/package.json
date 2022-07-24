@@ -28,7 +28,7 @@
     "@graphql-tools/utils": "^8.8.0"
   },
   "peerDependencies": {
-    "zod": "^3.10.3",
+    "zod": "^3.17.3",
     "@graphql-tools/utils": "^8.8.0",
     "graphql-code-generator": "^0.18.2"
   }
