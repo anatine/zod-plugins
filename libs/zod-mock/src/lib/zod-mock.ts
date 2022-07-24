@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { faker } from '@faker-js/faker';
 import * as randExp from 'randexp';
-import { AnyZodObject, z, ZodTypeAny } from 'zod';
+import { AnyZodObject, z, ZodTypeAny, ZodType, ZodString, ZodRecord } from 'zod';
 
 function parseObject(
   zodRef: AnyZodObject,
@@ -17,6 +17,20 @@ function parseObject(
     }),
     {} as Record<string, ZodTypeAny>
   );
+}
+
+function parseRecord<
+  Key extends ZodType<string | number | symbol, any, any> = ZodString,
+  Value extends ZodTypeAny = ZodTypeAny,
+>(zodRef: ZodRecord<Key, Value>, options?: GenerateMockOptions) {
+  const recordKeysLength = options?.recordKeysLength || 1;
+
+  return new Array(recordKeysLength).fill(null).reduce(prev => {
+    return {
+      ...prev,
+      [generateMock(zodRef.keySchema, options)]: generateMock(zodRef.valueSchema, options),
+    };
+  }, {});
 }
 
 type fakerFunction = () => string | number | boolean | Date;
@@ -128,7 +142,18 @@ function parseString(
     }
   });
 
-  const targetStringLength = faker.datatype.number(stringOptions);
+  const sortedStringOptions = {
+    ...stringOptions,
+  };
+
+  // avoid Max {Max} should be greater than min {Min}
+  if (sortedStringOptions.min && sortedStringOptions.max && sortedStringOptions.min > sortedStringOptions.max) {
+    const temp = sortedStringOptions.min;
+    sortedStringOptions.min = sortedStringOptions.max;
+    sortedStringOptions.max = temp;
+  }
+
+  const targetStringLength = faker.datatype.number(sortedStringOptions);
   /**
    * Returns a random lorem word using `faker.lorem.word(length)`.
    * This method can return undefined for large word lengths. If undefined is returned
@@ -251,6 +276,12 @@ function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
   return values[pick];
 }
 
+function parseNativeEnum(zodRef: z.ZodNativeEnum<never>) {
+  const { values } = zodRef._def;
+  const pick = Math.floor(Math.random() * (Object.values(values).length / 2));
+  return values[values[pick]];
+}
+
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
   return zodRef._def.value;
 }
@@ -282,7 +313,7 @@ function parseUnion(
 
 const workerMap = {
   ZodObject: parseObject,
-  ZodRecord: parseObject,
+  ZodRecord: parseRecord,
   ZodString: parseString,
   ZodNumber: parseNumber,
   ZodBigInt: parseNumber,
@@ -292,7 +323,7 @@ const workerMap = {
   ZodNullable: parseOptional,
   ZodArray: parseArray,
   ZodEnum: parseEnum,
-  ZodNativeEnum: parseEnum,
+  ZodNativeEnum: parseNativeEnum,
   ZodLiteral: parseLiteral,
   ZodTransformer: parseTransform,
   ZodEffects: parseTransform,
@@ -316,6 +347,8 @@ export interface GenerateMockOptions {
    * is unable to find an appropriate mocking function to use.
    */
   backupMocks?: Record<string, () => any | undefined>;
+
+  recordKeysLength?: number;
 }
 
 export function generateMock<T extends ZodTypeAny>(
