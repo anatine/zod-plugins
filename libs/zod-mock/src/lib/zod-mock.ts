@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { faker } from '@faker-js/faker';
 import * as randExp from 'randexp';
-import { AnyZodObject, z, ZodTypeAny, ZodType, ZodString, ZodRecord } from 'zod';
+import {
+  AnyZodObject,
+  z,
+  ZodTypeAny,
+  ZodType,
+  ZodString,
+  ZodRecord,
+} from 'zod';
 
 function parseObject(
   zodRef: AnyZodObject,
@@ -21,14 +28,17 @@ function parseObject(
 
 function parseRecord<
   Key extends ZodType<string | number | symbol, any, any> = ZodString,
-  Value extends ZodTypeAny = ZodTypeAny,
+  Value extends ZodTypeAny = ZodTypeAny
 >(zodRef: ZodRecord<Key, Value>, options?: GenerateMockOptions) {
   const recordKeysLength = options?.recordKeysLength || 1;
 
-  return new Array(recordKeysLength).fill(null).reduce(prev => {
+  return new Array(recordKeysLength).fill(null).reduce((prev) => {
     return {
       ...prev,
-      [generateMock(zodRef.keySchema, options)]: generateMock(zodRef.valueSchema, options),
+      [generateMock(zodRef.keySchema, options)]: generateMock(
+        zodRef.valueSchema,
+        options
+      ),
     };
   }, {});
 }
@@ -110,7 +120,7 @@ function parseString(
   if (regexCheck && 'regex' in regexCheck) {
     const generator = new randExp(regexCheck.regex);
     const max = checks.find((check) => check.kind === 'max');
-    if (max && 'value' in max) {
+    if (max && 'value' in max && typeof max.value === 'number') {
       generator.max = max.value;
     }
     const genRegString = generator.gen();
@@ -147,7 +157,11 @@ function parseString(
   };
 
   // avoid Max {Max} should be greater than min {Min}
-  if (sortedStringOptions.min && sortedStringOptions.max && sortedStringOptions.min > sortedStringOptions.max) {
+  if (
+    sortedStringOptions.min &&
+    sortedStringOptions.max &&
+    sortedStringOptions.min > sortedStringOptions.max
+  ) {
     const temp = sortedStringOptions.min;
     sortedStringOptions.min = sortedStringOptions.max;
     sortedStringOptions.max = temp;
