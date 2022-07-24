@@ -1,13 +1,13 @@
 {
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
     "codegen-e2e": "apps/codegen-e2e",
     "example": "apps/example",
-    "graphql-codegen-zod": "libs/graphql-codegen-zod",
-    "graphql-zod-validation": "libs/graphql-zod-validation",
-    "zod-mock": "libs/zod-mock",
-    "zod-nestjs": "libs/zod-nestjs",
-    "zod-openapi": "libs/zod-openapi"
-  },
-  "$schema": "./node_modules/nx/schemas/workspace-schema.json"
+    "graphql-codegen-zod": "packages/graphql-codegen-zod",
+    "graphql-zod-validation": "packages/graphql-zod-validation",
+    "zod-mock": "packages/zod-mock",
+    "zod-nestjs": "packages/zod-nestjs",
+    "zod-openapi": "packages/zod-openapi"
+  }
 }

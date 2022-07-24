@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -43,18 +44,29 @@ jobs:
         run: npm install
 
       - name: Test
-        run: npm run test:affected
-
-      - name: Build
-        run: npm run build:affected
+        run: npm run affected:test
 
       - name: Version
         shell: bash
-        run: npm run release:affected
+        run: npm run affected:version
+
+      - name: Build
+        run: npm run affected:build
+
+      - name: publish
+        run: npm run affected:publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: git-update
+        shell: bash
+        run: npm run affected:github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
           
       - name: Tag last-release
         shell: bash
