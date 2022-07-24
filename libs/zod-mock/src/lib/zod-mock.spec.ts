@@ -16,6 +16,7 @@ describe('zod-mock', () => {
       stringLength: z.string().transform((val) => val.length),
       numberCount: z.number().transform((item) => `total value = ${item}`),
       age: z.number().min(18).max(120),
+      record: z.record(z.string(), z.number())
     });
 
     const mockData = generateMock(schema); //?
@@ -35,6 +36,8 @@ describe('zod-mock', () => {
     expect(typeof mockData.stringLength).toEqual('number');
     expect(typeof mockData.numberCount).toEqual('string');
     expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
+    expect(typeof mockData.record).toEqual('object');
+    expect(typeof Object.values(mockData.record)[0]).toEqual('number');
   });
 
   it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
@@ -324,7 +327,7 @@ describe('zod-mock', () => {
     expect(regResult.data).toMatch(/^[A-Z0-9+_.-]+@[A-Z0-9.-]+$/);
   });
 
-  it.only('should handle complex unions', () => {
+  it('should handle complex unions', () => {
     const result = generateMock(z.object({ date: z.date() }));
     expect(result.date).toBeInstanceOf(Date);
 
