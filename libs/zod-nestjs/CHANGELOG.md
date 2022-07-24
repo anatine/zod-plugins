@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [1.6.0](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.5.0...zod-nestjs-1.6.0) (2022-07-24)
+
+
+### Bug Fixes
+
+* remove implicitDependencies ([970f924](https://github.com/anatine/zod-plugins/commit/970f924a044d907007482c14a05c710c02a04032))
+
+
+
 # [1.5.0](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.4.1...zod-nestjs-1.5.0) (2022-07-14)
 
 
