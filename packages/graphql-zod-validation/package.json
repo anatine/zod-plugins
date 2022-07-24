@@ -1,6 +1,6 @@
 {
   "name": "@anatine/graphql-zod-validation",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "GraphQL Code Generator plugin to generate form validation schema from your GraphQL schema",
   "keywords": [
     "gql",
