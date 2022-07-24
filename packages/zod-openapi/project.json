@@ -10,7 +10,8 @@
         "outputPath": "dist/packages/zod-openapi",
         "tsConfig": "packages/zod-openapi/tsconfig.lib.json",
         "packageJson": "packages/zod-openapi/package.json",
-        "main": "packages/zod-openapi/src/index.ts"
+        "main": "packages/zod-openapi/src/index.ts",
+        "assets": ["libs/graphql-zod-validation/*.md"]
       }
     },
     "lint": {

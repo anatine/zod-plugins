@@ -11,9 +11,10 @@
   "scripts": {
     "affected:lint": "nx affected:lint",
     "affected:test": "nx affected:test",
+    "affected:version": "nx affected --parallel=1 --base=last-release --target=version",
     "affected:build": "nx affected:build",
-    "affected:version": "nx affected --base=last-release --target=version",
-    "affected:publish": "nx affected --target=publish"
+    "affected:publish": "nx affected --target=publish",
+    "affected:github": "nx affected --parallel=1  --target=github"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.6.0",
