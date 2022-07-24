@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { generateMock } from './zod-mock';
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
+    enum NativeEnum {
+      a = 1,
+      b = 2,
+    }
     const schema = z.object({
       uid: z.string().nonempty(),
       theme: z.enum([`light`, `dark`]),
@@ -16,7 +20,8 @@ describe('zod-mock', () => {
       stringLength: z.string().transform((val) => val.length),
       numberCount: z.number().transform((item) => `total value = ${item}`),
       age: z.number().min(18).max(120),
-      record: z.record(z.string(), z.number())
+      record: z.record(z.string(), z.number()),
+      nativeEnum: z.nativeEnum(NativeEnum)
     });
 
     const mockData = generateMock(schema); //?
@@ -38,6 +43,7 @@ describe('zod-mock', () => {
     expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
     expect(typeof mockData.record).toEqual('object');
     expect(typeof Object.values(mockData.record)[0]).toEqual('number');
+    expect(mockData.nativeEnum === 1 || mockData.nativeEnum === 2);
   });
 
   it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {

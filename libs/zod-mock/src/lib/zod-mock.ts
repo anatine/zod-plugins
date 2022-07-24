@@ -276,6 +276,12 @@ function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
   return values[pick];
 }
 
+function parseNativeEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
+  const { values } = zodRef._def;
+  const pick = Math.floor(Math.random() * (Object.values(values).length / 2));
+  return values[values[pick]];
+}
+
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
   return zodRef._def.value;
 }
@@ -317,7 +323,7 @@ const workerMap = {
   ZodNullable: parseOptional,
   ZodArray: parseArray,
   ZodEnum: parseEnum,
-  ZodNativeEnum: parseEnum,
+  ZodNativeEnum: parseNativeEnum,
   ZodLiteral: parseLiteral,
   ZodTransformer: parseTransform,
   ZodEffects: parseTransform,
