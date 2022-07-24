@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [1.9.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.8.0...zod-openapi-1.9.0) (2022-07-24)
+
+
+### Bug Fixes
+
+* release pipeline ([bb0ad83](https://github.com/anatine/zod-plugins/commit/bb0ad836a954659b778f1181dff4fe99daf35447)), closes [PR#46](https://github.com/PR/issues/46)
+
+
+
 # [1.8.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.7.0...zod-openapi-1.8.0) (2022-07-24)
 
 
