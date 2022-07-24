@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+# [3.4.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.3.0...zod-mock-3.4.0) (2022-07-24)
+
+
+### Bug Fixes
+
+* native enum error ([1ad2dff](https://github.com/anatine/zod-plugins/commit/1ad2dffbb37e5435581d4d8bdb127b56314700a8))
+* parseNativeEnum arg type ([5700a14](https://github.com/anatine/zod-plugins/commit/5700a142caf0b585bc7f204a4985c7a187d4a316))
+* record type and swap string min when greater than max ([ae51c01](https://github.com/anatine/zod-plugins/commit/ae51c01fb55c3c386c3362680b40df25c3706c14))
+* type issue in zod-mock ([b2cd0bd](https://github.com/anatine/zod-plugins/commit/b2cd0bd2e1192333f928b60fb8bc59a3321522c2))
+
+
+
 # [3.3.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.2.2...zod-mock-3.3.0) (2022-07-14)
 
 
