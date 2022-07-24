@@ -3,15 +3,6 @@
   "sourceRoot": "libs/graphql-zod-validation/src",
   "projectType": "library",
   "targets": {
-    "publish": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "color": true,
-        "parallel": false,
-        "cwd": "./dist/libs/graphql-zod-validation",
-        "commands": ["npm publish --access public"]
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -43,7 +34,8 @@
       "options": {
         "skipCommitTypes": ["ci"],
         "postTargets": [
-          "graphql-zod-validation:deploy",
+          "graphql-zod-validation:build",
+          "graphql-zod-validation:publish",
           "graphql-zod-validation:github"
         ]
       }
@@ -53,6 +45,15 @@
       "options": {
         "tag": "${tag}",
         "notes": "${notes}"
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/libs/graphql-zod-validation",
+        "commands": ["npm publish --access public"]
       }
     },
     "deploy": {

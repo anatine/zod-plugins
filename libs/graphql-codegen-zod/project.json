@@ -3,15 +3,6 @@
   "sourceRoot": "libs/graphql-codegen-zod/src",
   "projectType": "library",
   "targets": {
-    "publish": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "color": true,
-        "parallel": false,
-        "cwd": "./dist/libs/graphql-codegen-zod",
-        "commands": ["npm publish --access public"]
-      }
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -43,7 +34,8 @@
       "options": {
         "skipCommitTypes": ["ci"],
         "postTargets": [
-          "graphql-codegen-zod:deploy",
+          "graphql-codegen-zod:build",
+          "graphql-codegen-zod:publish",
           "graphql-codegen-zod:github"
         ]
       }
@@ -53,6 +45,15 @@
       "options": {
         "tag": "${tag}",
         "notes": "${notes}"
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/libs/graphql-codegen-zod",
+        "commands": ["npm publish --access public"]
       }
     },
     "deploy": {

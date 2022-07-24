@@ -3,15 +3,6 @@
   "sourceRoot": "libs/zod-openapi/src",
   "projectType": "library",
   "targets": {
-    "publish": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "color": true,
-        "parallel": false,
-        "cwd": "./dist/libs/zod-openapi",
-        "commands": ["npm publish --access public"]
-      }
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -42,7 +33,11 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "skipCommitTypes": ["ci"],
-        "postTargets": ["zod-openapi:deploy", "zod-openapi:github"]
+        "postTargets": [
+          "zod-openapi:build",
+          "zod-openapi:publish",
+          "zod-openapi:github"
+        ]
       }
     },
     "github": {
@@ -56,6 +51,15 @@
       "executor": "ngx-deploy-npm:deploy",
       "options": {
         "access": "public"
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/libs/zod-openapi",
+        "commands": ["npm publish --access public"]
       }
     }
   },
