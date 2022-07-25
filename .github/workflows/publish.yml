@@ -74,8 +74,6 @@ jobs:
       - name: Return npm
         run: |
           echo 'legacy-peer-deps=true' > .npmrc
-        env:
-
           
       - name: Tag last-release
         shell: bash
