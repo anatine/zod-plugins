@@ -36,12 +36,12 @@ jobs:
 
       - name: Configure npm
         run: |
-          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}\nlegacy-peer-deps=true' > .npmrc
+          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install environment
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Test
         run: npm run affected:test
