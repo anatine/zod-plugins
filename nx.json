@@ -13,5 +13,13 @@
         "accessToken": "OTFkYWZhYzYtZjA5OS00NzM3LWJhOGYtNzA3MTVkNzhkYjA5fHJlYWQtd3JpdGU="
       }
     }
+  },
+  "targetDependencies": {
+    "version": [
+      {
+        "target": "version",
+        "projects": "dependencies"
+      }
+    ]
   }
 }
