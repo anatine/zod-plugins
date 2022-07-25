@@ -50,22 +50,22 @@ jobs:
         shell: bash
         run: npm run affected:version
 
-      - name: Build
-        run: npm run affected:build
+      # - name: Build
+      #   run: npm run affected:build
 
-      - name: publish
-        run: npm run affected:publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: publish
+      #   run: npm run affected:publish
+      #   env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: git-update
-        shell: bash
-        run: npm run affected:github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: git-update
+      #   shell: bash
+      #   run: npm run affected:github
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
           
       - name: Tag last-release

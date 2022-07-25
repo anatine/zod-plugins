@@ -33,7 +33,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "skipCommitTypes": ["ci"],
-        "postTargets": []
+        "postTargets": ["graphql-codegen-zod:github"]
       }
     },
     "github": {
@@ -46,8 +46,6 @@
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "color": true,
-        "parallel": false,
         "cwd": "./dist/packages/graphql-codegen-zod",
         "commands": ["npm publish --access public"]
       }
