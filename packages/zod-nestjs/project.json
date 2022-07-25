@@ -1,0 +1,57 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zod-nestjs/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/zod-nestjs",
+        "tsConfig": "packages/zod-nestjs/tsconfig.lib.json",
+        "packageJson": "packages/zod-nestjs/package.json",
+        "main": "packages/zod-nestjs/src/index.ts",
+        "assets": ["libs/graphql-zod-validation/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/zod-nestjs/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/zod-nestjs"],
+      "options": {
+        "jestConfig": "packages/zod-nestjs/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "skipCommitTypes": ["ci"],
+        "postTargets": []
+      }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}",
+        "notes": "${notes}"
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/packages/zod-nestjs",
+        "commands": ["npm publish --access public"]
+      }
+    }
+  },
+  "tags": []
+}

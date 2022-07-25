@@ -1,37 +1,17 @@
 {
+  "extends": "nx/presets/npm.json",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "anatine",
   "affected": {
     "defaultBase": "main"
-  },
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
-    ".eslintrc.json": "*"
   },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ],
-        "parallel": 1,
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
         "accessToken": "OTFkYWZhYzYtZjA5OS00NzM3LWJhOGYtNzA3MTVkNzhkYjA5fHJlYWQtd3JpdGU="
       }
-    }
-  },
-  "defaultProject": "example",
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "targetDefaults": {
-    "build": {
-      "dependsOn": [
-        "^build"
-      ]
     }
   }
 }

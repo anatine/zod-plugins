@@ -2,9 +2,6 @@
   "root": true,
   "ignorePatterns": ["**/*"],
   "plugins": ["@nrwl/nx"],
-  "rules": {
-    "no-console": ["error", { "allow": ["warn", "error"] }]
-  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

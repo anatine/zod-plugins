@@ -1,0 +1,57 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/graphql-zod-validation/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/graphql-zod-validation",
+        "tsConfig": "packages/graphql-zod-validation/tsconfig.lib.json",
+        "packageJson": "packages/graphql-zod-validation/package.json",
+        "main": "packages/graphql-zod-validation/src/index.ts",
+        "assets": ["libs/graphql-zod-validation/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/graphql-zod-validation/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/graphql-zod-validation"],
+      "options": {
+        "jestConfig": "packages/graphql-zod-validation/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "skipCommitTypes": ["ci"],
+        "postTargets": []
+      }
+    },
+    "github": {
+      "executor": "@jscutlery/semver:github",
+      "options": {
+        "tag": "${tag}",
+        "notes": "${notes}"
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "color": true,
+        "parallel": false,
+        "cwd": "./dist/packages/graphql-zod-validation",
+        "commands": ["npm publish --access public"]
+      }
+    }
+  },
+  "tags": []
+}

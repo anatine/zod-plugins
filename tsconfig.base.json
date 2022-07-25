@@ -7,23 +7,25 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "importHelpers": true,
     "isolatedModules": true,
     "strict": true,
-    "importHelpers": false,
     "target": "es2017",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2019", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@anatine/graphql-codegen-zod": ["libs/graphql-codegen-zod/src/index.ts"],
-      "@anatine/graphql-zod-validation": [
-        "libs/graphql-zod-validation/src/index.ts"
+      "@anatine/graphql-codegen-zod": [
+        "packages/graphql-codegen-zod/src/index.ts"
       ],
-      "@anatine/zod-mock": ["libs/zod-mock/src/index.ts"],
-      "@anatine/zod-nestjs": ["libs/zod-nestjs/src/index.ts"],
-      "@anatine/zod-openapi": ["libs/zod-openapi/src/index.ts"]
+      "@anatine/graphql-zod-validation": [
+        "packages/graphql-zod-validation/src/index.ts"
+      ],
+      "@anatine/zod-mock": ["packages/zod-mock/src/index.ts"],
+      "@anatine/zod-nestjs": ["packages/zod-nestjs/src/index.ts"],
+      "@anatine/zod-openapi": ["packages/zod-openapi/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
