@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.8.3](https://github.com/anatine/zod-plugins/compare/graphql-zod-validation-0.8.2...graphql-zod-validation-0.8.3) (2022-07-26)
+
+
+### Bug Fixes
+
+* missing readme ([581e371](https://github.com/anatine/zod-plugins/commit/581e37112c223782759635ae34937a0dfa664dc9))
+
+
+
 ## [0.8.2](https://github.com/anatine/zod-plugins/compare/graphql-zod-validation-0.8.1...graphql-zod-validation-0.8.2) (2022-07-24)
 
 
