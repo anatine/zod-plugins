@@ -31,6 +31,8 @@
     },
     "version": {
       "executor": "@jscutlery/semver:version",
+      "push": true,
+      "preset": "conventional",
       "options": {
         "skipCommitTypes": ["ci"],
         "postTargets": ["zod-openapi:publish", "zod-openapi:github"]

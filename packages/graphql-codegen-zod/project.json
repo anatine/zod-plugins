@@ -32,6 +32,8 @@
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
+        "push": true,
+        "preset": "conventional",
         "skipCommitTypes": ["ci"],
         "postTargets": [
           "graphql-codegen-zod:publish",
