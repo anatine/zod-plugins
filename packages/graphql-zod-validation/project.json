@@ -11,7 +11,7 @@
         "tsConfig": "packages/graphql-zod-validation/tsconfig.lib.json",
         "packageJson": "packages/graphql-zod-validation/package.json",
         "main": "packages/graphql-zod-validation/src/index.ts",
-        "assets": ["libs/graphql-zod-validation/*.md"]
+        "assets": ["packages/graphql-zod-validation/*.md"]
       }
     },
     "lint": {
@@ -33,7 +33,10 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "skipCommitTypes": ["ci"],
-        "postTargets": []
+        "postTargets": [
+          "graphql-zod-validation:publish",
+          "graphql-zod-validation:github"
+        ]
       }
     },
     "github": {
@@ -44,12 +47,9 @@
       }
     },
     "publish": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "ngx-deploy-npm:deploy",
       "options": {
-        "color": true,
-        "parallel": false,
-        "cwd": "./dist/packages/graphql-zod-validation",
-        "commands": ["npm publish --access public"]
+        "access": "public"
       }
     }
   },

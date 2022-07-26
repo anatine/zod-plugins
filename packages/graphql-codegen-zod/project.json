@@ -11,7 +11,7 @@
         "tsConfig": "packages/graphql-codegen-zod/tsconfig.lib.json",
         "packageJson": "packages/graphql-codegen-zod/package.json",
         "main": "packages/graphql-codegen-zod/src/index.ts",
-        "assets": ["libs/graphql-zod-validation/*.md"]
+        "assets": ["packages/graphql-zod-validation/*.md"]
       }
     },
     "lint": {
@@ -33,7 +33,10 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "skipCommitTypes": ["ci"],
-        "postTargets": ["graphql-codegen-zod:publish"]
+        "postTargets": [
+          "graphql-codegen-zod:publish",
+          "graphql-codegen-zod:github"
+        ]
       }
     },
     "github": {

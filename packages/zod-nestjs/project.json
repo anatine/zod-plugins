@@ -11,7 +11,7 @@
         "tsConfig": "packages/zod-nestjs/tsconfig.lib.json",
         "packageJson": "packages/zod-nestjs/package.json",
         "main": "packages/zod-nestjs/src/index.ts",
-        "assets": ["libs/graphql-zod-validation/*.md"]
+        "assets": ["packages/graphql-zod-validation/*.md"]
       }
     },
     "lint": {
@@ -33,7 +33,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "skipCommitTypes": ["ci"],
-        "postTargets": []
+        "postTargets": ["zod-nestjs:publish", "zod-nestjs:github"]
       }
     },
     "github": {
@@ -44,12 +44,9 @@
       }
     },
     "publish": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "ngx-deploy-npm:deploy",
       "options": {
-        "color": true,
-        "parallel": false,
-        "cwd": "./dist/packages/zod-nestjs",
-        "commands": ["npm publish --access public"]
+        "access": "public"
       }
     }
   },
