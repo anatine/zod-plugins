@@ -9,6 +9,13 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 * nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
 
+### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
+
+
+### Bug Fixes
+
+* nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
+
 ## [3.5.3](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.2...zod-mock-3.5.3) (2022-07-26)
 
 # [3.4.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.3.0...zod-mock-3.4.0) (2022-07-24)
