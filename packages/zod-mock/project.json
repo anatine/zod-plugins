@@ -11,7 +11,7 @@
         "tsConfig": "packages/zod-mock/tsconfig.lib.json",
         "packageJson": "packages/zod-mock/package.json",
         "main": "packages/zod-mock/src/index.ts",
-        "assets": ["packages/graphql-zod-validation/*.md"]
+        "assets": ["packages/zod-mock/*.md"]
       }
     },
     "lint": {

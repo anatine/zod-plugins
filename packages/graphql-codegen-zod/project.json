@@ -11,7 +11,7 @@
         "tsConfig": "packages/graphql-codegen-zod/tsconfig.lib.json",
         "packageJson": "packages/graphql-codegen-zod/package.json",
         "main": "packages/graphql-codegen-zod/src/index.ts",
-        "assets": ["packages/graphql-zod-validation/*.md"]
+        "assets": ["packages/graphql-codegen-zod/*.md"]
       }
     },
     "lint": {

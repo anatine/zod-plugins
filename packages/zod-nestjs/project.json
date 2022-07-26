@@ -11,7 +11,7 @@
         "tsConfig": "packages/zod-nestjs/tsconfig.lib.json",
         "packageJson": "packages/zod-nestjs/package.json",
         "main": "packages/zod-nestjs/src/index.ts",
-        "assets": ["packages/graphql-zod-validation/*.md"]
+        "assets": ["packages/zod-nestjs/*.md"]
       }
     },
     "lint": {

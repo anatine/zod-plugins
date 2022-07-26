@@ -11,7 +11,7 @@
         "tsConfig": "packages/zod-openapi/tsconfig.lib.json",
         "packageJson": "packages/zod-openapi/package.json",
         "main": "packages/zod-openapi/src/index.ts",
-        "assets": ["packages/graphql-zod-validation/*.md"]
+        "assets": ["packages/zod-openapi/*.md"]
       }
     },
     "lint": {
