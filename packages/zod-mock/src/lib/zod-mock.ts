@@ -292,7 +292,7 @@ function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
 
 function parseNativeEnum(zodRef: z.ZodNativeEnum<never>) {
 	const { values } = zodRef._def;
-	const pick = Math.floor(Math.random() * (Object.values(values).length / 2));
+	const pick = Math.floor(Math.random() * (Object.values(values).length));
 	const key = Array.from(Object.keys(values))[pick];
 	return values[values[key]];
 }
