@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [3.5.6](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.5...zod-mock-3.5.6) (2022-07-28)
+
+
+### Bug Fixes
+
+* nativeEnum random pick function bias  ([a082988](https://github.com/anatine/zod-plugins/commit/a0829880212bc43b858ee5ccf06fa7d9986d2479))
+
 ### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
 
 
