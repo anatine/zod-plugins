@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [1.7.4](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.7.3...zod-nestjs-1.7.4) (2022-08-16)
+
 ### [1.7.4](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.7.2...zod-nestjs-1.7.3) (2022-07-26)
 
 Remove tslib dep
