@@ -2,6 +2,10 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.9.8](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.9.7...zod-openapi-1.9.8) (2022-08-16)
+
+
+
 ## [1.9.7](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.9.6...zod-openapi-1.9.7) (2022-08-05)
 
 
