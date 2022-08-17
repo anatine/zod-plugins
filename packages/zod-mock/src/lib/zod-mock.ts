@@ -182,7 +182,7 @@ function parseString(
     uuid: faker.datatype.uuid,
     uid: faker.datatype.uuid,
     url: faker.internet.url,
-    name: faker.name.findName,
+    name: faker.name.fullName,
     date: dateGenerator,
     dateTime: dateGenerator,
     colorHex: faker.internet.color,
