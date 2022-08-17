@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [3.5.7](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.6...zod-mock-3.5.7) (2022-08-17)
+
+
+### Bug Fixes
+
+* replace findName to fullName ([8f04cbd](https://github.com/anatine/zod-plugins/commit/8f04cbdf0ffbb4ec98cc930e4ab8b95913736cc1))
+
 ### [3.5.6](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.5...zod-mock-3.5.6) (2022-07-28)
 
 
