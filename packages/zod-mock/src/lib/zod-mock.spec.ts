@@ -40,7 +40,7 @@ describe('zod-mock', () => {
     expect(typeof mockData.jobTitle).toEqual('string');
     expect(typeof mockData.stringLength).toEqual('number');
     expect(typeof mockData.numberCount).toEqual('string');
-    expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
+    expect(mockData.age >= 18 && mockData.age <= 120).toBeTruthy();
     expect(typeof mockData.record).toEqual('object');
     expect(typeof Object.values(mockData.record)[0]).toEqual('number');
     expect(mockData.nativeEnum === 1 || mockData.nativeEnum === 2);
