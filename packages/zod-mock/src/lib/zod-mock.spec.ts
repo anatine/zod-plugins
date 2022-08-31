@@ -21,7 +21,11 @@ describe('zod-mock', () => {
       numberCount: z.number().transform((item) => `total value = ${item}`),
       age: z.number().min(18).max(120),
       record: z.record(z.string(), z.number()),
-      nativeEnum: z.nativeEnum(NativeEnum)
+      nativeEnum: z.nativeEnum(NativeEnum),
+      discriminatedUnion: z.discriminatedUnion('discriminator', [
+        z.object({ discriminator: z.literal('a'), a: z.boolean() }),
+        z.object({ discriminator: z.literal('b'), b: z.string() }),
+      ]),
     });
 
     const mockData = generateMock(schema); //?
@@ -40,10 +44,12 @@ describe('zod-mock', () => {
     expect(typeof mockData.jobTitle).toEqual('string');
     expect(typeof mockData.stringLength).toEqual('number');
     expect(typeof mockData.numberCount).toEqual('string');
-    expect(mockData.age > 18 && mockData.age < 120).toBeTruthy();
+    expect(mockData.age).toBeGreaterThanOrEqual(18);
+    expect(mockData.age).toBeLessThanOrEqual(120);
     expect(typeof mockData.record).toEqual('object');
     expect(typeof Object.values(mockData.record)[0]).toEqual('number');
     expect(mockData.nativeEnum === 1 || mockData.nativeEnum === 2);
+    expect(mockData.discriminatedUnion).toBeTruthy()
   });
 
   it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
@@ -358,5 +364,28 @@ describe('zod-mock', () => {
     const transformResult = generateMock(TransformItem); //?
     expect(transformResult.items).toBeGreaterThan(0);
     expect(transformResult.items).toBeLessThan(101);
+  });
+
+  it('should handle discriminated unions', () => {
+    const FirstType = z.object({
+      hasEmail: z.literal(false),
+      userName: z.string(),
+    });
+
+    const SecondType = z.object({
+      hasEmail: z.literal(true),
+      email: z.string(),
+    });
+
+    const Union = z.discriminatedUnion('hasEmail', [FirstType, SecondType]);
+
+    const result = generateMock(Union);
+    expect(result).toBeDefined();
+
+    if (result.hasEmail) {
+      expect(result.email).toBeTruthy();
+    } else {
+      expect(result.userName).toBeTruthy();
+    }
   });
 });
