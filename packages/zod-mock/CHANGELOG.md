@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [3.5.9](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.8...zod-mock-3.5.9) (2022-09-05)
+
 ### [3.5.8](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.7...zod-mock-3.5.8) (2022-09-05)
 
 ### [3.5.7](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.6...zod-mock-3.5.7) (2022-08-17)
