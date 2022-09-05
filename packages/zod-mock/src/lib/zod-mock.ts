@@ -284,6 +284,37 @@ function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
   return results;
 }
 
+function parseSet(zodRef: z.ZodSet<never>, options?: GenerateMockOptions) {
+  let min = zodRef._def.minSize?.value != null ? zodRef._def.minSize.value : 1;
+  const max =
+    zodRef._def.maxSize?.value != null ? zodRef._def.maxSize.value : 5;
+
+  // prevents arrays from exceeding the max regardless of the min.
+  if (min > max) {
+    min = max;
+  }
+  const targetLength = faker.datatype.number({ min, max });
+  const results = new Set<ZodTypeAny>();
+  while (results.size < targetLength) {
+    results.add(generateMock<ZodTypeAny>(zodRef._def.valueType, options));
+  }
+
+  return results;
+}
+
+function parseMap(zodRef: z.ZodMap<never>, options?: GenerateMockOptions) {
+  const targetLength = options?.mapEntriesLength ?? 1;
+  const results = new Map<ZodTypeAny, ZodTypeAny>();
+
+  while (results.size < targetLength) {
+    results.set(
+      generateMock<ZodTypeAny>(zodRef._def.keyType, options),
+      generateMock<ZodTypeAny>(zodRef._def.valueType, options)
+    );
+  }
+  return results;
+}
+
 function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
   const values = zodRef._def.values as Array<z.infer<typeof zodRef>>;
   const pick = Math.floor(Math.random() * values.length);
@@ -357,6 +388,8 @@ const workerMap = {
   ZodTransformer: parseTransform,
   ZodEffects: parseTransform,
   ZodUnion: parseUnion,
+  ZodSet: parseSet,
+  ZodMap: parseMap,
   ZodDiscriminatedUnion: parseDiscriminatedUnion,
 };
 type WorkerKeys = keyof typeof workerMap;
@@ -378,7 +411,15 @@ export interface GenerateMockOptions {
    */
   backupMocks?: Record<string, () => any | undefined>;
 
+  /**
+   * How many entries to create for records
+   */
   recordKeysLength?: number;
+
+  /**
+   * How many entries to create for Maps
+   */
+  mapEntriesLength?: number;
 }
 
 export function generateMock<T extends ZodTypeAny>(

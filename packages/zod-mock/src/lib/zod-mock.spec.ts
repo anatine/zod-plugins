@@ -6,6 +6,7 @@ describe('zod-mock', () => {
       a = 1,
       b = 2,
     }
+
     const schema = z.object({
       uid: z.string().nonempty(),
       theme: z.enum([`light`, `dark`]),
@@ -22,6 +23,8 @@ describe('zod-mock', () => {
       age: z.number().min(18).max(120),
       record: z.record(z.string(), z.number()),
       nativeEnum: z.nativeEnum(NativeEnum),
+      set: z.set(z.string()),
+      map: z.map(z.string(), z.number()),
       discriminatedUnion: z.discriminatedUnion('discriminator', [
         z.object({ discriminator: z.literal('a'), a: z.boolean() }),
         z.object({ discriminator: z.literal('b'), b: z.string() }),
@@ -49,6 +52,8 @@ describe('zod-mock', () => {
     expect(typeof mockData.record).toEqual('object');
     expect(typeof Object.values(mockData.record)[0]).toEqual('number');
     expect(mockData.nativeEnum === 1 || mockData.nativeEnum === 2);
+    expect(mockData.set).toBeTruthy()
+    expect(mockData.map).toBeTruthy()
     expect(mockData.discriminatedUnion).toBeTruthy()
   });
 
@@ -227,7 +232,81 @@ describe('zod-mock', () => {
       expect(mockData.data[0] === mockData.data[1]).toBeFalsy();
     });
   });
+  describe('Sets', () => {
+    it('should mock an set without min or max', () => {
+      const schema = z.object({
+        data: z.set(z.string()),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.size).toBeTruthy();
+      expect(typeof [...mockData.data.values()][0] === 'string');
+    });
 
+    it('should mock an set with a min, but no max', () => {
+      const schema = z.object({
+        data: z.set(z.string()).min(3),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.size).toBeGreaterThanOrEqual(3);
+      expect(typeof [...mockData.data.values()][0] === 'string');
+    });
+
+    it('should mock an set with a max, but no min', () => {
+      const schema = z.object({
+        data: z.set(z.string()).max(1),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.data.size).toEqual(1);
+      expect(typeof [...mockData.data.values()][0] === 'string');
+    });
+
+    it('should mock an set of size 10', () => {
+      const setSchema = z.set(z.string()).size(10);
+      const schema = z.object({
+        data: setSchema,
+      });
+
+      expect(setSchema._def.maxSize?.value).toBe(10);
+      expect(setSchema._def.minSize?.value).toBe(10);
+      const mockData = generateMock(schema);
+      expect(mockData.data.size).toEqual(10);
+      expect(typeof [...mockData.data.values()][0] === 'string');
+    });
+
+    it('should accurately mock a zero size set', () => {
+      const schema = z.object({
+        alwaysEmpty: z.set(z.string()).max(0),
+      });
+      const mockData = generateMock(schema);
+      expect(mockData.alwaysEmpty.size).toEqual(0);
+    });
+
+    it('should generate different value instances per set element', () => {
+      const schema = z.object({
+        data: z.set(z.date()).size(2),
+      });
+      const mockData = generateMock(schema);
+
+      expect(mockData.data.size).toEqual(2);
+      const values = [...mockData.data.values()];
+      // even if the two dates represent the same instant in time,
+      // they should not be the same instance if we are mocking each
+      // set element separately.
+      expect(values[0] === values[1]).toBeFalsy();
+    });
+  });
+
+  it('should create Maps', () => {
+    const schema = z.map(z.string(), z.number());
+    const generated = generateMock(schema);
+
+    expect(generated.size).toBeGreaterThan(0);
+    const entries = [...generated.entries()];
+    entries.forEach(([k, v]) => {
+      expect(k).toBeTruthy();
+      expect(v).toBeTruthy();
+    });
+  });
   describe('backup mocks', () => {
     const notUndefined = () => 'not undefined';
     it('should use a user provided generator when a generator for the schema type cannot be found', () => {
@@ -286,20 +365,16 @@ describe('zod-mock', () => {
       });
 
       const EmployedPerson = z.intersection(Person, Employee);
-      expect(generateMock(EmployedPerson)).toBeTruthy();
-    });
-
-    it('ZodMap', () => {
-      expect(generateMock(z.map(z.string(), z.string()))).toBeTruthy();
+      const generated = generateMock(EmployedPerson);
+      expect(generated).toBeTruthy();
+      expect(generated.name).toBeTruthy();
+      expect(generated.role).toBeTruthy();
     });
 
     it('ZodPromise', () => {
       expect(generateMock(z.promise(z.string()))).toBeTruthy();
     });
 
-    it('ZodSet', () => {
-      expect(generateMock(z.set(z.string()))).toBeTruthy();
-    });
     it('ZodTuple', () => {
       expect(generateMock(z.tuple([z.string()]))).toBeTruthy();
     });
