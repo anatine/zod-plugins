@@ -24,7 +24,7 @@ describe('zod-mock', () => {
       record: z.record(z.string(), z.number()),
       nativeEnum: z.nativeEnum(NativeEnum),
       set: z.set(z.string()),
-      map: z.map(z.string(), z.number())
+      map: z.map(z.string(), z.number()),
       discriminatedUnion: z.discriminatedUnion('discriminator', [
         z.object({ discriminator: z.literal('a'), a: z.boolean() }),
         z.object({ discriminator: z.literal('b'), b: z.string() }),
