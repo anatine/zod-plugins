@@ -290,11 +290,25 @@ function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
   return values[pick];
 }
 
+function parseDiscriminatedUnion(
+  zodRef: z.ZodDiscriminatedUnion<never, never, never>,
+  options?: GenerateMockOptions
+) {
+
+  // Map the options to various possible union cases
+  const potentialCases = [...zodRef._def.options.values()];
+  const pick = Math.floor(Math.random() * potentialCases.length);
+
+  const mocked = potentialCases[pick];
+
+  return generateMock(mocked, options);
+}
+
 function parseNativeEnum(zodRef: z.ZodNativeEnum<never>) {
-	const { values } = zodRef._def;
-	const pick = Math.floor(Math.random() * (Object.values(values).length));
-	const key = Array.from(Object.keys(values))[pick];
-	return values[values[key]];
+  const { values } = zodRef._def;
+  const pick = Math.floor(Math.random() * Object.values(values).length);
+  const key = Array.from(Object.keys(values))[pick];
+  return values[values[key]];
 }
 
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
@@ -343,6 +357,7 @@ const workerMap = {
   ZodTransformer: parseTransform,
   ZodEffects: parseTransform,
   ZodUnion: parseUnion,
+  ZodDiscriminatedUnion: parseDiscriminatedUnion,
 };
 type WorkerKeys = keyof typeof workerMap;
 
