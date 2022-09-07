@@ -52,9 +52,9 @@ describe('zod-mock', () => {
     expect(typeof mockData.record).toEqual('object');
     expect(typeof Object.values(mockData.record)[0]).toEqual('number');
     expect(mockData.nativeEnum === 1 || mockData.nativeEnum === 2);
-    expect(mockData.set).toBeTruthy()
-    expect(mockData.map).toBeTruthy()
-    expect(mockData.discriminatedUnion).toBeTruthy()
+    expect(mockData.set).toBeTruthy();
+    expect(mockData.map).toBeTruthy();
+    expect(mockData.discriminatedUnion).toBeTruthy();
   });
 
   it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
@@ -375,10 +375,34 @@ describe('zod-mock', () => {
       expect(generateMock(z.promise(z.string()))).toBeTruthy();
     });
 
-    it('ZodTuple', () => {
-      expect(generateMock(z.tuple([z.string()]))).toBeTruthy();
-    });
+    describe('ZodTuple', () => {
+      it('basic tuple', () => {
+        const generated = generateMock(
+          z.tuple([z.number(), z.string(), z.boolean()])
+        );
+        expect(generated).toBeTruthy();
+        const [n, s, b] = generated;
 
+        expect(typeof n).toBe('number');
+        expect(typeof s).toBe('string');
+        expect(typeof b).toBe('boolean');
+      });
+
+      it('tuple with Rest args', () => {
+        const generated = generateMock(
+          z.tuple([z.number(), z.boolean()]).rest(z.string())
+        );
+        expect(generated).toBeTruthy();
+        const [n, b, ...rest] = generated;
+
+        expect(typeof n).toBe('number');
+        expect(typeof b).toBe('boolean');
+        expect(rest.length).toBeGreaterThan(0);
+        for (const item of rest) {
+          expect(typeof item).toBe('string');
+        }
+      });
+    });
     it('ZodUnion', () => {
       expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
     });

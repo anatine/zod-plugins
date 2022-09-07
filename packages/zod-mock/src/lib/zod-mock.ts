@@ -325,7 +325,6 @@ function parseDiscriminatedUnion(
   zodRef: z.ZodDiscriminatedUnion<never, never, never>,
   options?: GenerateMockOptions
 ) {
-
   // Map the options to various possible union cases
   const potentialCases = [...zodRef._def.options.values()];
   const pick = Math.floor(Math.random() * potentialCases.length);
@@ -375,12 +374,26 @@ function parseZodIntersection(
   zodRef: z.ZodIntersection<ZodTypeAny, ZodTypeAny>,
   options?: GenerateMockOptions
 ) {
-  const left = generateMock(zodRef._def.left, options)
-  const right = generateMock(zodRef._def.right, options)
+  const left = generateMock(zodRef._def.left, options);
+  const right = generateMock(zodRef._def.right, options);
 
-  return Object.assign(left, right)
+  return Object.assign(left, right);
 }
+function parseZodTuple(
+  zodRef: z.ZodTuple<[], never>,
+  options?: GenerateMockOptions
+) {
+  const results: ZodTypeAny[] = [];
+  zodRef._def.items.forEach((def) => {
+    results.push(generateMock(def, options));
+  });
 
+  if (zodRef._def.rest !== null) {
+    const next = parseArray(z.array(zodRef._def.rest), options);
+    results.push(...(next ?? []));
+  }
+  return results;
+}
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -401,7 +414,8 @@ const workerMap = {
   ZodSet: parseSet,
   ZodMap: parseMap,
   ZodDiscriminatedUnion: parseDiscriminatedUnion,
-  ZodIntersection: parseZodIntersection
+  ZodIntersection: parseZodIntersection,
+  ZodTuple: parseZodTuple,
 };
 
 type WorkerKeys = keyof typeof workerMap;
