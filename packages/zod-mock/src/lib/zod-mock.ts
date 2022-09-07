@@ -371,6 +371,16 @@ function parseUnion(
   return faker.helpers.arrayElement(mockOptions);
 }
 
+function parseZodIntersection(
+  zodRef: z.ZodIntersection<ZodTypeAny, ZodTypeAny>,
+  options?: GenerateMockOptions
+) {
+  const left = generateMock(zodRef._def.left, options)
+  const right = generateMock(zodRef._def.right, options)
+
+  return Object.assign(left, right)
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -391,7 +401,9 @@ const workerMap = {
   ZodSet: parseSet,
   ZodMap: parseMap,
   ZodDiscriminatedUnion: parseDiscriminatedUnion,
+  ZodIntersection: parseZodIntersection
 };
+
 type WorkerKeys = keyof typeof workerMap;
 
 export interface GenerateMockOptions {

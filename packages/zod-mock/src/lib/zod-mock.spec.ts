@@ -343,7 +343,7 @@ describe('zod-mock', () => {
   });
 
   // TODO: enable tests as their test types are implemented
-  xdescribe('missing types', () => {
+  describe('missing types', () => {
     it('ZodAny', () => {
       expect(generateMock(z.any())).toBeTruthy();
     });
