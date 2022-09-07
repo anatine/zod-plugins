@@ -352,7 +352,9 @@ describe('zod-mock', () => {
     });
 
     it('ZodFunction', () => {
-      expect(generateMock(z.function())).toBeTruthy();
+      const func = generateMock(z.function(z.tuple([]), z.string()));
+      expect(func).toBeTruthy();
+      expect(typeof func()).toBe('string');
     });
 
     it('ZodIntersection', () => {

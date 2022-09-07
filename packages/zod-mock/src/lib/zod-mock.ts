@@ -394,6 +394,16 @@ function parseZodTuple(
   }
   return results;
 }
+
+function parseZodFunction(
+  zodRef: z.ZodFunction<z.ZodTuple<any, any>, ZodTypeAny>,
+  options?: GenerateMockOptions
+) {
+  return function zodMockFunction() {
+    return generateMock(zodRef._def.returns, options);
+  }
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -416,6 +426,7 @@ const workerMap = {
   ZodDiscriminatedUnion: parseDiscriminatedUnion,
   ZodIntersection: parseZodIntersection,
   ZodTuple: parseZodTuple,
+  ZodFunction: parseZodFunction,
 };
 
 type WorkerKeys = keyof typeof workerMap;
