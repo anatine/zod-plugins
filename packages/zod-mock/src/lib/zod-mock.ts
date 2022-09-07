@@ -423,6 +423,20 @@ function parseZodPromise(
   return Promise.resolve(generateMock(zodRef._def.type, options));
 }
 
+function parseBranded(
+  zodRef: z.ZodBranded<ZodTypeAny, never>,
+  options?: GenerateMockOptions
+) {
+  return generateMock(zodRef.unwrap(), options);
+}
+
+function parseLazy(
+  zodRef: z.ZodLazy<ZodTypeAny>,
+  options?: GenerateMockOptions
+) {
+  return generateMock(zodRef._def.getter(), options);
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -448,6 +462,10 @@ const workerMap = {
   ZodFunction: parseZodFunction,
   ZodDefault: parseZodDefault,
   ZodPromise: parseZodPromise,
+  ZodLazy: () => parseLazy,
+  ZodBranded: parseBranded,
+  ZodNull: () => null,
+  ZodNaN: () => NaN,
 };
 
 type WorkerKeys = keyof typeof workerMap;

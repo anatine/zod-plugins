@@ -343,8 +343,13 @@ describe('zod-mock', () => {
   });
 
   // TODO: enable tests as their test types are implemented
-  it('ZodAny', () => {
-    expect(generateMock(z.any())).toBeTruthy();
+  xdescribe('missing types', () => {
+    it('ZodAny', () => {
+      expect(generateMock(z.any())).toBeTruthy();
+    });
+    it('ZodUnknown', () => {
+      expect(generateMock(z.unknown())).toBeTruthy();
+    });
   });
 
   it('ZodDefault', () => {
@@ -414,9 +419,6 @@ describe('zod-mock', () => {
     expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
   });
 
-  it('ZodUnknown', () => {
-    expect(generateMock(z.unknown())).toBeTruthy();
-  });
   it(`Avoid depreciations in strings`, () => {
     const warn = jest
       .spyOn(console, 'warn')
@@ -491,5 +493,28 @@ describe('zod-mock', () => {
     } else {
       expect(result.userName).toBeTruthy();
     }
+  });
+
+  it('should handle branded types', () => {
+    const Branded = z.string().brand<'__brand'>();
+
+    const result = generateMock(Branded);
+    expect(result).toBeTruthy();
+  });
+
+  it('ZodVoid', () => {
+    expect(generateMock(z.void())).toBeUndefined();
+  });
+  it('ZodNull', () => {
+    expect(generateMock(z.null())).toBeNull();
+  });
+  it('ZodNaN', () => {
+    expect(generateMock(z.nan())).toBeNaN();
+  });
+  it('ZodUndefined', () => {
+    expect(generateMock(z.undefined())).toBeUndefined();
+  });
+  it('ZodLazy', () => {
+    expect(generateMock(z.lazy(() => z.string()))).toBeTruthy();
   });
 });
