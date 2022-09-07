@@ -343,77 +343,74 @@ describe('zod-mock', () => {
   });
 
   // TODO: enable tests as their test types are implemented
-  describe('missing types', () => {
-    it('ZodAny', () => {
-      expect(generateMock(z.any())).toBeTruthy();
-    });
-    it('ZodDefault', () => {
+  it('ZodAny', () => {
+    expect(generateMock(z.any())).toBeTruthy();
+  });
+  it('ZodDefault', () => {
       expect(generateMock(z.string().default('a'))).toBeTruthy();
-    });
-
-    it('ZodFunction', () => {
-      const func = generateMock(z.function(z.tuple([]), z.string()));
-      expect(func).toBeTruthy();
-      expect(typeof func()).toBe('string');
-    });
-
-    it('ZodIntersection', () => {
-      const Person = z.object({
-        name: z.string(),
-      });
-
-      const Employee = z.object({
-        role: z.string(),
-      });
-
-      const EmployedPerson = z.intersection(Person, Employee);
-      const generated = generateMock(EmployedPerson);
-      expect(generated).toBeTruthy();
-      expect(generated.name).toBeTruthy();
-      expect(generated.role).toBeTruthy();
-    });
-
-    it('ZodPromise', () => {
-      expect(generateMock(z.promise(z.string()))).toBeTruthy();
-    });
-
-    describe('ZodTuple', () => {
-      it('basic tuple', () => {
-        const generated = generateMock(
-          z.tuple([z.number(), z.string(), z.boolean()])
-        );
-        expect(generated).toBeTruthy();
-        const [n, s, b] = generated;
-
-        expect(typeof n).toBe('number');
-        expect(typeof s).toBe('string');
-        expect(typeof b).toBe('boolean');
-      });
-
-      it('tuple with Rest args', () => {
-        const generated = generateMock(
-          z.tuple([z.number(), z.boolean()]).rest(z.string())
-        );
-        expect(generated).toBeTruthy();
-        const [n, b, ...rest] = generated;
-
-        expect(typeof n).toBe('number');
-        expect(typeof b).toBe('boolean');
-        expect(rest.length).toBeGreaterThan(0);
-        for (const item of rest) {
-          expect(typeof item).toBe('string');
-        }
-      });
-    });
-    it('ZodUnion', () => {
-      expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
-    });
-
-    it('ZodUnknown', () => {
-      expect(generateMock(z.unknown())).toBeTruthy();
-    });
   });
 
+  it('ZodFunction', () => {
+    const func = generateMock(z.function(z.tuple([]), z.string()));
+    expect(func).toBeTruthy();
+    expect(typeof func()).toBe('string');
+  });
+
+  it('ZodIntersection', () => {
+    const Person = z.object({
+      name: z.string(),
+    });
+
+    const Employee = z.object({
+      role: z.string(),
+    });
+
+    const EmployedPerson = z.intersection(Person, Employee);
+    const generated = generateMock(EmployedPerson);
+    expect(generated).toBeTruthy();
+    expect(generated.name).toBeTruthy();
+    expect(generated.role).toBeTruthy();
+  });
+
+  it('ZodPromise', () => {
+    expect(generateMock(z.promise(z.string()))).toBeTruthy();
+  });
+
+  describe('ZodTuple', () => {
+    it('basic tuple', () => {
+      const generated = generateMock(
+        z.tuple([z.number(), z.string(), z.boolean()])
+      );
+      expect(generated).toBeTruthy();
+      const [num, str, bool] = generated;
+
+      expect(typeof num).toBe('number');
+      expect(typeof str).toBe('string');
+      expect(typeof bool).toBe('boolean');
+    });
+
+    it('tuple with Rest args', () => {
+      const generated = generateMock(
+        z.tuple([z.number(), z.boolean()]).rest(z.string())
+      );
+      expect(generated).toBeTruthy();
+      const [num, bool, ...rest] = generated;
+
+      expect(typeof num).toBe('number');
+      expect(typeof bool).toBe('boolean');
+      expect(rest.length).toBeGreaterThan(0);
+      for (const item of rest) {
+        expect(typeof item).toBe('string');
+      }
+    });
+  });
+  it('ZodUnion', () => {
+    expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
+  });
+
+  it('ZodUnknown', () => {
+    expect(generateMock(z.unknown())).toBeTruthy();
+  });
   it(`Avoid depreciations in strings`, () => {
     const warn = jest
       .spyOn(console, 'warn')
