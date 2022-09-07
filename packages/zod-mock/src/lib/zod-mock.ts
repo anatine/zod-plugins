@@ -401,7 +401,26 @@ function parseZodFunction(
 ) {
   return function zodMockFunction() {
     return generateMock(zodRef._def.returns, options);
+  };
+}
+
+function parseZodDefault(
+  zodRef: z.ZodDefault<ZodTypeAny>,
+  options?: GenerateMockOptions
+) {
+  // Use the default value 50% of the time
+  if (faker.datatype.boolean()) {
+    return zodRef._def.defaultValue();
+  } else {
+    return generateMock(zodRef._def.innerType, options);
   }
+}
+
+function parseZodPromise(
+  zodRef: z.ZodPromise<ZodTypeAny>,
+  options?: GenerateMockOptions
+) {
+  return Promise.resolve(generateMock(zodRef._def.type, options));
 }
 
 const workerMap = {
@@ -427,6 +446,8 @@ const workerMap = {
   ZodIntersection: parseZodIntersection,
   ZodTuple: parseZodTuple,
   ZodFunction: parseZodFunction,
+  ZodDefault: parseZodDefault,
+  ZodPromise: parseZodPromise,
 };
 
 type WorkerKeys = keyof typeof workerMap;

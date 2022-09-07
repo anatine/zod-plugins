@@ -346,8 +346,11 @@ describe('zod-mock', () => {
   it('ZodAny', () => {
     expect(generateMock(z.any())).toBeTruthy();
   });
+
   it('ZodDefault', () => {
-      expect(generateMock(z.string().default('a'))).toBeTruthy();
+    const value = generateMock(z.string().default('a'));
+    expect(value).toBeTruthy();
+    expect(typeof value).toBe('string');
   });
 
   it('ZodFunction', () => {
@@ -372,8 +375,11 @@ describe('zod-mock', () => {
     expect(generated.role).toBeTruthy();
   });
 
-  it('ZodPromise', () => {
-    expect(generateMock(z.promise(z.string()))).toBeTruthy();
+  it('ZodPromise', async () => {
+    const promise = generateMock(z.promise(z.string()));
+    expect(promise).toBeTruthy();
+    const result = await promise;
+    expect(typeof result).toBe('string');
   });
 
   describe('ZodTuple', () => {
