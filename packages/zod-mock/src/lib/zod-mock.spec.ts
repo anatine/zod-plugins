@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generateMock } from './zod-mock';
+import { generateMock, ZodMockError } from './zod-mock';
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
     enum NativeEnum {
@@ -52,9 +52,9 @@ describe('zod-mock', () => {
     expect(typeof mockData.record).toEqual('object');
     expect(typeof Object.values(mockData.record)[0]).toEqual('number');
     expect(mockData.nativeEnum === 1 || mockData.nativeEnum === 2);
-    expect(mockData.set).toBeTruthy()
-    expect(mockData.map).toBeTruthy()
-    expect(mockData.discriminatedUnion).toBeTruthy()
+    expect(mockData.set).toBeTruthy();
+    expect(mockData.map).toBeTruthy();
+    expect(mockData.discriminatedUnion).toBeTruthy();
   });
 
   it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
@@ -340,6 +340,12 @@ describe('zod-mock', () => {
       });
       expect(mockData.anyVal).toEqual('any value');
     });
+  });
+
+  it('throws an error when configured to if we have not implemented the type mapping', () => {
+    expect(() =>
+      generateMock(z.any(), { throwOnUnknownType: true })
+    ).toThrowError(ZodMockError);
   });
 
   // TODO: enable tests as their test types are implemented

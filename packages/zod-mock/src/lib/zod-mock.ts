@@ -325,7 +325,6 @@ function parseDiscriminatedUnion(
   zodRef: z.ZodDiscriminatedUnion<never, never, never>,
   options?: GenerateMockOptions
 ) {
-
   // Map the options to various possible union cases
   const potentialCases = [...zodRef._def.options.values()];
   const pick = Math.floor(Math.random() * potentialCases.length);
@@ -420,6 +419,11 @@ export interface GenerateMockOptions {
    * How many entries to create for Maps
    */
   mapEntriesLength?: number;
+
+  /**
+   * Set to true to throw an exception instead of returning undefined when encountering an unknown `ZodType`
+   */
+  throwOnUnknownType?: boolean;
 }
 
 export function generateMock<T extends ZodTypeAny>(
@@ -430,17 +434,28 @@ export function generateMock<T extends ZodTypeAny>(
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
       return workerMap[typeName](zodRef as never, options);
-    } else {
+    } else if (options?.backupMocks && typeName in options.backupMocks) {
       // check for a generator match in the options.
       // workaround for unimplemented Zod types
-      const generator = options?.backupMocks?.[typeName];
+      const generator = options.backupMocks[typeName];
       if (generator) {
         return generator();
       }
+    } else if (options?.throwOnUnknownType) {
+      throw new ZodMockError(typeName);
     }
     return undefined;
   } catch (err) {
+    if (err instanceof ZodMockError) {
+      throw err;
+    }
     console.error(err);
     return undefined;
+  }
+}
+
+export class ZodMockError extends Error {
+  constructor(public typeName: string) {
+    super(`Unable to generate a mock value for ZodType ${typeName}.`);
   }
 }
