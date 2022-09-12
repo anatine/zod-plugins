@@ -353,45 +353,76 @@ describe('zod-mock', () => {
     it('ZodAny', () => {
       expect(generateMock(z.any())).toBeTruthy();
     });
-    it('ZodDefault', () => {
-      expect(generateMock(z.string().default('a'))).toBeTruthy();
-    });
-
-    it('ZodFunction', () => {
-      expect(generateMock(z.function())).toBeTruthy();
-    });
-
-    it('ZodIntersection', () => {
-      const Person = z.object({
-        name: z.string(),
-      });
-
-      const Employee = z.object({
-        role: z.string(),
-      });
-
-      const EmployedPerson = z.intersection(Person, Employee);
-      const generated = generateMock(EmployedPerson);
-      expect(generated).toBeTruthy();
-      expect(generated.name).toBeTruthy();
-      expect(generated.role).toBeTruthy();
-    });
-
-    it('ZodPromise', () => {
-      expect(generateMock(z.promise(z.string()))).toBeTruthy();
-    });
-
-    it('ZodTuple', () => {
-      expect(generateMock(z.tuple([z.string()]))).toBeTruthy();
-    });
-
-    it('ZodUnion', () => {
-      expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
-    });
-
     it('ZodUnknown', () => {
       expect(generateMock(z.unknown())).toBeTruthy();
     });
+  });
+
+  it('ZodDefault', () => {
+    const value = generateMock(z.string().default('a'));
+    expect(value).toBeTruthy();
+    expect(typeof value).toBe('string');
+  });
+
+  it('ZodFunction', () => {
+    const func = generateMock(z.function(z.tuple([]), z.string()));
+    expect(func).toBeTruthy();
+    expect(typeof func()).toBe('string');
+  });
+
+  it('ZodIntersection', () => {
+    const Person = z.object({
+      name: z.string(),
+    });
+
+    const Employee = z.object({
+      role: z.string(),
+    });
+
+    const EmployedPerson = z.intersection(Person, Employee);
+    const generated = generateMock(EmployedPerson);
+    expect(generated).toBeTruthy();
+    expect(generated.name).toBeTruthy();
+    expect(generated.role).toBeTruthy();
+  });
+
+  it('ZodPromise', async () => {
+    const promise = generateMock(z.promise(z.string()));
+    expect(promise).toBeTruthy();
+    const result = await promise;
+    expect(typeof result).toBe('string');
+  });
+
+  describe('ZodTuple', () => {
+    it('basic tuple', () => {
+      const generated = generateMock(
+        z.tuple([z.number(), z.string(), z.boolean()])
+      );
+      expect(generated).toBeTruthy();
+      const [num, str, bool] = generated;
+
+      expect(typeof num).toBe('number');
+      expect(typeof str).toBe('string');
+      expect(typeof bool).toBe('boolean');
+    });
+
+    it('tuple with Rest args', () => {
+      const generated = generateMock(
+        z.tuple([z.number(), z.boolean()]).rest(z.string())
+      );
+      expect(generated).toBeTruthy();
+      const [num, bool, ...rest] = generated;
+
+      expect(typeof num).toBe('number');
+      expect(typeof bool).toBe('boolean');
+      expect(rest.length).toBeGreaterThan(0);
+      for (const item of rest) {
+        expect(typeof item).toBe('string');
+      }
+    });
+  });
+  it('ZodUnion', () => {
+    expect(generateMock(z.union([z.number(), z.string()]))).toBeTruthy();
   });
 
   it(`Avoid depreciations in strings`, () => {
@@ -468,5 +499,28 @@ describe('zod-mock', () => {
     } else {
       expect(result.userName).toBeTruthy();
     }
+  });
+
+  it('should handle branded types', () => {
+    const Branded = z.string().brand<'__brand'>();
+
+    const result = generateMock(Branded);
+    expect(result).toBeTruthy();
+  });
+
+  it('ZodVoid', () => {
+    expect(generateMock(z.void())).toBeUndefined();
+  });
+  it('ZodNull', () => {
+    expect(generateMock(z.null())).toBeNull();
+  });
+  it('ZodNaN', () => {
+    expect(generateMock(z.nan())).toBeNaN();
+  });
+  it('ZodUndefined', () => {
+    expect(generateMock(z.undefined())).toBeUndefined();
+  });
+  it('ZodLazy', () => {
+    expect(generateMock(z.lazy(() => z.string()))).toBeTruthy();
   });
 });
