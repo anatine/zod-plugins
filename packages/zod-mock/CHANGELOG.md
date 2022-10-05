@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.6.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.11...zod-mock-3.6.0) (2022-10-05)
+
+
+### Features
+
+* Support for @Param() in @anatine/zod-nestjs ([ba00144](https://github.com/anatine/zod-plugins/commit/ba001444d3554695fe6db6b0d449f03351d65c48))
+
 ### [3.5.11](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.10...zod-mock-3.5.11) (2022-09-12)
 
 ### [3.5.10](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.9...zod-mock-3.5.10) (2022-09-12)
