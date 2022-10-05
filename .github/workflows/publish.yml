@@ -47,9 +47,6 @@ jobs:
       - name: Test
         run: npm run affected:test
 
-      - name: Build
-        run: npm run affected:build
-
       - name: Version
         shell: bash
         run: npm run affected:version

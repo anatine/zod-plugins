@@ -13,6 +13,7 @@
     "affected:lint": "nx affected:lint",
     "affected:test": "nx affected:test",
     "affected:version": "nx affected --parallel=1 --base=last-release --target=version",
+    "preaffected:version": "npm run affected:build",
     "affected:build": "nx affected:build",
     "affected:publish": "nx affected --target=publish",
     "affected:github": "nx affected --parallel=1  --target=github"
