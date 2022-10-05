@@ -4,6 +4,7 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "dependsOn": ["^build"],
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -22,6 +23,7 @@
       }
     },
     "test": {
+      "dependsOn": ["^build"],
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/zod-nestjs"],
       "options": {
