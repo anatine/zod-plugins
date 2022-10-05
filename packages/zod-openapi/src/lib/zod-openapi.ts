@@ -75,6 +75,7 @@ function parseTransformation({
   }
   return merge(
     {
+      ...(zodRef.description ? { description: zodRef.description } : {}),
       ...input,
       ...(['number', 'string', 'boolean', 'null'].includes(output)
         ? {
@@ -119,7 +120,11 @@ function parseString({
         break;
     }
   });
-  return merge(baseSchema, ...schemas);
+  return merge(
+    baseSchema,
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
 function parseNumber({
@@ -148,7 +153,11 @@ function parseNumber({
         baseSchema.multipleOf = item.value;
     }
   });
-  return merge(baseSchema, ...schemas);
+  return merge(
+    baseSchema,
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
 function parseObject({
@@ -195,6 +204,7 @@ function parseObject({
       }),
       ...additionalProperties,
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -212,29 +222,49 @@ function parseRecord({
           ? {}
           : generateSchema(zodRef._def.valueType, useOutput),
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
 
-function parseBigInt({ schemas }: ParsingArgs<z.ZodBigInt>): SchemaObject {
-  return merge({ type: 'integer', format: 'int64' }, ...schemas);
+function parseBigInt({
+  zodRef,
+  schemas,
+}: ParsingArgs<z.ZodBigInt>): SchemaObject {
+  return merge(
+    { type: 'integer', format: 'int64' },
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
-function parseBoolean({ schemas }: ParsingArgs<z.ZodBoolean>): SchemaObject {
-  return merge({ type: 'boolean' }, ...schemas);
+function parseBoolean({
+  zodRef,
+  schemas,
+}: ParsingArgs<z.ZodBoolean>): SchemaObject {
+  return merge(
+    { type: 'boolean' },
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
-function parseDate({ schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
-  return merge({ type: 'string', format: 'date-time' }, ...schemas);
+function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
+  return merge(
+    { type: 'string', format: 'date-time' },
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
-function parseNull({ schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
+function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   return merge(
     {
       type: 'string',
       format: 'null',
       nullable: true,
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -246,7 +276,11 @@ function parseOptionalNullable({
 }: ParsingArgs<
   z.ZodOptional<OpenApiZodAny> | z.ZodNullable<OpenApiZodAny>
 >): SchemaObject {
-  return merge(generateSchema(zodRef.unwrap(), useOutput), ...schemas);
+  return merge(
+    generateSchema(zodRef.unwrap(), useOutput),
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
 function parseDefault({
@@ -259,6 +293,7 @@ function parseDefault({
       default: zodRef._def.defaultValue(),
       ...generateSchema(zodRef._def.innerType, useOutput),
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -281,6 +316,7 @@ function parseArray({
       items: generateSchema(zodRef.element, useOutput),
       ...constraints,
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -294,6 +330,7 @@ function parseLiteral({
       type: typeof zodRef._def.value as 'string' | 'number' | 'boolean',
       enum: [zodRef._def.value],
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -307,6 +344,7 @@ function parseEnum({
       type: typeof Object.values(zodRef._def.values)[0] as 'string' | 'number',
       enum: Object.values(zodRef._def.values),
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -323,6 +361,7 @@ function parseIntersection({
         generateSchema(zodRef._def.right, useOutput),
       ],
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -338,6 +377,7 @@ function parseUnion({
         zodRef as z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>
       )._def.options.map((schema) => generateSchema(schema, useOutput)),
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
@@ -374,16 +414,30 @@ function parseDiscriminatedUnion({
         )._def.options.values()
       ).map((schema) => generateSchema(schema, useOutput)),
     },
+    zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
 
-function parseNever({ schemas }: ParsingArgs<z.ZodNever>): SchemaObject {
-  return merge({ readOnly: true }, ...schemas);
+function parseNever({
+  zodRef,
+  schemas,
+}: ParsingArgs<z.ZodNever>): SchemaObject {
+  return merge(
+    { readOnly: true },
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
-function catchAllParser({ schemas }: ParsingArgs<ZodTypeAny>): SchemaObject {
-  return merge(...schemas);
+function catchAllParser({
+  zodRef,
+  schemas,
+}: ParsingArgs<ZodTypeAny>): SchemaObject {
+  return merge(
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
 }
 
 const workerMap = {

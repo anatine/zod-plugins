@@ -10,7 +10,7 @@ describe('zodOpenapi', () => {
   it('should support basic primitives', () => {
     const zodSchema = extendApi(
       z.object({
-        aString: z.string().optional(),
+        aString: z.string().describe('A test string').optional(),
         aNumber: z.number().optional(),
         aBigInt: z.bigint(),
         aBoolean: z.boolean(),
@@ -26,7 +26,7 @@ describe('zodOpenapi', () => {
     expect(apiSchema).toEqual({
       type: 'object',
       properties: {
-        aString: { type: 'string' },
+        aString: { description: 'A test string', type: 'string' },
         aNumber: { type: 'number' },
         aBigInt: { type: 'integer', format: 'int64' },
         aBoolean: { type: 'boolean' },
