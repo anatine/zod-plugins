@@ -2,6 +2,14 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.10.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.9.7...zod-openapi-1.10.0) (2022-10-05)
+
+
+### Features
+
+*  Support for Zod `describe()` in OpenAPI Schema ([e743f8d](https://github.com/anatine/zod-plugins/commit/e743f8d18b71ded62863c3f8c22db4be2b576479))
+* Support for @Param() in @anatine/zod-nestjs ([ba00144](https://github.com/anatine/zod-plugins/commit/ba001444d3554695fe6db6b0d449f03351d65c48))
+
 ## [1.9.8](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.9.7...zod-openapi-1.9.8) (2022-08-16)
 
 
