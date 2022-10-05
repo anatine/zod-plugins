@@ -1,3 +1,5 @@
+import type { SchemaObject } from 'openapi3-ts';
+import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
 /**
  * This file was originally taken from:
@@ -26,11 +28,57 @@ export type ZodDtoStatic<T extends CompatibleZodType = CompatibleZodType> = {
   create(input: unknown): CompatibleZodInfer<T>;
 };
 
-export const createZodDto = <T extends CompatibleZodType>(
+// Used for transforming the SchemaObject in _OPENAPI_METADATA_FACTORY
+type SchemaObjectForMetadataFactory = Omit<SchemaObject, 'required'> & {
+  required: boolean | string[];
+};
+
+export const createZodDto = <T extends OpenApiZodAny>(
   zodSchema: T
 ): ZodDtoStatic<T> => {
   class SchemaHolderClass {
     public static zodSchema = zodSchema;
+    schema: SchemaObject | undefined;
+
+    constructor() {
+      this.schema = generateSchema(zodSchema);
+    }
+
+    /** Found from METADATA_FACTORY_NAME
+     * in Nestjs swagger module.
+     * https://github.com/nestjs/swagger/blob/491b168cbff3003191e55ee96e77e69d8c1deb66/lib/type-helpers/mapped-types.utils.ts
+     * METADATA_FACTORY_NAME is defined here as '_OPENAPI_METADATA_FACTORY' here:
+     * https://github.com/nestjs/swagger/blob/491b168cbff3003191e55ee96e77e69d8c1deb66/lib/plugin/plugin-constants.ts
+     */
+    public static _OPENAPI_METADATA_FACTORY():
+      | Record<string, SchemaObject>
+      | undefined {
+      const generatedSchema = generateSchema(zodSchema);
+      const properties = generatedSchema.properties ?? {};
+      for (const key in properties) {
+        /** For some reason the SchemaObject model has everything except for the
+         * required field, which is an array.
+         * The NestJS swagger module requires this to be a boolean representative
+         * of each property.
+         * This logic takes the SchemaObject, and turns the required field from an
+         * array to a boolean.
+         */
+        const schemaObject = properties[key] as SchemaObjectForMetadataFactory;
+        const schemaObjectWithRequiredField = {
+          ...schemaObject,
+        };
+        if (
+          (generatedSchema.required !== undefined,
+          generatedSchema.required?.includes(key))
+        ) {
+          schemaObjectWithRequiredField.required = true;
+        } else {
+          schemaObjectWithRequiredField.required = false;
+        }
+        properties[key] = schemaObjectWithRequiredField as any; // TODO: Fix this
+      }
+      return properties as Record<string, SchemaObject>;
+    }
 
     public static create(input: unknown): CompatibleZodInfer<T> {
       return this.zodSchema.parse(input);

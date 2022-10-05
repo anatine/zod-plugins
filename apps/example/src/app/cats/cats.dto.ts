@@ -29,7 +29,19 @@ export const CreateCatResponseZ = z.object({
   message: z.string(),
   name: z.string(),
 });
+
 export class CreateCatResponseDto extends createZodDto(CreateCatResponseZ) {}
 export class UpdateCatResponseDto extends createZodDto(
   CreateCatResponseZ.omit({ name: true })
 ) {}
+
+export const GetCatsParamsZ = extendApi(
+  z.object({
+    id: z.string(),
+  }),
+  {
+    example: { id: 'mouse-terminator-2000' },
+  }
+);
+
+export class GetCatsParamsDto extends createZodDto(GetCatsParamsZ) {}

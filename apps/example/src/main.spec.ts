@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from './app/app.module';
 import { patchNestjsSwagger } from '@anatine/zod-nestjs';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { inspect } from 'util';
 
 describe('Cats', () => {
   let app: INestApplication;
@@ -48,6 +49,16 @@ describe('Cats', () => {
       .expect(201)
       .expect({ success: true, message: 'Cat created', name: 'Spike' });
   });
+
+  // it('Lets peek', async () => {
+  //   const result = await request(app.getHttpServer())
+  //     .get('/api-json')
+  //     .set('Accept', 'application/json');
+
+  //   const { body } = result;
+
+  //   console.log(inspect(body, false, 10, true));
+  // });
 
   it(`Swagger Test`, () => {
     return request(app.getHttpServer())
@@ -120,7 +131,14 @@ describe('Cats', () => {
           '/cats/{id}': {
             get: {
               operationId: 'CatsController_findOne',
-              parameters: [],
+              parameters: [
+                {
+                  name: 'id',
+                  required: true,
+                  in: 'path',
+                  schema: { type: 'string' },
+                },
+              ],
               responses: {
                 '201': {
                   description: '',
