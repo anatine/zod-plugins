@@ -14,6 +14,7 @@ import {
   CatDto,
   CreateCatResponseDto,
   GetCatsDto,
+  GetCatsParamsDto,
   UpdateCatDto,
   UpdateCatResponseDto,
 } from './cats.dto';
@@ -21,6 +22,7 @@ import {
 @Controller('cats')
 @UsePipes(ZodValidationPipe)
 export class CatsController {
+  // Get all cats
   @Get()
   @ApiCreatedResponse({
     type: GetCatsDto,
@@ -29,11 +31,12 @@ export class CatsController {
     return { cats: ['Lizzie', 'Spike'] };
   }
 
+  // Get single cat
   @Get(':id')
   @ApiCreatedResponse({
     type: CatDto,
   })
-  async findOne(@Param() { id }: { id: string }): Promise<CatDto> {
+  async findOne(@Param() { id }: GetCatsParamsDto): Promise<CatDto> {
     return {
       name: `Cat-${id}`,
       age: 8,

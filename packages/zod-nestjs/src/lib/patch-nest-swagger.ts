@@ -23,7 +23,7 @@ export const patchNestjsSwagger = (
 
   SchemaObjectFactory.prototype.exploreModelSchema = function (
     type: Type<unknown> | Function | any,
-    schemas: any | Record<string, SchemaObject>, // TODO : Figure out what schemas actually are.
+    schemas: any | Record<string, SchemaObject>,
     schemaRefsStack: string[] = []
     // type: Type<unknown> | Function | any,
     // schemas: Record<string, SchemaObject>,
