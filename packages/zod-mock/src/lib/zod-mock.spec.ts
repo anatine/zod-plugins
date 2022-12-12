@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { generateMock, ZodMockError } from './zod-mock';
+import { faker } from '@faker-js/faker';
+
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
     enum NativeEnum {
@@ -534,4 +536,17 @@ describe('zod-mock', () => {
     const second = generateMock(schema, { seed });
     expect(first).toEqual(second);
   });
+
+  // it.only('Can use my own version of faker', () => {
+  //   const schema = z.object({
+  //     name: z.string(),
+  //     age: z.number(),
+  //   });
+  //   faker.seed(3);
+  //   const first = generateMock(schema, { faker });
+  //   const second = generateMock(schema, { faker });
+  //   const third = generateMock(schema);
+  //   expect(first).toEqual(second);
+  //   expect(first).not.toEqual(third);
+  // });
 });

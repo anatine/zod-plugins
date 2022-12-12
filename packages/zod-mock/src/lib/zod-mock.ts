@@ -259,7 +259,6 @@ function parseNumber(
         break;
     }
   });
-
   return fakerInstance.datatype.number(fakerOptions);
 }
 
@@ -525,8 +524,11 @@ export function generateMock<T extends ZodTypeAny>(
   options?: GenerateMockOptions
 ): z.infer<typeof zodRef> {
   try {
+    const fakerInstance = options?.faker || faker;
     if (options?.seed) {
-      faker.seed(Array.isArray(options.seed) ? options.seed : [options.seed]);
+      fakerInstance.seed(
+        Array.isArray(options.seed) ? options.seed : [options.seed]
+      );
     }
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
