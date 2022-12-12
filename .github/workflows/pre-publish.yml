@@ -47,41 +47,9 @@ jobs:
       - name: Test
         run: npm run affected:test
 
-      - name: Version
-        shell: bash
-        run: npm run affected:version
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_FLOW_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build
+        run: npm run affected:build
 
-      ###### DEPRECIATED ######
-      # - name: Build
-      #   run: npm run affected:build
 
-      # - name: publish
-      #   run: npm run affected:publish
-      #   env:
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # - name: git-update
-      #   shell: bash
-      #   run: npm run affected:github
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #########################
-
-      - name: Return npm
-        run: |
-          echo 'legacy-peer-deps=true' > .npmrc
-          
-      - name: Tag last-release
-        shell: bash
-        run: |
-          git tag -f last-release
-          git push origin last-release --force
 
 
