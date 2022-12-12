@@ -29,4 +29,62 @@ describe('zod-nesjs create-zod-dto', () => {
       })
     ).toEqual({ val: 'test', extraField: 'extra' });
   });
+
+  it('should merge a discriminated union types for class', () => {
+    enum Kind { A, B };
+    const discriminatedSchema = z
+      .discriminatedUnion('kind', [
+        z.object({
+          kind: z.literal(Kind.A),
+          value: z.number()
+        }),
+        z.object({
+          kind: z.literal(Kind.B),
+          value: z.string()
+        })
+      ]);
+
+    class TestDto extends createZodDto(discriminatedSchema) {}
+
+    const result = TestDto.create({kind: Kind.A, value: 1})
+    expect(result).toEqual({ kind: Kind.A, value: 1 });
+  });
+
+  it('should merge the union types for class', () => {
+    enum Kind { A, B };
+    const unionSchema = z
+      .union([
+        z.object({
+          kind: z.literal(Kind.A),
+          value: z.number()
+        }),
+        z.object({
+          kind: z.literal(Kind.B),
+          value: z.string()
+        })
+      ]);
+
+    class TestDto extends createZodDto(unionSchema) {}
+
+    const result = TestDto.create({kind: Kind.B, value: 'val'})
+    expect(result).toEqual({ kind: Kind.B, value: 'val' });
+  });
+
+  it('should support new pipe operator', () => {
+    const TestSchema = z
+      .string()
+      .transform((arg) => {
+        const [type, value] = arg.split(' ') as [string, string];
+        return { type, value };
+      })
+      .pipe(z.object({
+        type: z.string(),
+        value: z.string()
+      }));
+
+    class TestDto extends createZodDto(TestSchema) {}
+
+    const result = TestDto.create('a test')
+    expect(result).toEqual({ type: 'a', value: 'test' });
+  });
 });

@@ -22,7 +22,8 @@
     "nestjs"
   ],
   "dependencies": {
-    "@anatine/zod-openapi": "^1.9.8"
+    "@anatine/zod-openapi": "^1.9.8",
+    "type-fest": "^3.3.0"
   },
   "peerDependencies": {
     "zod": "^3.17.0 || ^3.18.0",

@@ -115,6 +115,10 @@ function parseString({
       case 'min':
         baseSchema.minLength = item.value;
         break;
+      case 'length':
+        baseSchema.minLength = item.value;
+        baseSchema.maxLength = item.value;
+        break;
       case 'regex':
         baseSchema.pattern = item.regex.source;
         break;
@@ -309,6 +313,10 @@ function parseArray({
     constraints.minItems = zodRef._def.minLength.value;
   if (zodRef._def.maxLength != null)
     constraints.maxItems = zodRef._def.maxLength.value;
+  if (zodRef._def.exactLength != null) {
+    constraints.minItems = zodRef._def.exactLength.value;
+    constraints.maxItems = zodRef._def.exactLength.value;
+  }
 
   return merge(
     {
@@ -389,27 +397,24 @@ function parseDiscriminatedUnion({
 }: ParsingArgs<
   z.ZodDiscriminatedUnion<
     string,
-    z.Primitive,
-    z.ZodDiscriminatedUnionOption<string, z.Primitive>
+    z.ZodDiscriminatedUnionOption<string>[]
   >
 >): SchemaObject {
   return merge(
     {
       discriminator: {
         propertyName: (
-          zodRef as z.ZodDiscriminatedUnion<
+          zodRef as  z.ZodDiscriminatedUnion<
             string,
-            z.Primitive,
-            z.ZodDiscriminatedUnionOption<string, z.Primitive>
+            z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.discriminator,
       },
       oneOf: Array.from(
         (
-          zodRef as z.ZodDiscriminatedUnion<
+          zodRef as  z.ZodDiscriminatedUnion<
             string,
-            z.Primitive,
-            z.ZodDiscriminatedUnionOption<string, z.Primitive>
+            z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.options.values()
       ).map((schema) => generateSchema(schema, useOutput)),

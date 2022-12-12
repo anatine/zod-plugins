@@ -268,9 +268,11 @@ function parseOptional(
 
 function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
   let min =
-    zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
+    zodRef._def.exactLength?.value != null ? zodRef._def.exactLength.value
+    : zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
   const max =
-    zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
+    zodRef._def.exactLength?.value != null ? zodRef._def.exactLength.value
+    : zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
 
   // prevents arrays from exceeding the max regardless of the min.
   if (min > max) {
@@ -322,7 +324,7 @@ function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
 }
 
 function parseDiscriminatedUnion(
-  zodRef: z.ZodDiscriminatedUnion<never, never, never>,
+  zodRef: z.ZodDiscriminatedUnion<never, never[]>,
   options?: GenerateMockOptions
 ) {
   // Map the options to various possible union cases
