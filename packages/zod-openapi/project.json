@@ -18,7 +18,8 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/zod-openapi/**/*.ts"]
+        "lintFilePatterns": ["packages/zod-openapi/**/*.ts"],
+        "ignorePath": ["node_modules"]
       }
     },
     "test": {

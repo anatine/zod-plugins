@@ -18,7 +18,8 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/graphql-codegen-zod/**/*.ts"]
+        "lintFilePatterns": ["packages/graphql-codegen-zod/**/*.ts"],
+        "ignorePath": ["node_modules"]
       }
     },
     "test": {

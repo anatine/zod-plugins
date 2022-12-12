@@ -36,7 +36,8 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/example/**/*.ts"]
+        "lintFilePatterns": ["apps/example/**/*.ts"],
+        "ignorePath": ["node_modules"]
       },
       "outputs": ["{options.outputFile}"]
     },

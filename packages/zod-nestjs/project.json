@@ -19,7 +19,8 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/zod-nestjs/**/*.ts"]
+        "lintFilePatterns": ["packages/zod-nestjs/**/*.ts"],
+        "ignorePath": ["node_modules"]
       }
     },
     "test": {
