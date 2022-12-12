@@ -389,8 +389,7 @@ function parseDiscriminatedUnion({
 }: ParsingArgs<
   z.ZodDiscriminatedUnion<
     string,
-    z.Primitive,
-    z.ZodDiscriminatedUnionOption<string, z.Primitive>
+    z.ZodDiscriminatedUnionOption<string>[]
   >
 >): SchemaObject {
   return merge(
@@ -399,8 +398,7 @@ function parseDiscriminatedUnion({
         propertyName: (
           zodRef as z.ZodDiscriminatedUnion<
             string,
-            z.Primitive,
-            z.ZodDiscriminatedUnionOption<string, z.Primitive>
+            z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.discriminator,
       },
@@ -408,8 +406,7 @@ function parseDiscriminatedUnion({
         (
           zodRef as z.ZodDiscriminatedUnion<
             string,
-            z.Primitive,
-            z.ZodDiscriminatedUnionOption<string, z.Primitive>
+            z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.options.values()
       ).map((schema) => generateSchema(schema, useOutput)),

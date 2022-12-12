@@ -24,7 +24,7 @@
     "ts-deepmerge": "^4.0.0"
   },
   "peerDependencies": {
-    "zod": "^3.17.0 || ^3.18.0",
+    "zod": "^3.20.0",
     "openapi3-ts": "^2.0.0 || ^3.0.0"
   }
 }
