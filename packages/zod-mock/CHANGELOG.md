@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.8.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.7.0...zod-mock-3.8.0) (2022-12-12)
+
+
+### Features
+
+* Optional faker class instance as an option ([ec7b505](https://github.com/anatine/zod-plugins/commit/ec7b505f1c010bb173759431c6c5583ff23bc15a))
+
 ## [3.7.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.6.0...zod-mock-3.7.0) (2022-12-12)
 
 
