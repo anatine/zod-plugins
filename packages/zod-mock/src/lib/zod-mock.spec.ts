@@ -31,7 +31,7 @@ describe('zod-mock', () => {
       ]),
     });
 
-    const mockData = generateMock(schema); //?
+    const mockData = generateMock(schema);
 
     expect(typeof mockData.uid).toEqual('string');
     expect(
@@ -94,7 +94,7 @@ describe('zod-mock', () => {
       camelCase: () => 'Exact case works',
     };
 
-    const mockData = generateMock(schema, { stringMap }); //?
+    const mockData = generateMock(schema, { stringMap });
 
     expect(mockData.uid).toEqual(
       expect.stringMatching(
@@ -473,7 +473,7 @@ describe('zod-mock', () => {
       name: z.string().optional(),
       items: variousTypes,
     });
-    const transformResult = generateMock(TransformItem); //?
+    const transformResult = generateMock(TransformItem);
     expect(transformResult.items).toBeGreaterThan(0);
     expect(transformResult.items).toBeLessThan(101);
   });

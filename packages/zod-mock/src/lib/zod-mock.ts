@@ -267,10 +267,9 @@ function parseOptional(
 }
 
 function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
-  let min =
-    zodRef._def.minLength?.value != null ? zodRef._def.minLength.value : 1;
+  let min = zodRef._def.minLength?.value ?? zodRef._def.exactLength?.value ?? 1;
   const max =
-    zodRef._def.maxLength?.value != null ? zodRef._def.maxLength.value : 5;
+    zodRef._def.maxLength?.value ?? zodRef._def.exactLength?.value ?? 5;
 
   // prevents arrays from exceeding the max regardless of the min.
   if (min > max) {
