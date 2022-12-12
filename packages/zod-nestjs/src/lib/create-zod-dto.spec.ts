@@ -69,22 +69,4 @@ describe('zod-nesjs create-zod-dto', () => {
     const result = TestDto.create({kind: Kind.B, value: 'val'})
     expect(result).toEqual({ kind: Kind.B, value: 'val' });
   });
-
-  it('should support new pipe operator', () => {
-    const TestSchema = z
-      .string()
-      .transform((arg) => {
-        const [type, value] = arg.split(' ') as [string, string];
-        return { type, value };
-      })
-      .pipe(z.object({
-        type: z.string(),
-        value: z.string()
-      }));
-
-    class TestDto extends createZodDto(TestSchema) {}
-
-    const result = TestDto.create('a test')
-    expect(result).toEqual({ type: 'a', value: 'test' });
-  });
 });
