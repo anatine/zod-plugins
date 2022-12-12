@@ -131,7 +131,7 @@ describe('zodOpenapi', () => {
       properties: {
         aStringMax: { type: 'string', maxLength: 5 },
         aStringMin: { type: 'string', minLength: 3 },
-        aStringLength: { type: 'string', minLength: 10, maxLength: 10 },
+        aStringLength: { maxLength: 10, minLength: 10, type: 'string' },
         aStringEmail: { type: 'string', format: 'email' },
         aStringUrl: { type: 'string', format: 'uri' },
         aStringUUID: { type: 'string', format: 'uuid' },
