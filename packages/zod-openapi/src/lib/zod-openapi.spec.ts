@@ -391,6 +391,55 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support a top level discriminated union', () => {
+    enum Kind {
+      A,
+      B
+    };
+
+    const zodSchema = extendApi(
+      z
+        .discriminatedUnion('kind', [
+          z.object({
+            kind: z.literal(Kind.A),
+            value: z.number()
+          }),
+          z.object({
+            kind: z.literal(Kind.B),
+            value: z.string()
+          })
+        ]),
+      {
+        description: "Discriminatory",
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      discriminator: { propertyName: 'kind' },
+      oneOf: [
+        { type: 'object', properties: {
+          kind: {
+            type: 'number',
+            enum: [0]
+          },
+          value: {
+            type: 'number'
+          }
+        }, required: ['kind', 'value'] },
+        { type: 'object', properties: {
+          kind: {
+            type: 'number',
+            enum: [1]
+          },
+          value: {
+            type: 'string'
+          }
+        }, required: ['kind', 'value'] },
+      ],
+      description: "Discriminatory",
+    });
+  });
+
   it('Testing large mixed schema', () => {
     enum Fruits {
       Apple,

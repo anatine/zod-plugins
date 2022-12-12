@@ -1,6 +1,8 @@
 import type { SchemaObject } from 'openapi3-ts';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
+import type { TupleToUnion, Merge } from 'type-fest';
+
 /**
  * This file was originally taken from:
  *   https://github.com/kbkk/abitia/blob/master/packages/zod-dto/src/createZodDto.ts
@@ -20,7 +22,14 @@ export type CompatibleZodType = Pick<
   z.ZodType<unknown>,
   '_input' | '_output' | 'parse' | 'safeParse'
 >;
-export type CompatibleZodInfer<T extends CompatibleZodType> = T['_output'];
+export type CompatibleZodInfer<T extends CompatibleZodType> =
+  T extends z.ZodDiscriminatedUnion<string, infer Options>
+    ? Merge<{}, TupleToUnion<{[X in keyof Options]: Options[X] extends z.ZodType ? Options[X]['_output'] : Options[X]}>>
+      : T extends z.ZodUnion<infer UnionTypes>
+        ? UnionTypes extends z.ZodType[]
+          ? Merge<{}, TupleToUnion<{[X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType ? UnionTypes[X]['_output'] : UnionTypes[X]}>>
+          : T['_output']
+        : T['_output'];
 
 export type ZodDtoStatic<T extends CompatibleZodType = CompatibleZodType> = {
   new (): CompatibleZodInfer<T>;
@@ -85,5 +94,5 @@ export const createZodDto = <T extends OpenApiZodAny>(
     }
   }
 
-  return SchemaHolderClass;
+  return SchemaHolderClass as unknown as ZodDtoStatic<T>;
 };
