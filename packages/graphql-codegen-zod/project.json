@@ -1,4 +1,5 @@
 {
+  "name": "graphql-codegen-zod",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/graphql-codegen-zod/src",
   "projectType": "library",
@@ -23,7 +24,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/graphql-codegen-zod"],
+      "outputs": ["{workspaceRoot}/coverage/packages/graphql-codegen-zod"],
       "options": {
         "jestConfig": "packages/graphql-codegen-zod/jest.config.ts",
         "passWithNoTests": true

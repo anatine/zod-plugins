@@ -44,7 +44,7 @@ function parseTransformation({
 }: ParsingArgs<z.ZodTransformer<never> | z.ZodEffects<never>>): SchemaObject {
   const input = generateSchema(zodRef._def.schema, useOutput);
 
-  zodRef._def; //?
+  zodRef._def;
 
   let output = 'undefined';
   if (useOutput && zodRef._def.effect) {
@@ -96,6 +96,7 @@ function parseString({
   };
   const { checks = [] } = zodRef._def;
   checks.forEach((item) => {
+    item; //?
     switch (item.kind) {
       case 'email':
         baseSchema.format = 'email';
@@ -108,6 +109,10 @@ function parseString({
         break;
       case 'url':
         baseSchema.format = 'uri';
+        break;
+      case 'length':
+        baseSchema.minLength = item.value;
+        baseSchema.maxLength = item.value;
         break;
       case 'max':
         baseSchema.maxLength = item.value;
@@ -304,6 +309,10 @@ function parseArray({
   useOutput,
 }: ParsingArgs<z.ZodArray<OpenApiZodAny>>): SchemaObject {
   const constraints: SchemaObject = {};
+  if (zodRef._def.exactLength != null) {
+    constraints.minItems = zodRef._def.exactLength.value;
+    constraints.maxItems = zodRef._def.exactLength.value;
+  }
 
   if (zodRef._def.minLength != null)
     constraints.minItems = zodRef._def.minLength.value;
@@ -387,11 +396,7 @@ function parseDiscriminatedUnion({
   zodRef,
   useOutput,
 }: ParsingArgs<
-  z.ZodDiscriminatedUnion<
-    string,
-    z.Primitive,
-    z.ZodDiscriminatedUnionOption<string, z.Primitive>
-  >
+  z.ZodDiscriminatedUnion<string, z.ZodDiscriminatedUnionOption<string>[]>
 >): SchemaObject {
   return merge(
     {
@@ -399,8 +404,7 @@ function parseDiscriminatedUnion({
         propertyName: (
           zodRef as z.ZodDiscriminatedUnion<
             string,
-            z.Primitive,
-            z.ZodDiscriminatedUnionOption<string, z.Primitive>
+            z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.discriminator,
       },
@@ -408,8 +412,7 @@ function parseDiscriminatedUnion({
         (
           zodRef as z.ZodDiscriminatedUnion<
             string,
-            z.Primitive,
-            z.ZodDiscriminatedUnionOption<string, z.Primitive>
+            z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.options.values()
       ).map((schema) => generateSchema(schema, useOutput)),

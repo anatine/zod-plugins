@@ -1,4 +1,5 @@
 {
+  "name": "zod-mock",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/zod-mock/src",
   "projectType": "library",
@@ -23,7 +24,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/zod-mock"],
+      "outputs": ["{workspaceRoot}/coverage/packages/zod-mock"],
       "options": {
         "jestConfig": "packages/zod-mock/jest.config.ts",
         "passWithNoTests": true

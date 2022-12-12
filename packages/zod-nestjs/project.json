@@ -1,4 +1,5 @@
 {
+  "name": "zod-nestjs",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/zod-nestjs/src",
   "projectType": "library",
@@ -25,7 +26,7 @@
     "test": {
       "dependsOn": ["^build"],
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/zod-nestjs"],
+      "outputs": ["{workspaceRoot}/coverage/packages/zod-nestjs"],
       "options": {
         "jestConfig": "packages/zod-nestjs/jest.config.ts",
         "passWithNoTests": true
