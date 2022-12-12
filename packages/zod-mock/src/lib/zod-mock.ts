@@ -322,7 +322,7 @@ function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
 }
 
 function parseDiscriminatedUnion(
-  zodRef: z.ZodDiscriminatedUnion<never, never, never>,
+  zodRef: z.ZodDiscriminatedUnion<never, any>,
   options?: GenerateMockOptions
 ) {
   // Map the options to various possible union cases
