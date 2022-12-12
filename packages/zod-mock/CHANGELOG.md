@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.7.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.6.0...zod-mock-3.7.0) (2022-12-12)
+
+
+### Features
+
+* Updated Dependencies ([ad8cfc8](https://github.com/anatine/zod-plugins/commit/ad8cfc8fa40ca32736dbfb0d8906569d2a626cbe))
+
+
+### Bug Fixes
+
+* array length in Zod Mock ([2811101](https://github.com/anatine/zod-plugins/commit/2811101302fb70e8e769f5d15345d880495e1485))
+
 ## [3.6.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.11...zod-mock-3.6.0) (2022-10-05)
 
 
