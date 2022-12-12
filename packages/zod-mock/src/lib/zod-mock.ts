@@ -500,6 +500,11 @@ export interface GenerateMockOptions {
    * Set to true to throw an exception instead of returning undefined when encountering an unknown `ZodType`
    */
   throwOnUnknownType?: boolean;
+
+  /**
+   * Set a seed for random generation within the mock library
+   */
+  seed?: number | number[];
 }
 
 export function generateMock<T extends ZodTypeAny>(
@@ -507,6 +512,9 @@ export function generateMock<T extends ZodTypeAny>(
   options?: GenerateMockOptions
 ): z.infer<typeof zodRef> {
   try {
+    if (options?.seed) {
+      faker.seed(Array.isArray(options.seed) ? options.seed : [options.seed]);
+    }
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
       return workerMap[typeName](zodRef as never, options);

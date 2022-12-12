@@ -523,4 +523,15 @@ describe('zod-mock', () => {
   it('ZodLazy', () => {
     expect(generateMock(z.lazy(() => z.string()))).toBeTruthy();
   });
+
+  it('Options seed value will return the same random numbers', () => {
+    const schema = z.object({
+      name: z.string(),
+      age: z.number(),
+    });
+    const seed = 123;
+    const first = generateMock(schema, { seed });
+    const second = generateMock(schema, { seed });
+    expect(first).toEqual(second);
+  });
 });
