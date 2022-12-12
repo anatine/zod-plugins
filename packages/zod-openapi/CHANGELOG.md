@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.11.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.10.0...zod-openapi-1.11.0) (2022-12-12)
+
+
+### Features
+
+* Updated Dependencies ([ad8cfc8](https://github.com/anatine/zod-plugins/commit/ad8cfc8fa40ca32736dbfb0d8906569d2a626cbe))
+
+
+### Bug Fixes
+
+* Open API Min/Max length for string and arrays ([b780138](https://github.com/anatine/zod-plugins/commit/b78013862285b5e7f1c336db26dcf2f5bc356f51))
+
 ## [1.10.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.9.7...zod-openapi-1.10.0) (2022-10-05)
 
 
