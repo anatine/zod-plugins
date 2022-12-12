@@ -10,6 +10,8 @@ import {
   ZodRecord,
 } from 'zod';
 
+type FakerClass = typeof faker;
+
 function parseObject(
   zodRef: AnyZodObject,
   options?: GenerateMockOptions
@@ -45,67 +47,64 @@ function parseRecord<
 
 type fakerFunction = () => string | number | boolean | Date;
 
-function findMatchingFaker(keyName: string): undefined | fakerFunction | void {
+function findMatchingFaker(
+  keyName: string,
+  fakerOption?: FakerClass
+): undefined | fakerFunction | void {
+  const fakerInstance = fakerOption || faker;
   const lowerCaseKeyName = keyName.toLowerCase();
   const withoutDashesUnderscores = lowerCaseKeyName.replace(/_|-/g, '');
   let fnName: string | undefined = undefined;
-  const sectionName = Object.keys(faker).find((sectionKey) => {
-    return Object.keys(faker[sectionKey as keyof typeof faker] || {}).find(
-      (fnKey) => {
-        const lower = fnKey.toLowerCase();
-        fnName =
-          lower === lowerCaseKeyName || lower === withoutDashesUnderscores
-            ? keyName
-            : undefined;
+  const sectionName = Object.keys(fakerInstance).find((sectionKey) => {
+    return Object.keys(
+      fakerInstance[sectionKey as keyof FakerClass] || {}
+    ).find((fnKey) => {
+      const lower = fnKey.toLowerCase();
+      fnName =
+        lower === lowerCaseKeyName || lower === withoutDashesUnderscores
+          ? keyName
+          : undefined;
 
-        // Skipping depreciated items
-        const depreciated: Record<string, string[]> = {
-          random: [
-            'image',
-            'number',
-            'float',
-            'uuid',
-            'boolean',
-            'hexaDecimal',
-          ],
-        };
-        if (
-          Object.keys(depreciated).find((key) =>
-            key === sectionKey
-              ? depreciated[key].find((fn) => fn === fnName)
-              : false
-          )
-        ) {
-          return undefined;
-        }
-
-        if (fnName) {
-          // TODO: it would be good to clean up these type castings
-          const fn = faker[sectionKey as keyof typeof faker]?.[
-            fnName as never
-          ] as any;
-          if (typeof fn === 'function') {
-            try {
-              // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
-              // with incorrect parameters
-              const mock = fn();
-              return typeof mock === 'string' ||
-                typeof mock === 'number' ||
-                typeof mock === 'boolean' ||
-                mock instanceof Date
-                ? fnName
-                : undefined;
-            } catch (_error) {
-              // do nothing. undefined will be returned eventually.
-            }
-          }
-        }
+      // Skipping depreciated items
+      const depreciated: Record<string, string[]> = {
+        random: ['image', 'number', 'float', 'uuid', 'boolean', 'hexaDecimal'],
+      };
+      if (
+        Object.keys(depreciated).find((key) =>
+          key === sectionKey
+            ? depreciated[key].find((fn) => fn === fnName)
+            : false
+        )
+      ) {
         return undefined;
       }
-    );
-  }) as keyof typeof faker;
+
+      if (fnName) {
+        // TODO: it would be good to clean up these type castings
+        const fn = fakerInstance[sectionKey as keyof FakerClass]?.[
+          fnName as never
+        ] as any;
+        if (typeof fn === 'function') {
+          try {
+            // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
+            // with incorrect parameters
+            const mock = fn();
+            return typeof mock === 'string' ||
+              typeof mock === 'number' ||
+              typeof mock === 'boolean' ||
+              mock instanceof Date
+              ? fnName
+              : undefined;
+          } catch (_error) {
+            // do nothing. undefined will be returned eventually.
+          }
+        }
+      }
+      return undefined;
+    });
+  }) as keyof FakerClass;
   if (sectionName && fnName) {
-    const section = faker[sectionName];
+    const section = fakerInstance[sectionName];
     return section ? section[fnName] : undefined;
   }
 }
@@ -114,6 +113,7 @@ function parseString(
   zodRef: z.ZodString,
   options?: GenerateMockOptions
 ): string | number | boolean {
+  const fakerInstance = options?.faker || faker;
   const { checks = [] } = zodRef._def;
 
   const regexCheck = checks.find((check) => check.kind === 'regex');
@@ -174,35 +174,35 @@ function parseString(
    * when specifying a large word length, will return `faker.lorem.word()` instead.
    */
   const defaultGenerator = () =>
-    faker.lorem.word(targetStringLength) || faker.lorem.word();
-  const dateGenerator = () => faker.date.recent().toISOString();
+    fakerInstance.lorem.word(targetStringLength) || fakerInstance.lorem.word();
+  const dateGenerator = () => fakerInstance.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
-    email: faker.internet.exampleEmail,
-    uuid: faker.datatype.uuid,
-    uid: faker.datatype.uuid,
-    url: faker.internet.url,
-    name: faker.name.fullName,
+    email: fakerInstance.internet.exampleEmail,
+    uuid: fakerInstance.datatype.uuid,
+    uid: fakerInstance.datatype.uuid,
+    url: fakerInstance.internet.url,
+    name: fakerInstance.name.fullName,
     date: dateGenerator,
     dateTime: dateGenerator,
-    colorHex: faker.internet.color,
-    color: faker.internet.color,
-    backgroundColor: faker.internet.color,
-    textShadow: faker.internet.color,
-    textColor: faker.internet.color,
-    textDecorationColor: faker.internet.color,
-    borderColor: faker.internet.color,
-    borderTopColor: faker.internet.color,
-    borderRightColor: faker.internet.color,
-    borderBottomColor: faker.internet.color,
-    borderLeftColor: faker.internet.color,
-    borderBlockStartColor: faker.internet.color,
-    borderBlockEndColor: faker.internet.color,
-    borderInlineStartColor: faker.internet.color,
-    borderInlineEndColor: faker.internet.color,
-    columnRuleColor: faker.internet.color,
-    outlineColor: faker.internet.color,
-    phoneNumber: faker.phone.number,
+    colorHex: fakerInstance.internet.color,
+    color: fakerInstance.internet.color,
+    backgroundColor: fakerInstance.internet.color,
+    textShadow: fakerInstance.internet.color,
+    textColor: fakerInstance.internet.color,
+    textDecorationColor: fakerInstance.internet.color,
+    borderColor: fakerInstance.internet.color,
+    borderTopColor: fakerInstance.internet.color,
+    borderRightColor: fakerInstance.internet.color,
+    borderBottomColor: fakerInstance.internet.color,
+    borderLeftColor: fakerInstance.internet.color,
+    borderBlockStartColor: fakerInstance.internet.color,
+    borderBlockEndColor: fakerInstance.internet.color,
+    borderInlineStartColor: fakerInstance.internet.color,
+    borderInlineEndColor: fakerInstance.internet.color,
+    columnRuleColor: fakerInstance.internet.color,
+    outlineColor: fakerInstance.internet.color,
+    phoneNumber: fakerInstance.phone.number,
   };
 
   const stringType =
@@ -218,7 +218,7 @@ function parseString(
     generator = stringGenerators[stringType];
   } else {
     const foundFaker = options?.keyName
-      ? findMatchingFaker(options?.keyName)
+      ? findMatchingFaker(options?.keyName, options.faker)
       : undefined;
     if (foundFaker) {
       generator = foundFaker;
@@ -239,24 +239,27 @@ function parseString(
   return val.slice(0, stringOptions.max);
 }
 
-function parseNumber(zodRef: z.ZodNumber): number {
+function parseNumber(
+  zodRef: z.ZodNumber,
+  options?: GenerateMockOptions
+): number {
+  const fakerInstance = options?.faker || faker;
   const { checks = [] } = zodRef._def;
-  const options: any = {};
+  const fakerOptions: any = {};
 
   checks.forEach((item) => {
     switch (item.kind) {
       case 'int':
         break;
       case 'min':
-        options.min = item.value;
+        fakerOptions.min = item.value;
         break;
       case 'max':
-        options.max = item.value;
+        fakerOptions.max = item.value;
         break;
     }
   });
-
-  return faker.datatype.number(options);
+  return fakerInstance.datatype.number(fakerOptions);
 }
 
 function parseOptional(
@@ -267,6 +270,7 @@ function parseOptional(
 }
 
 function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
+  const fakerInstance = options?.faker || faker;
   let min = zodRef._def.minLength?.value ?? zodRef._def.exactLength?.value ?? 1;
   const max =
     zodRef._def.maxLength?.value ?? zodRef._def.exactLength?.value ?? 5;
@@ -275,7 +279,7 @@ function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
   if (min > max) {
     min = max;
   }
-  const targetLength = faker.datatype.number({ min, max });
+  const targetLength = fakerInstance.datatype.number({ min, max });
   const results: ZodTypeAny[] = [];
   for (let index = 0; index < targetLength; index++) {
     results.push(generateMock<ZodTypeAny>(zodRef._def.type, options));
@@ -284,6 +288,7 @@ function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
 }
 
 function parseSet(zodRef: z.ZodSet<never>, options?: GenerateMockOptions) {
+  const fakerInstance = options?.faker || faker;
   let min = zodRef._def.minSize?.value != null ? zodRef._def.minSize.value : 1;
   const max =
     zodRef._def.maxSize?.value != null ? zodRef._def.maxSize.value : 5;
@@ -292,7 +297,7 @@ function parseSet(zodRef: z.ZodSet<never>, options?: GenerateMockOptions) {
   if (min > max) {
     min = max;
   }
-  const targetLength = faker.datatype.number({ min, max });
+  const targetLength = fakerInstance.datatype.number({ min, max });
   const results = new Set<ZodTypeAny>();
   while (results.size < targetLength) {
     results.add(generateMock<ZodTypeAny>(zodRef._def.valueType, options));
@@ -362,11 +367,12 @@ function parseUnion(
   zodRef: z.ZodUnion<Readonly<[ZodTypeAny, ...ZodTypeAny[]]>>,
   options?: GenerateMockOptions
 ) {
+  const fakerInstance = options?.faker || faker;
   // Map the options to various possible mock values
   const mockOptions = zodRef._def.options.map((option) =>
     generateMock(option, options)
   );
-  return faker.helpers.arrayElement(mockOptions);
+  return fakerInstance.helpers.arrayElement(mockOptions);
 }
 
 function parseZodIntersection(
@@ -407,8 +413,9 @@ function parseZodDefault(
   zodRef: z.ZodDefault<ZodTypeAny>,
   options?: GenerateMockOptions
 ) {
+  const fakerInstance = options?.faker || faker;
   // Use the default value 50% of the time
-  if (faker.datatype.boolean()) {
+  if (fakerInstance.datatype.boolean()) {
     return zodRef._def.defaultValue();
   } else {
     return generateMock(zodRef._def.innerType, options);
@@ -500,6 +507,16 @@ export interface GenerateMockOptions {
    * Set to true to throw an exception instead of returning undefined when encountering an unknown `ZodType`
    */
   throwOnUnknownType?: boolean;
+
+  /**
+   * Set a seed for random generation within the mock library
+   */
+  seed?: number | number[];
+
+  /**
+   * Faker class instance for mocking
+   */
+  faker?: FakerClass;
 }
 
 export function generateMock<T extends ZodTypeAny>(
@@ -507,6 +524,12 @@ export function generateMock<T extends ZodTypeAny>(
   options?: GenerateMockOptions
 ): z.infer<typeof zodRef> {
   try {
+    const fakerInstance = options?.faker || faker;
+    if (options?.seed) {
+      fakerInstance.seed(
+        Array.isArray(options.seed) ? options.seed : [options.seed]
+      );
+    }
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
       return workerMap[typeName](zodRef as never, options);

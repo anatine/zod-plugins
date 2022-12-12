@@ -93,6 +93,23 @@ const mockData = generateMock(schema, {
 
 ----
 
+## Adding a seed generator
+
+For consistent testing, you can also add in a seed or seed array.
+
+```typescript
+const schema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+const seed = 123;
+const first = generateMock(schema, { seed });
+const second = generateMock(schema, { seed });
+expect(first).toEqual(second);
+```
+
+----
+
 ## Behind the Scenes
 
 **`zod-mock`** tries to generate mock data from two sources.
