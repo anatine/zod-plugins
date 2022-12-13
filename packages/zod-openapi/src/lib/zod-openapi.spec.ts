@@ -761,4 +761,17 @@ describe('zodOpenapi', () => {
       description: newDescription,
     });
   });
+
+  it('Can cast a string to binary type', () => {
+    const binarySchema = extendApi(z.string(), {
+      format: 'binary',
+    });
+
+    const openapiSchema = generateSchema(binarySchema);
+
+    expect(openapiSchema).toMatchObject({
+      type: 'string',
+      format: 'binary',
+    });
+  });
 });
