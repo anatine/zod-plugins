@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         # Latest nodes only
-        node-version: [16.x]
+        node-version: [16]
 
     # Define Steps
     steps:
