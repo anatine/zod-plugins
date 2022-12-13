@@ -24,10 +24,10 @@ export type CompatibleZodType = Pick<
 >;
 export type CompatibleZodInfer<T extends CompatibleZodType> =
   T extends z.ZodDiscriminatedUnion<string, infer Options>
-    ? Merge<{}, TupleToUnion<{[X in keyof Options]: Options[X] extends z.ZodType ? Options[X]['_output'] : Options[X]}>>
+    ? Merge<object, TupleToUnion<{[X in keyof Options]: Options[X] extends z.ZodType ? Options[X]['_output'] : Options[X]}>>
       : T extends z.ZodUnion<infer UnionTypes>
         ? UnionTypes extends z.ZodType[]
-          ? Merge<{}, TupleToUnion<{[X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType ? UnionTypes[X]['_output'] : UnionTypes[X]}>>
+          ? Merge<object, TupleToUnion<{[X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType ? UnionTypes[X]['_output'] : UnionTypes[X]}>>
           : T['_output']
         : T['_output'];
 
