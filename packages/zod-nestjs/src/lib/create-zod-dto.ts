@@ -1,7 +1,7 @@
 import type { SchemaObject } from 'openapi3-ts';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
-import type { TupleToUnion, Merge } from 'type-fest';
+import type { TupleToUnion, Merge } from './types';
 
 /**
  * This file was originally taken from:
@@ -22,6 +22,8 @@ export type CompatibleZodType = Pick<
   z.ZodType<unknown>,
   '_input' | '_output' | 'parse' | 'safeParse'
 >;
+
+
 export type CompatibleZodInfer<T extends CompatibleZodType> =
   T extends z.ZodDiscriminatedUnion<string, infer Options>
     ? Merge<object, TupleToUnion<{[X in keyof Options]: Options[X] extends z.ZodType ? Options[X]['_output'] : Options[X]}>>
