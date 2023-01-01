@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [1.9.1](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.9.0...zod-nestjs-1.9.1) (2023-01-01)
+
+
+### Bug Fixes
+
+* support unions in class DTO ([ae3dc22](https://github.com/anatine/zod-plugins/commit/ae3dc22f1c481ea159066f86cfe2de060f21a794))
+
 ## [1.9.0](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.8.0...zod-nestjs-1.9.0) (2022-12-12)
 
 
