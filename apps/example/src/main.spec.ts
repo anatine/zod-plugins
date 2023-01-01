@@ -4,7 +4,6 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from './app/app.module';
 import { patchNestjsSwagger } from '@anatine/zod-nestjs';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { inspect } from 'util';
 
 describe('Cats', () => {
   let app: INestApplication;
