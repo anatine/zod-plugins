@@ -119,6 +119,8 @@ function parseString(
   const regexCheck = checks.find((check) => check.kind === 'regex');
   if (regexCheck && 'regex' in regexCheck) {
     const generator = new randExp(regexCheck.regex);
+    generator.randInt = (min: number, max: number) =>
+      fakerInstance.datatype.number({ min, max });
     const max = checks.find((check) => check.kind === 'max');
     if (max && 'value' in max && typeof max.value === 'number') {
       generator.max = max.value;
@@ -319,30 +321,34 @@ function parseMap(zodRef: z.ZodMap<never>, options?: GenerateMockOptions) {
   return results;
 }
 
-function parseEnum(zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>) {
+function parseEnum(
+  zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>,
+  options?: GenerateMockOptions
+) {
+  const fakerInstance = options?.faker || faker;
   const values = zodRef._def.values as Array<z.infer<typeof zodRef>>;
-  const pick = Math.floor(Math.random() * values.length);
-  return values[pick];
+  return fakerInstance.helpers.arrayElement(values);
 }
 
 function parseDiscriminatedUnion(
   zodRef: z.ZodDiscriminatedUnion<never, any>,
   options?: GenerateMockOptions
 ) {
+  const fakerInstance = options?.faker || faker;
   // Map the options to various possible union cases
   const potentialCases = [...zodRef._def.options.values()];
-  const pick = Math.floor(Math.random() * potentialCases.length);
-
-  const mocked = potentialCases[pick];
-
+  const mocked = fakerInstance.helpers.arrayElement(potentialCases);
   return generateMock(mocked, options);
 }
 
-function parseNativeEnum(zodRef: z.ZodNativeEnum<never>) {
+function parseNativeEnum(
+  zodRef: z.ZodNativeEnum<never>,
+  options?: GenerateMockOptions
+) {
+  const fakerInstance = options?.faker || faker;
   const { values } = zodRef._def;
-  const pick = Math.floor(Math.random() * Object.values(values).length);
-  const key = Array.from(Object.keys(values))[pick];
-  return values[values[key]];
+  const value = fakerInstance.helpers.arrayElement(values);
+  return values[value];
 }
 
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
@@ -369,10 +375,9 @@ function parseUnion(
 ) {
   const fakerInstance = options?.faker || faker;
   // Map the options to various possible mock values
-  const mockOptions = zodRef._def.options.map((option) =>
-    generateMock(option, options)
-  );
-  return fakerInstance.helpers.arrayElement(mockOptions);
+  const potentialCases = [...zodRef._def.options.values()];
+  const mocked = fakerInstance.helpers.arrayElement(potentialCases);
+  return generateMock(mocked, options);
 }
 
 function parseZodIntersection(
@@ -509,7 +514,7 @@ export interface GenerateMockOptions {
   throwOnUnknownType?: boolean;
 
   /**
-   * Set a seed for random generation within the mock library
+   * Set a seed for random generation
    */
   seed?: number | number[];
 

@@ -537,6 +537,37 @@ describe('zod-mock', () => {
     expect(first).toEqual(second);
   });
 
+  it('Options seed value will return the same union & enum members', () => {
+    enum NativeEnum {
+      a = 1,
+      b = 2,
+    }
+
+    const schema = z.object({
+      theme: z.enum([`light`, `dark`]),
+      nativeEnum: z.nativeEnum(NativeEnum),
+      union: z.union([z.literal('a'), z.literal('b')]),
+      discriminatedUnion: z.discriminatedUnion('discriminator', [
+        z.object({ discriminator: z.literal('a'), a: z.boolean() }),
+        z.object({ discriminator: z.literal('b'), b: z.string() }),
+      ]),
+    });
+    const seed = 123;
+    const first = generateMock(schema, { seed });
+    const second = generateMock(schema, { seed });
+    expect(first).toEqual(second);
+  });
+
+  it('Options seed value will return the same generated regex values', () => {
+    const schema = z.object({
+      data: z.string().regex(/^[A-Z0-9+_.-]+@[A-Z0-9.-]+$/),
+    });
+    const seed = 123;
+    const first = generateMock(schema, { seed });
+    const second = generateMock(schema, { seed });
+    expect(first).toEqual(second);
+  });
+
   // it.only('Can use my own version of faker', () => {
   //   const schema = z.object({
   //     name: z.string(),
