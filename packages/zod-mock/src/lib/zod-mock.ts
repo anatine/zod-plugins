@@ -473,7 +473,7 @@ const workerMap = {
   ZodFunction: parseZodFunction,
   ZodDefault: parseZodDefault,
   ZodPromise: parseZodPromise,
-  ZodLazy: () => parseLazy,
+  ZodLazy: parseLazy,
   ZodBranded: parseBranded,
   ZodNull: () => null,
   ZodNaN: () => NaN,
