@@ -8,7 +8,6 @@ import {
   ZodType,
   ZodString,
   ZodRecord,
-  number,
 } from 'zod';
 
 type FakerClass = typeof faker;
