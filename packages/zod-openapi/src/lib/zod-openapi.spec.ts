@@ -139,7 +139,6 @@ describe('zodOpenapi', () => {
         aStringRegex: { type: 'string', pattern: '^[a-zA-Z]+$' },
         aStringNonEmpty: { type: 'string', minLength: 1 },
       },
-      required: [],
       description: 'This is totally unlike String Theory',
     });
   });
@@ -179,7 +178,6 @@ describe('zodOpenapi', () => {
         aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
         aNumberMultipleOf: { type: 'number', multipleOf: 2 },
       },
-      required: [],
       description: 'Look mah, the horse can count higher than me!',
     });
   });
@@ -223,7 +221,6 @@ describe('zodOpenapi', () => {
           items: { type: 'number' },
         },
       },
-      required: [],
       description: 'I need arrays',
     });
   });
