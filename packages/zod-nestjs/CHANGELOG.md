@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [1.9.2](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.9.1...zod-nestjs-1.9.2) (2023-01-17)
+
+
+### Bug Fixes
+
+* **zod-nestjs:** set up nx project the same as zod-openapi ([be67dc4](https://github.com/anatine/zod-plugins/commit/be67dc4503bd62617ebe91f165977cf0e9f3ceff))
+
 ### [1.9.1](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.9.0...zod-nestjs-1.9.1) (2023-01-01)
 
 
