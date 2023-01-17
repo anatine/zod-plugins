@@ -5,7 +5,6 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "dependsOn": ["^build"],
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -24,7 +23,6 @@
       }
     },
     "test": {
-      "dependsOn": ["^build"],
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/zod-nestjs"],
       "options": {
@@ -51,10 +49,7 @@
     "publish": {
       "executor": "ngx-deploy-npm:deploy",
       "options": {
-        "access": "public",
-        "noBuild": true,
-        "tag": "${tag}",
-        "notes": "${notes}"
+        "access": "public"
       }
     }
   },
