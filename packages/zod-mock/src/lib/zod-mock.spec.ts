@@ -177,6 +177,29 @@ describe('zod-mock', () => {
     });
   });
 
+  it('should create mock dates that respect the specified min and max dates', () => {
+    const min = new Date('2022-01-01T00:00:00.000Z');
+    const max = new Date('2023-01-01T00:00:00.000Z');
+
+    const schema = z.object({
+      dateWithMin: z.date().min(min),
+      dateWithMax: z.date().max(max),
+      dateWithRange: z.date().min(min).max(max),
+      dateWithInvertedRange: z.date().min(max).max(min),
+    });
+    const mockData = generateMock(schema);
+
+    expect(mockData.dateWithMin.getTime()).toBeGreaterThanOrEqual(
+      min.getTime()
+    );
+    expect(mockData.dateWithMax.getTime()).toBeLessThanOrEqual(max.getTime());
+    expect(mockData.dateWithRange.getTime()).toBeGreaterThanOrEqual(
+      min.getTime()
+    );
+    expect(mockData.dateWithRange.getTime()).toBeLessThanOrEqual(max.getTime());
+    expect(mockData.dateWithInvertedRange).toBeUndefined();
+  });
+
   describe('arrays', () => {
     it('should mock an array without min or max', () => {
       const schema = z.object({
@@ -568,16 +591,43 @@ describe('zod-mock', () => {
     expect(first).toEqual(second);
   });
 
-  // it.only('Can use my own version of faker', () => {
-  //   const schema = z.object({
-  //     name: z.string(),
-  //     age: z.number(),
-  //   });
-  //   faker.seed(3);
-  //   const first = generateMock(schema, { faker });
-  //   const second = generateMock(schema, { faker });
-  //   const third = generateMock(schema);
-  //   expect(first).toEqual(second);
-  //   expect(first).not.toEqual(third);
-  // });
+  it('Can use my own version of faker', () => {
+    enum NativeEnum {
+      a = 1,
+      b = 2,
+    }
+
+    const schema = z.object({
+      uid: z.string().nonempty(),
+      theme: z.enum([`light`, `dark`]),
+      name: z.string(),
+      firstName: z.string(),
+      email: z.string().email().optional(),
+      phoneNumber: z.string().min(10).optional(),
+      avatar: z.string().url().optional(),
+      jobTitle: z.string().optional(),
+      otherUserEmails: z.array(z.string().email()),
+      stringArrays: z.array(z.string()),
+      stringLength: z.string().transform((val) => val.length),
+      numberCount: z.number().transform((item) => `total value = ${item}`),
+      age: z.number().min(18).max(120),
+      record: z.record(z.string(), z.number()),
+      nativeEnum: z.nativeEnum(NativeEnum),
+      set: z.set(z.string()),
+      map: z.map(z.string(), z.number()),
+      discriminatedUnion: z.discriminatedUnion('discriminator', [
+        z.object({ discriminator: z.literal('a'), a: z.boolean() }),
+        z.object({ discriminator: z.literal('b'), b: z.string() }),
+      ]),
+      dateWithMin: z.date().min(new Date('2023-01-01T00:00:00Z')),
+    });
+
+    faker.seed(3);
+    const first = generateMock(schema, { faker });
+    faker.seed(3);
+    const second = generateMock(schema, { faker });
+    const third = generateMock(schema);
+    expect(first).toEqual(second);
+    expect(first).not.toEqual(third);
+  });
 });

@@ -169,7 +169,7 @@ function parseString(
     sortedStringOptions.max = temp;
   }
 
-  const targetStringLength = faker.datatype.number(sortedStringOptions);
+  const targetStringLength = fakerInstance.datatype.number(sortedStringOptions);
   /**
    * Returns a random lorem word using `faker.lorem.word(length)`.
    * This method can return undefined for large word lengths. If undefined is returned
@@ -235,10 +235,43 @@ function parseString(
   let val = generator().toString();
   const delta = targetStringLength - val.length;
   if (stringOptions.min != null && val.length < stringOptions.min) {
-    val = val + faker.random.alpha(delta);
+    val = val + fakerInstance.random.alpha(delta);
   }
 
   return val.slice(0, stringOptions.max);
+}
+
+function parseBoolean(zodRef: z.ZodBoolean, options?: GenerateMockOptions) {
+  const fakerInstance = options?.faker || faker;
+  return fakerInstance.datatype.boolean();
+}
+
+function parseDate(zodRef: z.ZodDate, options?: GenerateMockOptions) {
+  const fakerInstance = options?.faker || faker;
+  const { checks = [] } = zodRef._def;
+  let min: number | undefined;
+  let max: number | undefined;
+
+  checks.forEach((item) => {
+    switch (item.kind) {
+      case 'min':
+        min = item.value;
+        break;
+      case 'max':
+        max = item.value;
+        break;
+    }
+  });
+
+  if (min !== undefined && max !== undefined) {
+    return fakerInstance.date.between(min, max);
+  } else if (min !== undefined && max === undefined) {
+    return fakerInstance.date.soon(undefined, min);
+  } else if (min === undefined && max !== undefined) {
+    return fakerInstance.date.recent(undefined, max);
+  } else {
+    return fakerInstance.date.soon();
+  }
 }
 
 function parseNumber(
@@ -454,8 +487,8 @@ const workerMap = {
   ZodString: parseString,
   ZodNumber: parseNumber,
   ZodBigInt: parseNumber,
-  ZodBoolean: () => faker.datatype.boolean(),
-  ZodDate: () => faker.date.soon(),
+  ZodBoolean: parseBoolean,
+  ZodDate: parseDate,
   ZodOptional: parseOptional,
   ZodNullable: parseOptional,
   ZodArray: parseArray,
