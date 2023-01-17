@@ -184,9 +184,11 @@ function parseObject({
     additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
   else if (zodRef._def.unknownKeys === 'passthrough')
     additionalProperties = true;
+  else if (zodRef._def.unknownKeys === 'strict')
+    additionalProperties = false;
 
   // So that `undefined` values don't end up in the schema and be weird
-  additionalProperties = additionalProperties ? { additionalProperties } : {};
+  additionalProperties = additionalProperties != null ? { additionalProperties } : {};
 
   const requiredProperties = Object.keys((zodRef as z.AnyZodObject).shape).filter((key) => {
     const item = (zodRef as z.AnyZodObject).shape[key];

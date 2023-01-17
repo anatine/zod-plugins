@@ -388,6 +388,31 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support `strict` on an object schema', () => {
+    const zodSchema = extendApi(
+      z
+        .object({
+          aString: z.string(),
+          aNumber: z.number(),
+        })
+        .strict(),
+      {
+        description: "Super strict",
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+    expect(apiSchema).toEqual({
+      type: 'object',
+      required: ['aString', 'aNumber'],
+      properties: {
+        aString: { type: 'string' },
+        aNumber: { type: 'number' },
+      },
+      additionalProperties: false,
+      description: "Super strict",
+    });
+  });
+
   it('Testing large mixed schema', () => {
     enum Fruits {
       Apple,
