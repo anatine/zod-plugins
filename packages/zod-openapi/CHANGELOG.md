@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.12.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.11.1...zod-openapi-1.12.0) (2023-01-17)
+
+
+### Features
+
+* set additionalProperties to false if strict ([80c7012](https://github.com/anatine/zod-plugins/commit/80c7012922bb4b1a59a5b96d0b5680e7cc436976))
+
+
+### Bug Fixes
+
+* **zod-openapi:** no empty required to conform to OpenApi 3.0 ([5d7731e](https://github.com/anatine/zod-plugins/commit/5d7731e3ae8b457664f2a750274005d0a5a50f7f))
+
 ### [1.11.1](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.11.0...zod-openapi-1.11.1) (2023-01-01)
 
 ## [1.11.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.10.0...zod-openapi-1.11.0) (2022-12-12)
