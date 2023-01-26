@@ -151,6 +151,10 @@ function parseString(
       case 'max':
         stringOptions.max = item.value;
         break;
+      case 'length':
+        stringOptions.min = item.value;
+        stringOptions.max = item.value;
+        break;
     }
   });
 

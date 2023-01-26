@@ -177,6 +177,22 @@ describe('zod-mock', () => {
     });
   });
 
+  describe('when handling length property on string', () => {
+    const createSchema = (len: number) =>
+      z.object({
+        default: z.string().length(len),
+      });
+
+    it('should create mock strings that respect the specified length', () => {
+      const length = 33;
+      const mockData = generateMock(createSchema(length));
+
+      Object.values(mockData).forEach((val) => {
+        expect(val).toHaveLength(length);
+      });
+    });
+  });
+
   it('should create mock dates that respect the specified min and max dates', () => {
     const min = new Date('2022-01-01T00:00:00.000Z');
     const max = new Date('2023-01-01T00:00:00.000Z');
