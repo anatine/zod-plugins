@@ -6,6 +6,7 @@
     "example": "apps/example",
     "graphql-codegen-zod": "packages/graphql-codegen-zod",
     "graphql-zod-validation": "packages/graphql-zod-validation",
+    "zod-cloudevents": "packages/zod-cloudevents",
     "zod-mock": "packages/zod-mock",
     "zod-nestjs": "packages/zod-nestjs",
     "zod-openapi": "packages/zod-openapi"

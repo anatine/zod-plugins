@@ -1,0 +1,27 @@
+{
+  "name": "@anatine/zod-cloudevents",
+  "version": "0.0.1",
+  "description": "Handle CloudEvents with Zod as a type-safe alternative to JSON Schema",
+  "license": "MIT",
+  "public": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatine/zod-plugins"
+  },
+  "homepage": "https://github.com/anatine/zod-plugins/tree/main/packages/zod-cloudevents",
+  "author": {
+    "name": "Brian McBride",
+    "url": "https://www.linkedin.com/in/brianmcbride"
+  },
+  "keywords": [
+    "zod",
+    "cloudevents",
+    "cloud events"
+  ],
+  "dependencies": {
+    "uuid": "^9.0.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.20.0"
+  }
+}

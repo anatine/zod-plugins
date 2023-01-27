@@ -1,0 +1,41 @@
+{
+  "name": "zod-cloudevents",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/zod-cloudevents/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/zod-cloudevents",
+        "tsConfig": "packages/zod-cloudevents/tsconfig.lib.json",
+        "packageJson": "packages/zod-cloudevents/package.json",
+        "main": "packages/zod-cloudevents/src/index.ts",
+        "assets": ["packages/zod-cloudevents/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/zod-cloudevents/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/zod-cloudevents/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": ["zod", "cloudevents"]
+}

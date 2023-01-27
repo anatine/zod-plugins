@@ -23,6 +23,7 @@
       "@anatine/graphql-zod-validation": [
         "packages/graphql-zod-validation/src/index.ts"
       ],
+      "@anatine/zod-cloudevents": ["packages/zod-cloudevents/src/index.ts"],
       "@anatine/zod-mock": ["packages/zod-mock/src/index.ts"],
       "@anatine/zod-nestjs": ["packages/zod-nestjs/src/index.ts"],
       "@anatine/zod-openapi": ["packages/zod-openapi/src/index.ts"]

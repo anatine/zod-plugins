@@ -2,7 +2,11 @@
   "cSpell.words": [
     "anatidae",
     "anatine",
+    "cloudevent",
+    "cloudevents",
     "codegen",
+    "datacontenttype",
+    "dataschema",
     "deepmerge",
     "esbuild",
     "jscutlery",
@@ -13,6 +17,8 @@
     "npmrc",
     "openapi",
     "randexp",
+    "specversion",
     "Unprocessable"
-  ]
+  ],
+  "eslint.validate": ["json"]
 }

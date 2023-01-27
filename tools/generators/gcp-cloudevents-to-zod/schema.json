@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "gcp-cloudevents-to-zod",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Library name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "directory": {
+      "type": "string",
+      "description": "Directory to create the library in",
+      "default": "",
+      "x-prompt": "What directory should the library be generated in?"
+    },
+    "clone": {
+      "type": "boolean",
+      "description": "Clone or update google-cloudevents.git",
+      "default": true,
+      "x-prompt": "Should the repository google-cloudevents.git be cloned and updated?"
+    },
+    "repository": {
+      "type": "string",
+      "description": "Destination folder for the repository",
+      "default": "./tmp/google-cloudevents",
+      "x-prompt": "Where should the repository google-cloudevents.git be cloned to?"
+    }
+  },
+  "required": ["name"]
+}
