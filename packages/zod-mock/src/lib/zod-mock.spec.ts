@@ -133,6 +133,14 @@ describe('zod-mock', () => {
     expect(new Date(mockData.date).getTime()).not.toBeNaN();
   });
 
+  it("should correctly generate date strings for date validated strings", () => {
+    const schema = z.object({
+      dateString: z.string().datetime(),
+    });
+    const mockData = generateMock(schema);
+    expect(new Date(mockData.dateString).getTime()).not.toBeNaN()
+  });
+
   describe('when handling min and max string lengths', () => {
     const createSchema = (min: number, max: number) =>
       z.object({
