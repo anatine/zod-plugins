@@ -86,7 +86,7 @@ const mockData = generateMock(schema, {
   stringMap: {
     locked: () => `this return set to the locked value`,
     email: () => `not a email anymore`,
-    primaryColor: faker.internet.color,
+    primaryColor: () => faker.internet.color,
   },
 });
 ```
