@@ -211,7 +211,7 @@ function parseString(
     (Object.keys(stringGenerators).find(
       (genKey) =>
         genKey.toLowerCase() === lowerCaseKeyName ||
-        checks.find((item) => item.kind === genKey)
+        checks.find((item) => item.kind.toUpperCase() === genKey.toUpperCase())
     ) as keyof typeof stringGenerators) || null;
 
   let generator: fakerFunction = defaultGenerator;
