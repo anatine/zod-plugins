@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.9.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.8.4...zod-mock-3.9.0) (2023-02-27)
+
+
+### Features
+
+* **zod-mock:** mock strings with explicit length ([c0f7670](https://github.com/anatine/zod-plugins/commit/c0f767083984d5555dfda6a5c0689eb5b8485e18))
+
 ### [3.8.4](https://github.com/anatine/zod-plugins/compare/zod-mock-3.8.3...zod-mock-3.8.4) (2023-02-21)
 
 
