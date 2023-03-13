@@ -413,6 +413,24 @@ describe('zod-mock', () => {
     expect(typeof value).toBe('string');
   });
 
+  it('ZodNativeEnum', () => {
+      enum NativeEnum {
+          a = 1,
+          b = 2,
+      }
+
+      const first = generateMock(z.nativeEnum(NativeEnum));
+      expect(first === 1 || first === 2);
+
+      const ConstAssertionEnum = {
+          a: 1,
+          b: 2
+      } as const;
+
+      const second = generateMock(z.nativeEnum(ConstAssertionEnum));
+      expect(second === 1 || second === 2);
+  });
+
   it('ZodFunction', () => {
     const func = generateMock(z.function(z.tuple([]), z.string()));
     expect(func).toBeTruthy();
