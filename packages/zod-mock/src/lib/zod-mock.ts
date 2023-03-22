@@ -384,8 +384,7 @@ function parseNativeEnum(
 ) {
   const fakerInstance = options?.faker || faker;
   const { values } = zodRef._def;
-  const value = fakerInstance.helpers.arrayElement(values);
-  return values[value];
+  return fakerInstance.helpers.objectValue(values);
 }
 
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
