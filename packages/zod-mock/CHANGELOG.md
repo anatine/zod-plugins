@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.10.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.9.0...zod-mock-3.10.0) (2023-03-22)
+
+
+### Features
+
+* extend native enum to support const assertion ([c70336a](https://github.com/anatine/zod-plugins/commit/c70336a16c30492b2e165f438da10528e86a4107))
+
 ## [3.9.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.8.4...zod-mock-3.9.0) (2023-02-27)
 
 
