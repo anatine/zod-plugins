@@ -1,4 +1,4 @@
-import type { SchemaObject } from 'openapi3-ts';
+import type { SchemaObject, ReferenceObject } from 'openapi3-ts';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
 
@@ -63,39 +63,55 @@ export const createZodDto = <T extends OpenApiZodAny>(
      * https://github.com/nestjs/swagger/blob/491b168cbff3003191e55ee96e77e69d8c1deb66/lib/plugin/plugin-constants.ts
      */
     public static _OPENAPI_METADATA_FACTORY():
-      | Record<string, SchemaObject>
+      | Record<string, SchemaObject | ReferenceObject>
       | undefined {
       const generatedSchema = generateSchema(zodSchema);
-      const properties = generatedSchema.properties ?? {};
-      for (const key in properties) {
-        /** For some reason the SchemaObject model has everything except for the
-         * required field, which is an array.
-         * The NestJS swagger module requires this to be a boolean representative
-         * of each property.
-         * This logic takes the SchemaObject, and turns the required field from an
-         * array to a boolean.
-         */
-        const schemaObject = properties[key] as SchemaObjectForMetadataFactory;
-        const schemaObjectWithRequiredField = {
-          ...schemaObject,
-        };
-        if (
-          (generatedSchema.required !== undefined,
-          generatedSchema.required?.includes(key))
-        ) {
-          schemaObjectWithRequiredField.required = true;
-        } else {
-          schemaObjectWithRequiredField.required = false;
-        }
-        properties[key] = schemaObjectWithRequiredField as any; // TODO: Fix this
-      }
-      return properties as Record<string, SchemaObject>;
+
+      const objIsReferenceObject = (
+        obj: SchemaObject | SchemaObjectForMetadataFactory | ReferenceObject
+      ): obj is ReferenceObject => (obj as ReferenceObject).$ref !== undefined;
+
+      const appendRequiredProperties = (
+        obj: SchemaObject | ReferenceObject
+      ): SchemaObjectForMetadataFactory | ReferenceObject => {
+        if (objIsReferenceObject(obj)) return obj;
+
+        if (!obj.properties) return obj as SchemaObjectForMetadataFactory;
+
+        const propertyKeyValues = Object.entries(obj.properties).map(
+          ([key, property]) => {
+            /** For some reason the SchemaObject model has everything except for the
+             * required field, which is an array.
+             * The NestJS swagger module requires this to be a boolean representative
+             * of each property.
+             * This logic takes the SchemaObject, and turns the required field from an
+             * array to a boolean.
+             */
+            const schemaObjectWithRequiredField: SchemaObjectForMetadataFactory = {
+              ...appendRequiredProperties(property),
+              required:
+                obj.required !== undefined && obj.required?.includes(key),
+            };
+
+            return [key, schemaObjectWithRequiredField];
+          }
+        );
+
+        return {
+          ...obj,
+          properties: Object.fromEntries(propertyKeyValues),
+        } as SchemaObjectForMetadataFactory;
+      };
+
+      const objectWithRequired = appendRequiredProperties(generatedSchema);
+
+      return objIsReferenceObject(objectWithRequired) ? undefined : objectWithRequired.properties;
     }
 
     public static create(input: unknown): CompatibleZodInfer<T> {
       return this.zodSchema.parse(input);
     }
-  };
+  }
 
   return <MergeZodSchemaOutput<T>>SchemaHolderClass;
 };

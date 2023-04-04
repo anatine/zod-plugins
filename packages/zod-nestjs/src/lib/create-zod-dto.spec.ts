@@ -69,4 +69,23 @@ describe('zod-nesjs create-zod-dto', () => {
     const result = TestDto.create({kind: Kind.B, value: 'val'})
     expect(result).toEqual({ kind: Kind.B, value: 'val' });
   });
+
+  it('should handle nested requires', () => {
+    const petSchema = z.object({
+      animal: z.object({
+        legs: z.number(),
+      }),
+    });
+
+    class TestDto extends createZodDto(petSchema) {}
+
+    // @ts-ignore
+    expect(TestDto._OPENAPI_METADATA_FACTORY()).toEqual({
+      animal: {
+        type: 'object',
+        properties: { legs: { type: 'number', required: true } },
+        required: true,
+      },
+    });
+  });
 });
