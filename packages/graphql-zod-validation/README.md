@@ -83,7 +83,7 @@ generates:
 Then the generator generates code with import statement like below.
 
 ```ts
-import { GeneratedInput } from './graphql'
+import { GeneratedInput } from './graphql';
 /* generates validation schema here */
 ```
 
@@ -109,7 +109,7 @@ generates:
 Then the generator generates code with import statement like below.
 
 ```ts
-import { IGeneratedInput } from './graphql'
+import { IGeneratedInput } from './graphql';
 /* generates validation schema here */
 ```
 
@@ -135,7 +135,7 @@ generates:
 Then the generator generates code with import statement like below.
 
 ```ts
-import { GeneratedInputI } from './graphql'
+import { GeneratedInputI } from './graphql';
 /* generates validation schema here */
 ```
 
@@ -192,7 +192,9 @@ Generates validation schema with more API based on directive schema. For example
 
 ```graphql
 input ExampleInput {
-  email: String! @required(msg: "Hello, World!") @constraint(minLength: 50, format: "email")
+  email: String!
+    @required(msg: "Hello, World!")
+    @constraint(minLength: 50, format: "email")
   message: String! @constraint(startsWith: "Hello")
 }
 ```
@@ -221,7 +223,7 @@ generates:
         constraint:
           minLength: min
           # Replace $1 with specified `startsWith` argument value of the constraint directive
-          startsWith: ["matches", "/^$1/"]
+          startsWith: ['matches', '/^$1/']
           format:
             email: email
 ```
@@ -231,9 +233,12 @@ Then generates yup validation schema like below.
 ```ts
 export function ExampleInputSchema(): yup.SchemaOf<ExampleInput> {
   return yup.object({
-    email: yup.string().defined().required("Hello, World!").min(50).email(),
-    message: yup.string().defined().matches(/^Hello/)
-  })
+    email: yup.string().defined().required('Hello, World!').min(50).email(),
+    message: yup
+      .string()
+      .defined()
+      .matches(/^Hello/),
+  });
 }
 ```
 
@@ -259,7 +264,7 @@ generates:
         constraint:
           minLength: min
           # Replace $1 with specified `startsWith` argument value of the constraint directive
-          startsWith: ["regex", "/^$1/", "message"]
+          startsWith: ['regex', '/^$1/', 'message']
           format:
             email: email
 ```
@@ -270,8 +275,8 @@ Then generates zod validation schema like below.
 export function ExampleInputSchema(): z.ZodSchema<ExampleInput> {
   return z.object({
     email: z.string().min(50).email(),
-    message: z.string().regex(/^Hello/, "message")
-  })
+    message: z.string().regex(/^Hello/, 'message'),
+  });
 }
 ```
 

@@ -1,8 +1,14 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -23,7 +29,7 @@ export type AttributeInput = {
 
 export enum ButtonComponentType {
   Button = 'BUTTON',
-  Submit = 'SUBMIT'
+  Submit = 'SUBMIT',
 }
 
 export type ComponentInput = {
@@ -51,7 +57,7 @@ export type EventInput = {
 
 export enum EventOptionType {
   Reload = 'RELOAD',
-  Retry = 'RETRY'
+  Retry = 'RETRY',
 }
 
 export type HttpInput = {
@@ -61,7 +67,7 @@ export type HttpInput = {
 
 export enum HttpMethod {
   Get = 'GET',
-  Post = 'POST'
+  Post = 'POST',
 }
 
 export type LayoutInput = {
@@ -87,7 +93,7 @@ export enum PageType {
   BasicAuth = 'BASIC_AUTH',
   Lp = 'LP',
   Restricted = 'RESTRICTED',
-  Service = 'SERVICE'
+  Service = 'SERVICE',
 }
 
 export type RegisterAddressInput = {
@@ -102,7 +108,7 @@ export type RegisterAddressInput = {
 
 export enum TestEnum {
   Enum1 = 'ENUM1',
-  Enum2 = 'ENUM2'
+  Enum2 = 'ENUM2',
 }
 
 export type TestExample = {

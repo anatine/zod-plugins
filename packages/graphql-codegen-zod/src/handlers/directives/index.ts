@@ -2,10 +2,15 @@ import { DirectiveNode } from 'graphql';
 import { DIRECTIVE_NAME } from '../../utils/constants';
 
 const directiveHandler = (
-  directives: readonly DirectiveNode[] = [],
-): { requiredMessage: string | undefined; extraValidations: Record<string, any> } => {
+  directives: readonly DirectiveNode[] = []
+): {
+  requiredMessage: string | undefined;
+  extraValidations: Record<string, any>;
+} => {
   let result: any = {};
-  const directive = directives.find((directive) => directive.name.value === DIRECTIVE_NAME);
+  const directive = directives.find(
+    (directive) => directive.name.value === DIRECTIVE_NAME
+  );
 
   if (directive) {
     directive.arguments?.forEach((item) => {

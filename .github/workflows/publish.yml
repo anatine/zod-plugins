@@ -77,11 +77,9 @@ jobs:
       - name: Return npm
         run: |
           echo 'legacy-peer-deps=true' > .npmrc
-          
+
       - name: Tag last-release
         shell: bash
         run: |
           git tag -f last-release
           git push origin last-release --force
-
-

@@ -1,2 +1,2 @@
-export * from './typesCheckers'
-export * from './constants'
+export * from './typesCheckers';
+export * from './constants';

@@ -1,4 +1,9 @@
-import { isBoolean, isNumber, isRef, isString } from '../../utils/typesCheckers';
+import {
+  isBoolean,
+  isNumber,
+  isRef,
+  isString,
+} from '../../utils/typesCheckers';
 
 const fieldNamedTypeHandler = (type: string) => {
   let result = 'z.';

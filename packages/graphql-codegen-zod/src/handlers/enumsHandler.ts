@@ -1,6 +1,10 @@
 import { IConfig, IEnums, ITypes } from '../types';
 
-const enumsHandler = (enums: IEnums, types: ITypes, config: IConfig): string => {
+const enumsHandler = (
+  enums: IEnums,
+  types: ITypes,
+  config: IConfig
+): string => {
   return Object.keys(enums)
     .map((key) => {
       let schemaName = `export const ${key}Schema`;

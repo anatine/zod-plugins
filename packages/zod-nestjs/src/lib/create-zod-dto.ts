@@ -27,12 +27,26 @@ export type CompatibleZodInfer<T extends CompatibleZodType> = T['_output'];
 
 export type MergeZodSchemaOutput<T extends CompatibleZodType> =
   T extends z.ZodDiscriminatedUnion<string, infer Options>
-    ? Merge<object, TupleToUnion<{[X in keyof Options]: Options[X] extends z.ZodType ? Options[X]['_output'] : Options[X]}>>
-      : T extends z.ZodUnion<infer UnionTypes>
-        ? UnionTypes extends z.ZodType[]
-          ? Merge<object, TupleToUnion<{[X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType ? UnionTypes[X]['_output'] : UnionTypes[X]}>>
-          : T['_output']
-        : T['_output'];
+    ? Merge<
+        object,
+        TupleToUnion<{
+          [X in keyof Options]: Options[X] extends z.ZodType
+            ? Options[X]['_output']
+            : Options[X];
+        }>
+      >
+    : T extends z.ZodUnion<infer UnionTypes>
+    ? UnionTypes extends z.ZodType[]
+      ? Merge<
+          object,
+          TupleToUnion<{
+            [X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType
+              ? UnionTypes[X]['_output']
+              : UnionTypes[X];
+          }>
+        >
+      : T['_output']
+    : T['_output'];
 
 export type ZodDtoStatic<T extends CompatibleZodType = CompatibleZodType> = {
   new (): MergeZodSchemaOutput<T>;
@@ -95,7 +109,7 @@ export const createZodDto = <T extends OpenApiZodAny>(
     public static create(input: unknown): CompatibleZodInfer<T> {
       return this.zodSchema.parse(input);
     }
-  };
+  }
 
   return <MergeZodSchemaOutput<T>>SchemaHolderClass;
 };

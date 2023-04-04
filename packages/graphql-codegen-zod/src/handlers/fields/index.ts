@@ -1,3 +1,3 @@
 import fieldsHandler from './fieldsHandler';
 
-export default fieldsHandler
+export default fieldsHandler;

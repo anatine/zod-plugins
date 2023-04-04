@@ -1,4 +1,3 @@
-
 # @anatine/zod-plugins
 
 Various modules to help leverage zod in all sort so places
@@ -29,8 +28,8 @@ Various modules to help leverage zod in all sort so places
   - Used with [GraphQL code generator](https://github.com/dotansimha/graphql-code-generator) plugin to generate form validation schema from your GraphQL schema.
   - Alternative codebase to [@anatine/graphql-zod-validation](./packages/graphql-zod-validation/README.md)
 
-----
+---
 
 This is a monorepo project utilizing the tooling [Nx](https://nx.dev).
 
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+//registry.npmjs.org/:\_authToken=${NPM_TOKEN}

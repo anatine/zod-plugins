@@ -4,24 +4,21 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 ## [3.10.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.9.0...zod-mock-3.10.0) (2023-03-22)
 
-
 ### Features
 
-* extend native enum to support const assertion ([c70336a](https://github.com/anatine/zod-plugins/commit/c70336a16c30492b2e165f438da10528e86a4107))
+- extend native enum to support const assertion ([c70336a](https://github.com/anatine/zod-plugins/commit/c70336a16c30492b2e165f438da10528e86a4107))
 
 ## [3.9.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.8.4...zod-mock-3.9.0) (2023-02-27)
 
-
 ### Features
 
-* **zod-mock:** mock strings with explicit length ([c0f7670](https://github.com/anatine/zod-plugins/commit/c0f767083984d5555dfda6a5c0689eb5b8485e18))
+- **zod-mock:** mock strings with explicit length ([c0f7670](https://github.com/anatine/zod-plugins/commit/c0f767083984d5555dfda6a5c0689eb5b8485e18))
 
 ### [3.8.4](https://github.com/anatine/zod-plugins/compare/zod-mock-3.8.3...zod-mock-3.8.4) (2023-02-21)
 
-
 ### Bug Fixes
 
-* mockData example ([d45a3ec](https://github.com/anatine/zod-plugins/commit/d45a3ec389880b0bb967024efdf33065fc250e43))
+- mockData example ([d45a3ec](https://github.com/anatine/zod-plugins/commit/d45a3ec389880b0bb967024efdf33065fc250e43))
 
 ### [3.8.3](https://github.com/anatine/zod-plugins/compare/zod-mock-3.8.2...zod-mock-3.8.3) (2023-01-17)
 
@@ -31,29 +28,25 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 ## [3.8.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.7.0...zod-mock-3.8.0) (2022-12-12)
 
-
 ### Features
 
-* Optional faker class instance as an option ([ec7b505](https://github.com/anatine/zod-plugins/commit/ec7b505f1c010bb173759431c6c5583ff23bc15a))
+- Optional faker class instance as an option ([ec7b505](https://github.com/anatine/zod-plugins/commit/ec7b505f1c010bb173759431c6c5583ff23bc15a))
 
 ## [3.7.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.6.0...zod-mock-3.7.0) (2022-12-12)
 
-
 ### Features
 
-* Updated Dependencies ([ad8cfc8](https://github.com/anatine/zod-plugins/commit/ad8cfc8fa40ca32736dbfb0d8906569d2a626cbe))
-
+- Updated Dependencies ([ad8cfc8](https://github.com/anatine/zod-plugins/commit/ad8cfc8fa40ca32736dbfb0d8906569d2a626cbe))
 
 ### Bug Fixes
 
-* array length in Zod Mock ([2811101](https://github.com/anatine/zod-plugins/commit/2811101302fb70e8e769f5d15345d880495e1485))
+- array length in Zod Mock ([2811101](https://github.com/anatine/zod-plugins/commit/2811101302fb70e8e769f5d15345d880495e1485))
 
 ## [3.6.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.11...zod-mock-3.6.0) (2022-10-05)
 
-
 ### Features
 
-* Support for @Param() in @anatine/zod-nestjs ([ba00144](https://github.com/anatine/zod-plugins/commit/ba001444d3554695fe6db6b0d449f03351d65c48))
+- Support for @Param() in @anatine/zod-nestjs ([ba00144](https://github.com/anatine/zod-plugins/commit/ba001444d3554695fe6db6b0d449f03351d65c48))
 
 ### [3.5.11](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.10...zod-mock-3.5.11) (2022-09-12)
 
@@ -65,59 +58,51 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 ### [3.5.7](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.6...zod-mock-3.5.7) (2022-08-17)
 
-
 ### Bug Fixes
 
-* replace findName to fullName ([8f04cbd](https://github.com/anatine/zod-plugins/commit/8f04cbdf0ffbb4ec98cc930e4ab8b95913736cc1))
+- replace findName to fullName ([8f04cbd](https://github.com/anatine/zod-plugins/commit/8f04cbdf0ffbb4ec98cc930e4ab8b95913736cc1))
 
 ### [3.5.6](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.5...zod-mock-3.5.6) (2022-07-28)
 
-
 ### Bug Fixes
 
-* nativeEnum random pick function bias  ([a082988](https://github.com/anatine/zod-plugins/commit/a0829880212bc43b858ee5ccf06fa7d9986d2479))
+- nativeEnum random pick function bias ([a082988](https://github.com/anatine/zod-plugins/commit/a0829880212bc43b858ee5ccf06fa7d9986d2479))
 
 ### [3.5.6](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.5...zod-mock-3.5.6) (2022-07-28)
 
-
 ### Bug Fixes
 
-* nativeEnum random pick function bias  ([a082988](https://github.com/anatine/zod-plugins/commit/a0829880212bc43b858ee5ccf06fa7d9986d2479))
+- nativeEnum random pick function bias ([a082988](https://github.com/anatine/zod-plugins/commit/a0829880212bc43b858ee5ccf06fa7d9986d2479))
 
 ### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
 
-
 ### Bug Fixes
 
-* nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
+- nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
 
 ### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
 
-
 ### Bug Fixes
 
-* nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
+- nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
 
 ### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
 
-
 ### Bug Fixes
 
-* nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
+- nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
 
 ### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
 
-
 ### Bug Fixes
 
-* nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
+- nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
 
 ### [3.5.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.4...zod-mock-3.5.5) (2022-07-26)
 
-
 ### Bug Fixes
 
-* nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
+- nativeEnum parsing ([a07e791](https://github.com/anatine/zod-plugins/commit/a07e79166fac0c53eb9569058f2de4e4b85edfda))
 
 ## [3.5.3](https://github.com/anatine/zod-plugins/compare/zod-mock-3.5.2...zod-mock-3.5.3) (2022-07-26)
 
@@ -125,10 +110,10 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 ### Bug Fixes
 
-* native enum error ([1ad2dff](https://github.com/anatine/zod-plugins/commit/1ad2dffbb37e5435581d4d8bdb127b56314700a8))
-* parseNativeEnum arg type ([5700a14](https://github.com/anatine/zod-plugins/commit/5700a142caf0b585bc7f204a4985c7a187d4a316))
-* record type and swap string min when greater than max ([ae51c01](https://github.com/anatine/zod-plugins/commit/ae51c01fb55c3c386c3362680b40df25c3706c14))
-* type issue in zod-mock ([b2cd0bd](https://github.com/anatine/zod-plugins/commit/b2cd0bd2e1192333f928b60fb8bc59a3321522c2))
+- native enum error ([1ad2dff](https://github.com/anatine/zod-plugins/commit/1ad2dffbb37e5435581d4d8bdb127b56314700a8))
+- parseNativeEnum arg type ([5700a14](https://github.com/anatine/zod-plugins/commit/5700a142caf0b585bc7f204a4985c7a187d4a316))
+- record type and swap string min when greater than max ([ae51c01](https://github.com/anatine/zod-plugins/commit/ae51c01fb55c3c386c3362680b40df25c3706c14))
+- type issue in zod-mock ([b2cd0bd](https://github.com/anatine/zod-plugins/commit/b2cd0bd2e1192333f928b60fb8bc59a3321522c2))
 
 # [3.3.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.2.2...zod-mock-3.3.0) (2022-07-14)
 
@@ -138,4 +123,4 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 ### Bug Fixes
 
-* Adding in new release githuib actions ([29a2455](https://github.com/anatine/zod-plugins/commit/29a2455161f7021df9f933d0d8b200a08fe31fde))
+- Adding in new release githuib actions ([29a2455](https://github.com/anatine/zod-plugins/commit/29a2455161f7021df9f933d0d8b200a08fe31fde))

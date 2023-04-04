@@ -5,7 +5,7 @@ Helper methods for using [Zod](https://github.com/colinhacks/zod) in a NestJS pr
 - Validation pipe on data
 - Patch to Swagger module
 
-----
+---
 
 ## Installation
 
@@ -16,7 +16,7 @@ While `zod` is necessary for operation, `openapi3-ts` is for type-casting.
 npm install openapi3-ts zod @anatine/zod-nestjs
 ```
 
-----
+---
 
 ## Usage
 
@@ -180,4 +180,3 @@ bootstrap();
 - ### [zod-dto](https://github.com/kbkk/abitia/tree/master/packages/zod-dto)
 
   Extensive use and inspiration from zod-dto.
-  

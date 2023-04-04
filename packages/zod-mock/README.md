@@ -2,7 +2,7 @@
 
 Generates a mock data object using [faker.js](https://www.npmjs.com/package/@faker-js/faker) from a [Zod](https://github.com/colinhacks/zod) schema.
 
-----
+---
 
 ## Installation
 
@@ -13,7 +13,7 @@ While `zod` is necessary for operation, `openapi3-ts` is for type-casting.
 npm install @faker-js/faker zod @anatine/zod-mock
 ```
 
-----
+---
 
 ## Usage
 
@@ -22,18 +22,18 @@ npm install @faker-js/faker zod @anatine/zod-mock
 ```typescript
 import { generateMock } from '@anatine/zod-mock';
 const schema = z.object({
-      uid: z.string().nonempty(),
-      theme: z.enum([`light`, `dark`]),
-      email: z.string().email().optional(),
-      phoneNumber: z.string().min(10).optional(),
-      avatar: z.string().url().optional(),
-      jobTitle: z.string().optional(),
-      otherUserEmails: z.array(z.string().email()),
-      stringArrays: z.array(z.string()),
-      stringLength: z.string().transform((val) => val.length),
-      numberCount: z.number().transform((item) => `total value = ${item}`),
-      age: z.number().min(18).max(120),
-    });
+  uid: z.string().nonempty(),
+  theme: z.enum([`light`, `dark`]),
+  email: z.string().email().optional(),
+  phoneNumber: z.string().min(10).optional(),
+  avatar: z.string().url().optional(),
+  jobTitle: z.string().optional(),
+  otherUserEmails: z.array(z.string().email()),
+  stringArrays: z.array(z.string()),
+  stringLength: z.string().transform((val) => val.length),
+  numberCount: z.number().transform((item) => `total value = ${item}`),
+  age: z.number().min(18).max(120),
+});
 const mockData = generateMock(schema);
 // ...
 ```
@@ -55,20 +55,14 @@ This will generate mock data similar to:
     "Elena.Torphy33@example.org",
     "Kelli_Bartoletti@example.com"
   ],
-  "stringArrays": [
-    "quisquam",
-    "corrupti",
-    "atque",
-    "sunt",
-    "voluptatem"
-  ],
+  "stringArrays": ["quisquam", "corrupti", "atque", "sunt", "voluptatem"],
   "stringLength": 4,
   "numberCount": "total value = 25430",
   "age": 110
 }
 ```
 
-----
+---
 
 ## Overriding string mocks
 
@@ -91,7 +85,7 @@ const mockData = generateMock(schema, {
 });
 ```
 
-----
+---
 
 ## Adding a seed generator
 
@@ -108,7 +102,7 @@ const second = generateMock(schema, { seed });
 expect(first).toEqual(second);
 ```
 
-----
+---
 
 ## Behind the Scenes
 
@@ -128,18 +122,18 @@ expect(first).toEqual(second);
 
   If **`zod-mock`** does not yet support a Zod type used in your schema, you may provide a backup mock function to use for that particular type.
 
-  ``` typescript
+  ```typescript
   const schema = z.object({
-    anyVal: z.any()
+    anyVal: z.any(),
   });
   const mockData = generateMock(schema, {
     backupMocks: {
-      ZodAny: () => 'a value'
-    }
+      ZodAny: () => 'a value',
+    },
   });
   ```
 
-----
+---
 
 ## Missing Features
 
@@ -156,7 +150,7 @@ expect(first).toEqual(second);
   - ZodUnion
   - ZodUnknown
 
-----
+---
 
 ## Credits
 
@@ -164,6 +158,6 @@ expect(first).toEqual(second);
 
   A great lib that provided some insights on dealing with various zod types.
 
-----
+---
 
 This library is part of a nx monorepo [@anatine/zod-plugins](https://github.com/anatine/zod-plugins).

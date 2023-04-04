@@ -184,25 +184,27 @@ function parseObject({
     additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
   else if (zodRef._def.unknownKeys === 'passthrough')
     additionalProperties = true;
-  else if (zodRef._def.unknownKeys === 'strict')
-    additionalProperties = false;
+  else if (zodRef._def.unknownKeys === 'strict') additionalProperties = false;
 
   // So that `undefined` values don't end up in the schema and be weird
-  additionalProperties = additionalProperties != null ? { additionalProperties } : {};
+  additionalProperties =
+    additionalProperties != null ? { additionalProperties } : {};
 
-  const requiredProperties = Object.keys((zodRef as z.AnyZodObject).shape).filter((key) => {
+  const requiredProperties = Object.keys(
+    (zodRef as z.AnyZodObject).shape
+  ).filter((key) => {
     const item = (zodRef as z.AnyZodObject).shape[key];
     return (
       !(
         item.isOptional() ||
         item instanceof z.ZodDefault ||
         item._def.typeName === 'ZodDefault'
-      ) &&
-      !(item instanceof z.ZodNever || item._def.typeName === 'ZodDefault')
+      ) && !(item instanceof z.ZodNever || item._def.typeName === 'ZodDefault')
     );
   });
 
-  const required = requiredProperties.length > 0 ? { required: requiredProperties } : {};
+  const required =
+    requiredProperties.length > 0 ? { required: requiredProperties } : {};
 
   return merge(
     {

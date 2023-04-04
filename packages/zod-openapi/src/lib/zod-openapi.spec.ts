@@ -397,7 +397,7 @@ describe('zodOpenapi', () => {
         })
         .strict(),
       {
-        description: "Super strict",
+        description: 'Super strict',
       }
     );
     const apiSchema = generateSchema(zodSchema);
@@ -409,7 +409,7 @@ describe('zodOpenapi', () => {
         aNumber: { type: 'number' },
       },
       additionalProperties: false,
-      description: "Super strict",
+      description: 'Super strict',
     });
   });
 

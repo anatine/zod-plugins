@@ -1,4 +1,4 @@
 module.exports = () => ({
   autoDetect: true,
-  runMode: 'onsave'
+  runMode: 'onsave',
 });

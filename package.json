@@ -16,7 +16,8 @@
     "preaffected:version": "npm run affected:build",
     "affected:build": "nx affected:build",
     "affected:publish": "nx affected --target=publish",
-    "affected:github": "nx affected --parallel=1  --target=github"
+    "affected:github": "nx affected --parallel=1  --target=github",
+    "format": "prettier -w ."
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.7.1",

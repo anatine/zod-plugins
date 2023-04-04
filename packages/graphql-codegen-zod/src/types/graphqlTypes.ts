@@ -6,5 +6,5 @@ export const TYPE_NAMED = 'NamedType';
 // THIS ARE TYPES OF FIELD VALUE
 export const TYPE_INPUT = 'Input';
 export const TYPE_BOOLEAN = 'Boolean';
-export const TYPE_STRINGS = ['ID', 'String']
-export const TYPE_NUMBERS = ['Int', 'Float']
+export const TYPE_STRINGS = ['ID', 'String'];
+export const TYPE_NUMBERS = ['Int', 'Float'];
