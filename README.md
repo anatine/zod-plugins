@@ -32,5 +32,3 @@ Various modules to help leverage zod in all sort so places
 ----
 
 This is a monorepo project utilizing the tooling [Nx](https://nx.dev).
-
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}
