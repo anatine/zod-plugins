@@ -110,6 +110,9 @@ function parseString({
       case 'url':
         baseSchema.format = 'uri';
         break;
+      case 'datetime':
+        baseSchema.format = 'date-time';
+        break;
       case 'length':
         baseSchema.minLength = item.value;
         baseSchema.maxLength = item.value;
