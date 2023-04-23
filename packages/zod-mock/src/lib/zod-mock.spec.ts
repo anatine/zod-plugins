@@ -367,6 +367,33 @@ describe('zod-mock', () => {
       expect(mock).toEqual(notUndefined());
     });
 
+    it('should use a user provided generator when a generator takes 2 arguments', () => {
+      // Given
+      const custom = z.custom<Date>((val) => val instanceof Date);
+      const anyDate = () => '2023-01-01T00:00:00.000Z';
+      const zodCustomBackupMock = (ref: z.ZodType): string | void => {
+        if (ref === (custom as z.ZodEffects<z.ZodAny>)._def.schema) {
+          return anyDate();
+        }
+      };
+
+      // When
+      const mock = generateMock(custom, {
+        backupMocks: { ZodAny: zodCustomBackupMock },
+      });
+
+      // Then
+      expect(mock).toEqual(anyDate())
+
+      // When
+      const mock2 = generateMock(z.custom(() => false), {
+        backupMocks: { ZodAny: zodCustomBackupMock },
+      })
+
+      // Then
+      expect(mock2).toBeUndefined()
+    })
+
     it('should work with objects and arrays', () => {
       const schema = z.object({
         data: z.array(z.undefined()).length(1),

@@ -532,7 +532,7 @@ export interface GenerateMockOptions {
    * The functions in this map will only be used if this library
    * is unable to find an appropriate mocking function to use.
    */
-  backupMocks?: Record<string, () => any | undefined>;
+  backupMocks?: Record<string, (zodRef: AnyZodObject, options?: GenerateMockOptions) => any | undefined>;
 
   /**
    * How many entries to create for records
@@ -579,7 +579,7 @@ export function generateMock<T extends ZodTypeAny>(
       // workaround for unimplemented Zod types
       const generator = options.backupMocks[typeName];
       if (generator) {
-        return generator();
+        return generator(zodRef as never, options);
       }
     } else if (options?.throwOnUnknownType) {
       throw new ZodMockError(typeName);
