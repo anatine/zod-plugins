@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.11.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.10.0...zod-mock-3.11.0) (2023-04-23)
+
+
+### Features
+
+* **zod-mock:** pass zodRef and options to generator function which defined in backupMocks ([a7a8acf](https://github.com/anatine/zod-plugins/commit/a7a8acfb31e391106fc314f90c6301733c5c491f))
+
 ## [3.10.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.9.0...zod-mock-3.10.0) (2023-03-22)
 
 
