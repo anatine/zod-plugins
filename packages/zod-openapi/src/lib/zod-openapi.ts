@@ -442,6 +442,13 @@ function parseNever({
   );
 }
 
+function parseBranded({
+  schemas,
+  zodRef,
+}: ParsingArgs<z.ZodBranded<z.ZodAny, string>>): SchemaObject {
+  return merge(generateSchema(zodRef._def.type), ...schemas);
+}
+
 function catchAllParser({
   zodRef,
   schemas,
@@ -474,6 +481,7 @@ const workerMap = {
   ZodUnion: parseUnion,
   ZodDiscriminatedUnion: parseDiscriminatedUnion,
   ZodNever: parseNever,
+  ZodBranded: parseBranded,
   // TODO Transform the rest to schemas
   ZodUndefined: catchAllParser,
   // TODO: `prefixItems` is allowed in OpenAPI 3.1 which can be used to create tuples
