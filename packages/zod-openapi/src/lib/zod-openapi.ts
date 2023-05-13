@@ -44,8 +44,6 @@ function parseTransformation({
 }: ParsingArgs<z.ZodTransformer<never> | z.ZodEffects<never>>): SchemaObject {
   const input = generateSchema(zodRef._def.schema, useOutput);
 
-  zodRef._def;
-
   let output = 'undefined';
   if (useOutput && zodRef._def.effect) {
     const effect =
@@ -96,7 +94,6 @@ function parseString({
   };
   const { checks = [] } = zodRef._def;
   checks.forEach((item) => {
-    item; //?
     switch (item.kind) {
       case 'email':
         baseSchema.format = 'email';
