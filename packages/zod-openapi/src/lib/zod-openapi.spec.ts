@@ -104,6 +104,35 @@ describe('zodOpenapi', () => {
     expect((apiSchema.properties?.aNever as SchemaObject).readOnly).toEqual(
       true
     );
+  })
+
+  it('should support branded types', () => {
+    const zodSchema = extendApi(
+      z.object({
+        aBrandedString: z.string().describe('A branded test string').brand('BrandedString').optional(),
+        aBrandedNumber: z.number().brand('BrandedNumber').optional(),
+        aBrandedBigInt: z.bigint().brand('BrandedBigInt'),
+        aBrandedBoolean: z.boolean().brand('BrandedBoolean'),
+        aBrandedDate: z.date().brand('BrandedDate'),
+      }),
+      {
+        description: `Branded primitives`
+      }
+    );
+    const apiSchema = generateSchema(zodSchema);
+
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aBrandedString: { description: 'A branded test string', type: 'string' },
+        aBrandedNumber: { type: 'number' },
+        aBrandedBigInt: { type: 'integer', format: 'int64' },
+        aBrandedBoolean: { type: 'boolean' },
+        aBrandedDate: { type: 'string', format: 'date-time' },
+      },
+      required: ['aBrandedBigInt', 'aBrandedBoolean', 'aBrandedDate'],
+      description: 'Branded primitives',
+    });
   });
 
   it('should support string and string constraints', () => {
