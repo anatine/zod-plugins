@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.13.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.12.0...zod-openapi-1.13.0) (2023-05-13)
+
+
+### Features
+
+* **zod-openapi:** add support for branded types ([3df8e00](https://github.com/anatine/zod-plugins/commit/3df8e00dd9ed602e6a0b44e9c4b2d7fec4f89607))
+
 ### [1.12.1](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.12.0...zod-openapi-1.12.1) (2023-04-23)
 
 ## [1.12.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.11.1...zod-openapi-1.12.0) (2023-01-17)
