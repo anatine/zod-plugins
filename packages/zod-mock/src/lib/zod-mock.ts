@@ -83,16 +83,16 @@ function findMatchingFaker(
         // TODO: it would be good to clean up these type castings
         const fn = fakerInstance[sectionKey as keyof FakerClass]?.[
           fnName as never
-        ] as any;
+          ] as any;
         if (typeof fn === 'function') {
           try {
             // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
             // with incorrect parameters
             const mock = fn();
             return typeof mock === 'string' ||
-              typeof mock === 'number' ||
-              typeof mock === 'boolean' ||
-              mock instanceof Date
+            typeof mock === 'number' ||
+            typeof mock === 'boolean' ||
+            mock instanceof Date
               ? fnName
               : undefined;
           } catch (_error) {
@@ -120,7 +120,7 @@ function parseString(
   if (regexCheck && 'regex' in regexCheck) {
     const generator = new randExp(regexCheck.regex);
     generator.randInt = (min: number, max: number) =>
-      fakerInstance.datatype.number({ min, max });
+      fakerInstance.number.int({ min, max });
     const max = checks.find((check) => check.kind === 'max');
     if (max && 'value' in max && typeof max.value === 'number') {
       generator.max = max.value;
@@ -173,22 +173,22 @@ function parseString(
     sortedStringOptions.max = temp;
   }
 
-  const targetStringLength = fakerInstance.datatype.number(sortedStringOptions);
+  const targetStringLength = fakerInstance.number.int(sortedStringOptions);
   /**
    * Returns a random lorem word using `faker.lorem.word(length)`.
    * This method can return undefined for large word lengths. If undefined is returned
    * when specifying a large word length, will return `faker.lorem.word()` instead.
    */
   const defaultGenerator = () =>
-    fakerInstance.lorem.word(targetStringLength) || fakerInstance.lorem.word();
+    targetStringLength > 10 ? fakerInstance.lorem.word() : fakerInstance.lorem.word({ length: targetStringLength })
   const dateGenerator = () => fakerInstance.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
     email: fakerInstance.internet.exampleEmail,
-    uuid: fakerInstance.datatype.uuid,
-    uid: fakerInstance.datatype.uuid,
+    uuid: fakerInstance.string.uuid,
+    uid: fakerInstance.string.uuid,
     url: fakerInstance.internet.url,
-    name: fakerInstance.name.fullName,
+    name: fakerInstance.person.fullName,
     date: dateGenerator,
     dateTime: dateGenerator,
     colorHex: fakerInstance.internet.color,
@@ -239,7 +239,7 @@ function parseString(
   let val = generator().toString();
   const delta = targetStringLength - val.length;
   if (stringOptions.min != null && val.length < stringOptions.min) {
-    val = val + fakerInstance.random.alpha(delta);
+    val = val + fakerInstance.string.alpha(delta);
   }
 
   return val.slice(0, stringOptions.max);
@@ -268,11 +268,11 @@ function parseDate(zodRef: z.ZodDate, options?: GenerateMockOptions) {
   });
 
   if (min !== undefined && max !== undefined) {
-    return fakerInstance.date.between(min, max);
+    return fakerInstance.date.between({ from: min, to: max });
   } else if (min !== undefined && max === undefined) {
-    return fakerInstance.date.soon(undefined, min);
+    return fakerInstance.date.soon({ refDate: min });
   } else if (min === undefined && max !== undefined) {
-    return fakerInstance.date.recent(undefined, max);
+    return fakerInstance.date.recent({ refDate: max });
   } else {
     return fakerInstance.date.soon();
   }
@@ -298,7 +298,7 @@ function parseNumber(
         break;
     }
   });
-  return fakerInstance.datatype.number(fakerOptions);
+  return fakerInstance.number.int(fakerOptions);
 }
 
 function parseOptional(
@@ -336,7 +336,7 @@ function parseSet(zodRef: z.ZodSet<never>, options?: GenerateMockOptions) {
   if (min > max) {
     min = max;
   }
-  const targetLength = fakerInstance.datatype.number({ min, max });
+  const targetLength = fakerInstance.number.int({ min, max });
   const results = new Set<ZodTypeAny>();
   while (results.size < targetLength) {
     results.add(generateMock<ZodTypeAny>(zodRef._def.valueType, options));
@@ -532,7 +532,10 @@ export interface GenerateMockOptions {
    * The functions in this map will only be used if this library
    * is unable to find an appropriate mocking function to use.
    */
-  backupMocks?: Record<string, (zodRef: AnyZodObject, options?: GenerateMockOptions) => any | undefined>;
+  backupMocks?: Record<
+    string,
+    (zodRef: AnyZodObject, options?: GenerateMockOptions) => any | undefined
+  >;
 
   /**
    * How many entries to create for records
