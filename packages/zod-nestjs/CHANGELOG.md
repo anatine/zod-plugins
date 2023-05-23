@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.10.0](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.9.2...zod-nestjs-1.10.0) (2023-05-23)
+
+
+### Features
+
+* Dep updates ([156b026](https://github.com/anatine/zod-plugins/commit/156b026391eba70c00df8b0f96ec402db1ceed4c))
+
 ### [1.9.2](https://github.com/anatine/zod-plugins/compare/zod-nestjs-1.9.1...zod-nestjs-1.9.2) (2023-01-17)
 
 

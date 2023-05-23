@@ -1,6 +1,6 @@
 {
   "name": "@anatine/zod-nestjs",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "description": "Zod helper methods for NestJS",
   "main": "src/index.js",
   "types": "src/index.d.ts",
