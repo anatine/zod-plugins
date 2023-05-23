@@ -1,4 +1,4 @@
-import type { SchemaObject } from 'openapi3-ts';
+import type { SchemaObject, SchemaObjectType } from 'openapi3-ts';
 import merge from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
@@ -184,29 +184,31 @@ function parseObject({
     additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
   else if (zodRef._def.unknownKeys === 'passthrough')
     additionalProperties = true;
-  else if (zodRef._def.unknownKeys === 'strict')
-    additionalProperties = false;
+  else if (zodRef._def.unknownKeys === 'strict') additionalProperties = false;
 
   // So that `undefined` values don't end up in the schema and be weird
-  additionalProperties = additionalProperties != null ? { additionalProperties } : {};
+  additionalProperties =
+    additionalProperties != null ? { additionalProperties } : {};
 
-  const requiredProperties = Object.keys((zodRef as z.AnyZodObject).shape).filter((key) => {
+  const requiredProperties = Object.keys(
+    (zodRef as z.AnyZodObject).shape
+  ).filter((key) => {
     const item = (zodRef as z.AnyZodObject).shape[key];
     return (
       !(
         item.isOptional() ||
         item instanceof z.ZodDefault ||
         item._def.typeName === 'ZodDefault'
-      ) &&
-      !(item instanceof z.ZodNever || item._def.typeName === 'ZodDefault')
+      ) && !(item instanceof z.ZodNever || item._def.typeName === 'ZodDefault')
     );
   });
 
-  const required = requiredProperties.length > 0 ? { required: requiredProperties } : {};
+  const required =
+    requiredProperties.length > 0 ? { required: requiredProperties } : {};
 
-  return merge(
+  const result = merge(
     {
-      type: 'object',
+      type: 'object' as SchemaObjectType,
       properties: iterateZodObject({
         zodRef: zodRef as OpenApiZodAnyObject,
         schemas,
@@ -218,6 +220,7 @@ function parseObject({
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
+  return result;
 }
 
 function parseRecord({
@@ -227,7 +230,7 @@ function parseRecord({
 }: ParsingArgs<z.ZodRecord>): SchemaObject {
   return merge(
     {
-      type: 'object',
+      type: 'object' as SchemaObjectType,
       additionalProperties:
         zodRef._def.valueType instanceof z.ZodUnknown
           ? {}
@@ -243,7 +246,7 @@ function parseBigInt({
   schemas,
 }: ParsingArgs<z.ZodBigInt>): SchemaObject {
   return merge(
-    { type: 'integer', format: 'int64' },
+    { type: 'integer' as SchemaObjectType, format: 'int64' },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -254,7 +257,7 @@ function parseBoolean({
   schemas,
 }: ParsingArgs<z.ZodBoolean>): SchemaObject {
   return merge(
-    { type: 'boolean' },
+    { type: 'boolean' as SchemaObjectType },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -262,7 +265,7 @@ function parseBoolean({
 
 function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
   return merge(
-    { type: 'string', format: 'date-time' },
+    { type: 'string' as SchemaObjectType, format: 'date-time' },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -271,7 +274,7 @@ function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
 function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   return merge(
     {
-      type: 'string',
+      type: 'string' as SchemaObjectType,
       format: 'null',
       nullable: true,
     },
@@ -327,7 +330,7 @@ function parseArray({
 
   return merge(
     {
-      type: 'array',
+      type: 'array' as SchemaObjectType,
       items: generateSchema(zodRef.element, useOutput),
       ...constraints,
     },

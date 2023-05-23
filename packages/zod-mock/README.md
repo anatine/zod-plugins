@@ -110,6 +110,46 @@ expect(first).toEqual(second);
 
 ----
 
+## Adding a custom mock mapper
+
+Once drilled down to deliver a string, number, boolean, or other primitive value a function with a matching name is searched for in faker.
+
+You can add your own key/fn mapper in the options.
+
+```typescript
+
+export function mockeryMapper(
+  keyName: string,
+  fakerInstance: Faker
+): FakerFunction | undefined {
+  const keyToFnMap: Record<string, FakerFunction> = {
+    image: fakerInstance.image.url,
+    imageurl: fakerInstance.image.url,
+    number: fakerInstance.number.int,
+    float: fakerInstance.number.float,
+    hexadecimal: fakerInstance.number.hex,
+    uuid: fakerInstance.string.uuid,
+    boolean: fakerInstance.datatype.boolean,
+    // Email more guaranteed to be random for testing
+    email: () => fakerInstance.database.mongodbObjectId() + '@example.com'
+  };
+  return keyName && keyName.toLowerCase() in keyToFnMap
+    ? keyToFnMap[keyName.toLowerCase() as never]
+    : undefined;
+}
+
+const schema = z.object({
+  locked: z.string(),
+  email: z.string().email(),
+  primaryColor: z.string(),
+});
+
+const result = generateMock(schema, { mockeryMapper });
+
+```
+
+----
+
 ## Behind the Scenes
 
 **`zod-mock`** tries to generate mock data from two sources.

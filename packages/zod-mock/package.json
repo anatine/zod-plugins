@@ -21,7 +21,7 @@
     "faker-js"
   ],
   "peerDependencies": {
-    "@faker-js/faker": "^7.0.0"
+    "@faker-js/faker": "^7.0.0 || ^8.0.0"
   },
   "dependencies": {
     "randexp": "^0.5.3"

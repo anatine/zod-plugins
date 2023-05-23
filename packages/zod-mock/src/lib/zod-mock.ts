@@ -9,6 +9,10 @@ import {
   ZodString,
   ZodRecord,
 } from 'zod';
+import {
+  MockeryMapper,
+  mockeryMapper as defaultMapper,
+} from './zod-mockery-map';
 
 type FakerClass = typeof faker;
 
@@ -45,16 +49,22 @@ function parseRecord<
   }, {});
 }
 
-type fakerFunction = () => string | number | boolean | Date;
+type FakerFunction = () => string | number | boolean | Date;
 
 function findMatchingFaker(
   keyName: string,
-  fakerOption?: FakerClass
-): undefined | fakerFunction | void {
+  fakerOption?: FakerClass,
+  mockeryMapper: MockeryMapper = defaultMapper
+): undefined | FakerFunction | void {
   const fakerInstance = fakerOption || faker;
   const lowerCaseKeyName = keyName.toLowerCase();
   const withoutDashesUnderscores = lowerCaseKeyName.replace(/_|-/g, '');
   let fnName: string | undefined = undefined;
+
+  // Well, all the dep warnings are going to require mapping
+  const mapped = mockeryMapper(keyName, fakerInstance);
+  if (mapped) return mapped;
+
   const sectionName = Object.keys(fakerInstance).find((sectionKey) => {
     return Object.keys(
       fakerInstance[sectionKey as keyof FakerClass] || {}
@@ -66,33 +76,34 @@ function findMatchingFaker(
           : undefined;
 
       // Skipping depreciated items
-      const depreciated: Record<string, string[]> = {
-        random: ['image', 'number', 'float', 'uuid', 'boolean', 'hexaDecimal'],
-      };
-      if (
-        Object.keys(depreciated).find((key) =>
-          key === sectionKey
-            ? depreciated[key].find((fn) => fn === fnName)
-            : false
-        )
-      ) {
-        return undefined;
-      }
+      // const depreciated: Record<string, string[]> = {
+      //   random: ['image', 'number', 'float', 'uuid', 'boolean', 'hexaDecimal'],
+      // };
+      // if (
+      //   Object.keys(depreciated).find((key) =>
+      //     key === sectionKey
+      //       ? depreciated[key].find((fn) => fn === fnName)
+      //       : false
+      //   )
+      // ) {
+      //   return undefined;
+      // }
 
       if (fnName) {
         // TODO: it would be good to clean up these type castings
         const fn = fakerInstance[sectionKey as keyof FakerClass]?.[
           fnName as never
-          ] as any;
+        ] as any;
+
         if (typeof fn === 'function') {
           try {
             // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
             // with incorrect parameters
             const mock = fn();
             return typeof mock === 'string' ||
-            typeof mock === 'number' ||
-            typeof mock === 'boolean' ||
-            mock instanceof Date
+              typeof mock === 'number' ||
+              typeof mock === 'boolean' ||
+              mock instanceof Date
               ? fnName
               : undefined;
           } catch (_error) {
@@ -180,7 +191,9 @@ function parseString(
    * when specifying a large word length, will return `faker.lorem.word()` instead.
    */
   const defaultGenerator = () =>
-    targetStringLength > 10 ? fakerInstance.lorem.word() : fakerInstance.lorem.word({ length: targetStringLength })
+    targetStringLength > 10
+      ? fakerInstance.lorem.word()
+      : fakerInstance.lorem.word({ length: targetStringLength });
   const dateGenerator = () => fakerInstance.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
@@ -218,13 +231,17 @@ function parseString(
         checks.find((item) => item.kind.toUpperCase() === genKey.toUpperCase())
     ) as keyof typeof stringGenerators) || null;
 
-  let generator: fakerFunction = defaultGenerator;
+  let generator: FakerFunction = defaultGenerator;
 
   if (stringType) {
     generator = stringGenerators[stringType];
   } else {
     const foundFaker = options?.keyName
-      ? findMatchingFaker(options?.keyName, options.faker)
+      ? findMatchingFaker(
+          options?.keyName,
+          options.faker,
+          options.mockeryMapper
+        )
       : undefined;
     if (foundFaker) {
       generator = foundFaker;
@@ -318,7 +335,7 @@ function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
   if (min > max) {
     min = max;
   }
-  const targetLength = fakerInstance.datatype.number({ min, max });
+  const targetLength = fakerInstance.number.int({ min, max });
   const results: ZodTypeAny[] = [];
   for (let index = 0; index < targetLength; index++) {
     results.push(generateMock<ZodTypeAny>(zodRef._def.type, options));
@@ -524,6 +541,12 @@ export interface GenerateMockOptions {
    * parameters at this time.
    */
   stringMap?: Record<string, (...args: any[]) => string>;
+
+  /**
+   * This is a function that can be provided to match a key name with a specific mock
+   * Otherwise it searches the faker library for a matching function name
+   */
+  mockeryMapper?: MockeryMapper;
 
   /**
    * This is a mapping of field name to mock generator function.

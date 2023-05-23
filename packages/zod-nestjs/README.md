@@ -9,11 +9,11 @@ Helper methods for using [Zod](https://github.com/colinhacks/zod) in a NestJS pr
 
 ## Installation
 
-Both openapi3-ts and zod are peer dependencies instead of dependant packages.
-While `zod` is necessary for operation, `openapi3-ts` is for type-casting.
+@anatine/zod-openapi, openapi3-ts, and zod are peer dependencies instead of dependant packages.
+While `zod` is necessary for operation, `openapi3-ts` is for type-casting. `@anatine/zod-openapi` does the actual conversion
 
 ```shell
-npm install openapi3-ts zod @anatine/zod-nestjs
+npm install openapi3-ts zod @anatine/zod-openapi @anatine/zod-nestjs 
 ```
 
 ----

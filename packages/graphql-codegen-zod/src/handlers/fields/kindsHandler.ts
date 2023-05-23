@@ -18,9 +18,8 @@ const fieldKindHandler = ({
   if (fieldName === 'arrayRequired') {
     console.log({ fieldName, type, extra, isOptional });
   }
-  if (isRequired(type.kind)) {
+  if (isRequired(type.kind) && 'type' in type) {
     result = `${fieldKindHandler({
-      // @ts-expect-error
       type: type.type,
       fieldName,
       extra,
@@ -28,9 +27,8 @@ const fieldKindHandler = ({
     })}`;
   }
 
-  if (isArray(type.kind)) {
+  if (isArray(type.kind) && 'type' in type) {
     result = `z.array(${fieldKindHandler({
-      // @ts-expect-error
       type: type.type,
       fieldName,
       extra,

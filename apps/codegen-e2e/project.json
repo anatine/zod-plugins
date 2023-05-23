@@ -6,14 +6,11 @@
   "implicitDependencies": ["graphql-codegen-zod", "graphql-zod-validation"],
   "targets": {
     "test": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "nx:run-commands",
       "options": {
         "color": true,
         "parallel": false,
-        "commands": [
-          "echo \"Cleaning previously generated files...\"",
-          "rm -rf ./apps/codegen-e2e/generated"
-        ]
+        "commands": ["echo \"Code test not enabled...\""]
       }
     }
   },
