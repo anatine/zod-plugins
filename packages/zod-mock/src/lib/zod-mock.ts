@@ -83,16 +83,16 @@ function findMatchingFaker(
         // TODO: it would be good to clean up these type castings
         const fn = fakerInstance[sectionKey as keyof FakerClass]?.[
           fnName as never
-          ] as any;
+        ] as any;
         if (typeof fn === 'function') {
           try {
             // some Faker functions, such as `faker.mersenne.seed`, are known to throw errors if called
             // with incorrect parameters
             const mock = fn();
             return typeof mock === 'string' ||
-            typeof mock === 'number' ||
-            typeof mock === 'boolean' ||
-            mock instanceof Date
+              typeof mock === 'number' ||
+              typeof mock === 'boolean' ||
+              mock instanceof Date
               ? fnName
               : undefined;
           } catch (_error) {
@@ -180,7 +180,9 @@ function parseString(
    * when specifying a large word length, will return `faker.lorem.word()` instead.
    */
   const defaultGenerator = () =>
-    targetStringLength > 10 ? fakerInstance.lorem.word() : fakerInstance.lorem.word({ length: targetStringLength })
+    targetStringLength > 10
+      ? fakerInstance.lorem.word()
+      : fakerInstance.lorem.word({ length: targetStringLength });
   const dateGenerator = () => fakerInstance.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
@@ -318,7 +320,12 @@ function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
   if (min > max) {
     min = max;
   }
-  const targetLength = fakerInstance.datatype.number({ min, max });
+  // TODO: Probably remove the fakerInstance.datatype.number at some point
+  const targetLength =
+    'int' in (fakerInstance.number || {})
+      ? fakerInstance.number.int({ min, max })
+      : fakerInstance.datatype.number({ min, max });
+  // fakerInstance.datatype.number({ min, max });
   const results: ZodTypeAny[] = [];
   for (let index = 0; index < targetLength; index++) {
     results.push(generateMock<ZodTypeAny>(zodRef._def.type, options));

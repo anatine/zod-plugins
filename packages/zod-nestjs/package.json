@@ -21,13 +21,12 @@
     "swagger",
     "nestjs"
   ],
-  "dependencies": {
-    "@anatine/zod-openapi": "^1.10.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "zod": "^3.20.0",
     "openapi3-ts": "^2.0.0 || ^3.0.0",
     "@nestjs/common": "^7.0.0 || ^8.0.0 || ^9.0.0",
-    "@nestjs/swagger": "^6.0.0"
+    "@nestjs/swagger": "^6.0.0",
+    "@anatine/zod-openapi": "^1.10.0"
   }
 }

@@ -6,13 +6,17 @@
   "implicitDependencies": ["zod-openapi", "zod-nestjs"],
   "targets": {
     "build": {
-      "executor": "@nx/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "target": "node",
+        "compiler": "tsc",
         "outputPath": "dist/apps/example",
         "main": "apps/example/src/main.ts",
         "tsConfig": "apps/example/tsconfig.app.json",
-        "assets": ["apps/example/src/assets"]
+        "assets": ["apps/example/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/example/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -29,7 +33,7 @@
       }
     },
     "serve": {
-      "executor": "@nx/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "example:build"
       }

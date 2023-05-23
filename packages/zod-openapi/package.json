@@ -21,7 +21,7 @@
     "swagger"
   ],
   "dependencies": {
-    "ts-deepmerge": "^4.0.0"
+    "ts-deepmerge": "^6.0.3"
   },
   "peerDependencies": {
     "zod": "^3.20.0",
