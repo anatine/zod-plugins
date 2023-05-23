@@ -133,12 +133,12 @@ describe('zod-mock', () => {
     expect(new Date(mockData.date).getTime()).not.toBeNaN();
   });
 
-  it("should correctly generate date strings for date validated strings", () => {
+  it('should correctly generate date strings for date validated strings', () => {
     const schema = z.object({
       dateString: z.string().datetime(),
     });
     const mockData = generateMock(schema);
-    expect(new Date(mockData.dateString).getTime()).not.toBeNaN()
+    expect(new Date(mockData.dateString).getTime()).not.toBeNaN();
   });
 
   describe('when handling min and max string lengths', () => {
@@ -383,16 +383,19 @@ describe('zod-mock', () => {
       });
 
       // Then
-      expect(mock).toEqual(anyDate())
+      expect(mock).toEqual(anyDate());
 
       // When
-      const mock2 = generateMock(z.custom(() => false), {
-        backupMocks: { ZodAny: zodCustomBackupMock },
-      })
+      const mock2 = generateMock(
+        z.custom(() => false),
+        {
+          backupMocks: { ZodAny: zodCustomBackupMock },
+        }
+      );
 
       // Then
-      expect(mock2).toBeUndefined()
-    })
+      expect(mock2).toBeUndefined();
+    });
 
     it('should work with objects and arrays', () => {
       const schema = z.object({
@@ -451,7 +454,7 @@ describe('zod-mock', () => {
 
     const ConstAssertionEnum = {
       a: 1,
-      b: 2
+      b: 2,
     } as const;
 
     const second = generateMock(z.nativeEnum(ConstAssertionEnum));
