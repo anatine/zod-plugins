@@ -25,6 +25,7 @@ export function mockeryMapper(
     uuid: fakerInstance.string.uuid,
     boolean: fakerInstance.datatype.boolean,
   };
+
   return keyName && keyName.toLowerCase() in keyToFnMap
     ? keyToFnMap[keyName.toLowerCase() as never]
     : undefined;
