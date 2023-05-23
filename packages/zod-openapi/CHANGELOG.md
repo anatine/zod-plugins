@@ -2,6 +2,14 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [1.14.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.13.0...zod-openapi-1.14.0) (2023-05-23)
+
+
+### Features
+
+* Dep updates ([156b026](https://github.com/anatine/zod-plugins/commit/156b026391eba70c00df8b0f96ec402db1ceed4c))
+* **zod-openapi:** add option to use extension-method on zod ([fe26a3e](https://github.com/anatine/zod-plugins/commit/fe26a3ed3a0f9a8d62d65ad43b34a7091268aec7))
+
 ## [1.13.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.12.0...zod-openapi-1.13.0) (2023-05-13)
 
 
