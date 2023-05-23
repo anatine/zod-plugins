@@ -63,7 +63,7 @@ describe('zod-mock', () => {
     const schema = z.object({
       // the following fields represent non function properties in Faker
       lorem: z.string(),
-      phone_number: z.string().min(10).optional(),
+      phoneNumber: z.string().min(10).optional(),
 
       // 'shuffle', located at `faker.helpers.shuffle`, is a function, but does not
       // produce the appropriate return type to match `fakerFunction`
@@ -76,7 +76,7 @@ describe('zod-mock', () => {
 
     const mockData = generateMock(schema);
     expect(typeof mockData.lorem).toEqual('string');
-    expect(typeof mockData.phone_number).toEqual('string');
+    expect(typeof mockData.phoneNumber).toEqual('string');
     expect(typeof mockData.shuffle).toEqual('string');
     expect(typeof mockData.seed).toEqual('string');
   });
@@ -441,21 +441,21 @@ describe('zod-mock', () => {
   });
 
   it('ZodNativeEnum', () => {
-      enum NativeEnum {
-          a = 1,
-          b = 2,
-      }
+    enum NativeEnum {
+      a = 1,
+      b = 2,
+    }
 
-      const first = generateMock(z.nativeEnum(NativeEnum));
-      expect(first === 1 || first === 2);
+    const first = generateMock(z.nativeEnum(NativeEnum));
+    expect(first === 1 || first === 2);
 
-      const ConstAssertionEnum = {
-          a: 1,
-          b: 2
-      } as const;
+    const ConstAssertionEnum = {
+      a: 1,
+      b: 2
+    } as const;
 
-      const second = generateMock(z.nativeEnum(ConstAssertionEnum));
-      expect(second === 1 || second === 2);
+    const second = generateMock(z.nativeEnum(ConstAssertionEnum));
+    expect(second === 1 || second === 2);
   });
 
   it('ZodFunction', () => {
