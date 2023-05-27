@@ -1,6 +1,6 @@
-import type { SchemaObject, SchemaObjectType } from 'openapi3-ts';
+import type {SchemaObject, SchemaObjectType} from 'openapi3-ts/oas31';
 import merge from 'ts-deepmerge';
-import { AnyZodObject, z, ZodTypeAny } from 'zod';
+import {AnyZodObject, z, ZodTypeAny} from 'zod';
 
 export interface OpenApiZodAny extends ZodTypeAny {
   metaOpenApi?: SchemaObject | SchemaObject[];
@@ -145,11 +145,11 @@ function parseNumber({
       case 'max':
         baseSchema.maximum = item.value;
         // TODO: option to make this always explicit? (false instead of non-existent)
-        if (!item.inclusive) baseSchema.exclusiveMaximum = true;
+        if (!item.inclusive) baseSchema.exclusiveMaximum = item.value;
         break;
       case 'min':
         baseSchema.minimum = item.value;
-        if (!item.inclusive) baseSchema.exclusiveMinimum = true;
+        if (!item.inclusive) baseSchema.exclusiveMinimum = item.value;
         break;
       case 'int':
         baseSchema.type = 'integer';
@@ -206,7 +206,7 @@ function parseObject({
   const required =
     requiredProperties.length > 0 ? { required: requiredProperties } : {};
 
-  const result = merge(
+  return merge(
     {
       type: 'object' as SchemaObjectType,
       properties: iterateZodObject({
@@ -217,10 +217,9 @@ function parseObject({
       ...required,
       ...additionalProperties,
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    zodRef.description ? {description: zodRef.description} : {},
     ...schemas
   );
-  return result;
 }
 
 function parseRecord({

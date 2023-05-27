@@ -1,4 +1,4 @@
-import type { SchemaObject } from 'openapi3-ts';
+import type { SchemaObject } from 'openapi3-ts/oas31';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
 
@@ -79,14 +79,8 @@ export const createZodDto = <T extends OpenApiZodAny>(
         const schemaObjectWithRequiredField = {
           ...schemaObject,
         };
-        if (
-          (generatedSchema.required !== undefined,
-          generatedSchema.required?.includes(key))
-        ) {
-          schemaObjectWithRequiredField.required = true;
-        } else {
-          schemaObjectWithRequiredField.required = false;
-        }
+        schemaObjectWithRequiredField.required = !!(generatedSchema.required !== undefined,
+          generatedSchema.required?.includes(key));
         properties[key] = schemaObjectWithRequiredField as any; // TODO: Fix this
       }
       return properties as Record<string, SchemaObject>;
@@ -95,7 +89,7 @@ export const createZodDto = <T extends OpenApiZodAny>(
     public static create(input: unknown): CompatibleZodInfer<T> {
       return this.zodSchema.parse(input);
     }
-  };
+  }
 
   return <MergeZodSchemaOutput<T>>SchemaHolderClass;
 };

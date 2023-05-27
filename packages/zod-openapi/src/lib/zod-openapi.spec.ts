@@ -1,4 +1,4 @@
-import { SchemaObject } from 'openapi3-ts';
+import { SchemaObject } from 'openapi3-ts/oas31';
 import validator from 'validator';
 import { z } from 'zod';
 import { generateSchema, extendApi } from './zod-openapi';
@@ -84,10 +84,6 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema.properties).toBeDefined();
-    expect((apiSchema.properties?.aAny as SchemaObject).nullable).toEqual(true);
-    expect((apiSchema.properties?.aUnknown as SchemaObject).nullable).toEqual(
-      true
-    );
   });
 
   it('should support never type', () => {
@@ -201,12 +197,12 @@ describe('zodOpenapi', () => {
         aNumberMin: { type: 'number', minimum: 3 },
         aNumberMax: { type: 'number', maximum: 8 },
         aNumberInt: { type: 'integer' },
-        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: true },
+        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: 0 },
         aNumberNonnegative: { type: 'number', minimum: 0 },
-        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: true },
+        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: 0 },
         aNumberNonpositive: { type: 'number', maximum: 0 },
-        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: true },
-        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
+        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: 5 },
+        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: 5 },
         aNumberMultipleOf: { type: 'number', multipleOf: 2 },
       },
       description: 'Look mah, the horse can count higher than me!',
