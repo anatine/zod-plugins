@@ -389,11 +389,31 @@ function parseUnion({
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>>): SchemaObject {
+  const contents = zodRef._def.options;
+  if (contents.reduce((prev, content) => prev && content._def.typeName === "ZodLiteral", true)) {
+    const literals = contents as unknown as z.ZodLiteral<OpenApiZodAny>[];
+    const type = literals
+      .reduce((prev, content) =>
+        !prev || prev === typeof content._def.value ?
+          typeof content._def.value :
+          null,
+        null as null | string
+      );
+
+    if (type) {
+      return merge(
+        {
+          type: type as 'string' | 'number' | 'boolean',
+          enum: literals.map((literal) => literal._def.value)
+        },
+        zodRef.description ? { description: zodRef.description } : {},
+        ...schemas
+      );
+    }
+  }
   return merge(
     {
-      oneOf: (
-        zodRef as z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>
-      )._def.options.map((schema) => generateSchema(schema, useOutput)),
+      oneOf: contents.map((schema) => generateSchema(schema, useOutput)),
     },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
