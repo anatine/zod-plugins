@@ -390,7 +390,8 @@ function parseUnion({
   useOutput,
 }: ParsingArgs<z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>>): SchemaObject {
   const contents = zodRef._def.options;
-  if (contents.reduce((prev, content) => prev && content._def.typeName === "ZodLiteral", true)) {
+  if (contents.reduce((prev, content) => prev && content._def.typeName === 'ZodLiteral', true)) {
+    // special case to transform unions of literals into enums
     const literals = contents as unknown as z.ZodLiteral<OpenApiZodAny>[];
     const type = literals
       .reduce((prev, content) =>
@@ -411,6 +412,7 @@ function parseUnion({
       );
     }
   }
+
   return merge(
     {
       oneOf: contents.map((schema) => generateSchema(schema, useOutput)),
