@@ -68,7 +68,7 @@ describe('zodOpenapi', () => {
     );
     const schemaIn = generateSchema(zodTransform);
     expect(schemaIn.type).toEqual('string');
-    const schemaOut = generateSchema(zodTransform, true);
+    const schemaOut = generateSchema(zodTransform, {useOutput: true}) as SchemaObject;
     expect(schemaOut.type).toEqual('number');
   });
 
@@ -521,7 +521,7 @@ describe('zodOpenapi', () => {
         .passthrough(),
     });
 
-    const schemaTest = generateSchema(zodSchema, true);
+    const schemaTest = generateSchema(zodSchema, {useOutput: true});
 
     expect(schemaTest).toEqual({
       type: 'object',
