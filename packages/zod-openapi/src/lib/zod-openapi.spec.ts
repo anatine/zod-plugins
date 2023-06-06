@@ -1,7 +1,7 @@
 import { SchemaObject } from 'openapi3-ts/oas31';
 import validator from 'validator';
 import { z } from 'zod';
-import { generateSchema, extendApi } from './zod-openapi';
+import { generateSchema, extendApi, fragmentName, generateVocabulary } from './zod-openapi';
 
 describe('zodOpenapi', () => {
   /**
@@ -824,34 +824,45 @@ describe('zodOpenapi', () => {
     });
   });
 
-  it('can summarize unions of zod literals as an enum', () => {
-    expect(generateSchema(z.union([z.literal('h'), z.literal('i')]))).toEqual({
-      type: 'string',
-      enum: ['h', 'i']
+  it('Ignores components out of its vocabulary', () => {
+    const schema = extendApi(z.string(), {
+      [fragmentName]: "coolstring"
     });
 
-    expect(generateSchema(z.union([z.literal(3), z.literal(4)]))).toEqual({
-      type: 'number',
-      enum: [3, 4]
-    });
-
-    // should this just remove the enum? true | false is exhaustive...
-    expect(generateSchema(z.union([z.literal(true), z.literal(false)]))).toEqual({
-      type: 'boolean',
-      enum: [true, false]
-    });
-
-    expect(generateSchema(z.union([z.literal(5), z.literal('i')]))).toEqual({
-      oneOf: [
-        {
-          type: 'number',
-          enum: [5]
+    expect(generateSchema(schema))
+      .toEqual({"type": "string"});
+    expect(generateSchema(z.object({string: schema})))
+      .toEqual({
+        "properties": {
+          "string": {
+            "type": "string"
+          }
         },
-        {
-          type: 'string',
-          enum: ['i']
-        }
-      ]
+        "required": ["string"],
+        "type": "object"
+      });
+  });
+
+  it('Elides components in its vocabulary', () => {
+    const schema = extendApi(z.string(), {
+      [fragmentName]: "coolstring"
     });
-  })
+
+    const [schemas, vocabulary] = generateVocabulary([schema]);
+
+    expect(schemas)
+      .toEqual([{"type": "string"}]);
+    expect(generateSchema(schema, { vocabulary }))
+      .toEqual({"$ref": "#/components/schemas/coolstring"});
+    expect(generateSchema(z.object({string: schema}), { vocabulary }))
+      .toEqual({
+        "properties": {
+          "string": {
+            "$ref": "#/components/schemas/coolstring"
+          }
+        },
+        "required": ["string"],
+        "type": "object"
+      });
+  });
 });
