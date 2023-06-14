@@ -851,9 +851,11 @@ describe('zodOpenapi', () => {
     const [schemas, vocabulary] = generateVocabulary([schema]);
 
     expect(schemas)
-      .toEqual([{"type": "string"}]);
+      .toEqual({"coolstring": {"type": "string"}});
+
     expect(generateSchema(schema, { vocabulary }))
       .toEqual({"$ref": "#/components/schemas/coolstring"});
+
     expect(generateSchema(z.object({string: schema}), { vocabulary }))
       .toEqual({
         "properties": {

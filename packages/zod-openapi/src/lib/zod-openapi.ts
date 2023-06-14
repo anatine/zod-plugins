@@ -577,20 +577,20 @@ export function generateSchema(
 
 export const fragmentName = Symbol('fragmentName');
 
-export function generateVocabulary(objects: OpenApiZodAny[]): [SchemaObject[], Set<string>] {
+export function generateVocabulary(objects: OpenApiZodAny[]): [{[key: string]: SchemaObject}, Set<string>] {
   const fragments = objects.filter(object => getNameFromSchemas(getSchemasForZodObject(object)));
   const fragmentNames = new Set(fragments.map(
     object => getNameFromSchemas(getSchemasForZodObject(object)) as string
   ));
-  const fragmentSchemas = fragments.map(fragment => {
+  const fragmentSchemas = Object.fromEntries(fragments.map(fragment => {
     const name = getNameFromSchemas(getSchemasForZodObject(fragment)) as string;
     fragmentNames.delete(name);
     // assumption: schemas cannot have 2 different names
     const schema = generateSchema(fragment, { vocabulary: fragmentNames }) as SchemaObject;
     fragmentNames.add(name);
 
-    return schema;
-  });
+    return [name, schema];
+  }));
 
   return [fragmentSchemas, fragmentNames];
 }
