@@ -823,4 +823,35 @@ describe('zodOpenapi', () => {
       format: 'binary',
     });
   });
+
+  it('can summarize unions of zod literals as an enum', () => {
+    expect(generateSchema(z.union([z.literal('h'), z.literal('i')]))).toEqual({
+      type: 'string',
+      enum: ['h', 'i']
+    });
+
+    expect(generateSchema(z.union([z.literal(3), z.literal(4)]))).toEqual({
+      type: 'number',
+      enum: [3, 4]
+    });
+
+    // should this just remove the enum? true | false is exhaustive...
+    expect(generateSchema(z.union([z.literal(true), z.literal(false)]))).toEqual({
+      type: 'boolean',
+      enum: [true, false]
+    });
+
+    expect(generateSchema(z.union([z.literal(5), z.literal('i')]))).toEqual({
+      oneOf: [
+        {
+          type: 'number',
+          enum: [5]
+        },
+        {
+          type: 'string',
+          enum: ['i']
+        }
+      ]
+    });
+  })
 });
