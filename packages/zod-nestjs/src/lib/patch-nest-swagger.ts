@@ -6,7 +6,7 @@
  *   https://github.com/kbkk/abitia/blob/master/packages/zod-dto/src/OpenApi/patchNestjsSwagger.ts
  */
 import {generateSchema} from '@anatine/zod-openapi';
-import type {SchemaObject} from 'openapi3-ts/oas31';
+import type {SchemaObject} from 'openapi3-ts/oas30';
 
 interface Type<T = any> extends Function {
   new (...args: any[]): T;

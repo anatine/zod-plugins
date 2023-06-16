@@ -1,4 +1,4 @@
-import type { SchemaObject } from 'openapi3-ts/oas31';
+import type { SchemaObject } from 'openapi3-ts/oas30';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
 

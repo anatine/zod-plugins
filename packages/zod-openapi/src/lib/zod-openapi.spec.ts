@@ -1,4 +1,4 @@
-import { SchemaObject } from 'openapi3-ts/oas31';
+import { SchemaObject } from 'openapi3-ts/oas30';
 import validator from 'validator';
 import { z } from 'zod';
 import { generateSchema, extendApi, fragmentName, generateVocabulary } from './zod-openapi';
@@ -197,12 +197,12 @@ describe('zodOpenapi', () => {
         aNumberMin: { type: 'number', minimum: 3 },
         aNumberMax: { type: 'number', maximum: 8 },
         aNumberInt: { type: 'integer' },
-        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: 0 },
+        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: true },
         aNumberNonnegative: { type: 'number', minimum: 0 },
-        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: 0 },
+        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: true },
         aNumberNonpositive: { type: 'number', maximum: 0 },
-        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: 5 },
-        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: 5 },
+        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: true },
+        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
         aNumberMultipleOf: { type: 'number', multipleOf: 2 },
       },
       description: 'Look mah, the horse can count higher than me!',

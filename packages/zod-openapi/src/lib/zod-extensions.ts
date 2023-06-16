@@ -4,7 +4,7 @@ This code is heavily inspired by https://github.com/asteasolutions/zod-to-openap
 
 import { extendApi } from './zod-openapi';
 import {z} from "zod";
-import { SchemaObject } from "openapi3-ts/oas31";
+import { SchemaObject } from "openapi3-ts/oas30";
 import {ZodTypeDef} from "zod/lib/types";
 
 
