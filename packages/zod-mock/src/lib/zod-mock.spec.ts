@@ -702,4 +702,36 @@ describe('zod-mock', () => {
     expect(first).toEqual(second);
     expect(first).not.toEqual(third);
   });
+
+  it(`Will mock sub objections properly`, () => {
+    const airline = z.object({
+      flightNumber: z.string(),
+      departure: z.object({
+        airport: z.string(),
+        time: z.date(),
+      }),
+      arrival: z.object({
+        airport: z.string(),
+        time: z.date(),
+      }),
+    });
+
+    const flight = z.object({
+      operating_airline: airline,
+      marketing_airline: airline,
+    });
+
+    const mockedFlight = generateMock(flight, {
+      stringMap: {
+        airport: () => faker.airline.airport().iataCode,
+      },
+    });
+
+    expect(mockedFlight.operating_airline.departure.airport.length).toEqual(3);
+    expect(mockedFlight.operating_airline.arrival.airport.length).toEqual(3);
+    expect(mockedFlight.marketing_airline.departure.airport.length).toEqual(3);
+    expect(mockedFlight.marketing_airline.arrival.airport.length).toEqual(3);
+    expect(mockedFlight.operating_airline.departure.time).toBeInstanceOf(Date);
+    expect(mockedFlight.operating_airline.flightNumber.length).toBeLessThan(5);
+  });
 });
