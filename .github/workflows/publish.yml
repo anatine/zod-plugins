@@ -24,7 +24,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: Setup Git
         run: |
@@ -77,11 +77,9 @@ jobs:
       - name: Return npm
         run: |
           echo 'legacy-peer-deps=true' > .npmrc
-          
+
       - name: Tag last-release
         shell: bash
         run: |
           git tag -f last-release
           git push origin last-release --force
-
-
