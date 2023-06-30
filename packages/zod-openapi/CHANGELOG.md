@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [2.0.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.14.2...zod-openapi-2.0.0) (2023-06-30)
+
+
+### Bug Fixes
+
+* PeerDeps updates ([7812c60](https://github.com/anatine/zod-plugins/commit/7812c6048b19430424b69720bbd98726dc863bf3))
+
 ### [1.14.2](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.14.1...zod-openapi-1.14.2) (2023-06-16)
 
 ### [1.14.1](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.14.0...zod-openapi-1.14.1) (2023-06-16)
