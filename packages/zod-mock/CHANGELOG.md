@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.13.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.12.1...zod-mock-3.13.0) (2023-06-30)
+
+
+### Bug Fixes
+
+* Logic for city key to map to name, not image ([73cac73](https://github.com/anatine/zod-plugins/commit/73cac737da484c3b5bfb360f6000feb11ada3318))
+
 ### [3.12.1](https://github.com/anatine/zod-plugins/compare/zod-mock-3.12.0...zod-mock-3.12.1) (2023-06-16)
 
 ## [3.12.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.11.0...zod-mock-3.12.0) (2023-05-23)
