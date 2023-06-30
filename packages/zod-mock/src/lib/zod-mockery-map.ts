@@ -24,6 +24,7 @@ export function mockeryMapper(
     hexadecimal: fakerInstance.number.hex,
     uuid: fakerInstance.string.uuid,
     boolean: fakerInstance.datatype.boolean,
+    city: fakerInstance.location.city,
   };
 
   return keyName && keyName.toLowerCase() in keyToFnMap
