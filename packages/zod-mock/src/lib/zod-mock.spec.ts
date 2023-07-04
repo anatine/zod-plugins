@@ -443,22 +443,36 @@ describe('zod-mock', () => {
     expect(typeof value).toBe('string');
   });
 
-  it('ZodNativeEnum', () => {
-    enum NativeEnum {
-      a = 1,
-      b = 2,
-    }
+  describe('ZodNativeEnum', () => {
+    it('numeric enum', () => {
+      enum NativeEnum {
+        a = 1,
+        b = 2,
+      }
 
-    const first = generateMock(z.nativeEnum(NativeEnum));
-    expect(first === 1 || first === 2);
+      const value = generateMock(z.nativeEnum(NativeEnum));
+      expect(value === 1 || value === 2).toBeTruthy();
+    });
 
-    const ConstAssertionEnum = {
-      a: 1,
-      b: 2,
-    } as const;
+    it('const assertion enum', () => {
+      const ConstAssertionEnum = {
+        a: 1,
+        b: 2,
+      } as const;
 
-    const second = generateMock(z.nativeEnum(ConstAssertionEnum));
-    expect(second === 1 || second === 2);
+      const value = generateMock(z.nativeEnum(ConstAssertionEnum));
+      expect(value === 1 || value === 2).toBeTruthy();
+    });
+
+    it('string enum', () => {
+      enum StringEnum {
+        a = 'A',
+        b = 'B',
+      }
+
+      const value = generateMock(z.nativeEnum(StringEnum));
+      expect(value === 'A' || value === 'B').toBeTruthy();
+    });
   });
 
   it('ZodFunction', () => {
