@@ -375,10 +375,7 @@ function parseMap(zodRef: z.ZodMap<never>, options?: GenerateMockOptions) {
   return results;
 }
 
-function parseEnum(
-  zodRef: z.ZodEnum<never> | z.ZodNativeEnum<never>,
-  options?: GenerateMockOptions
-) {
+function parseEnum(zodRef: z.ZodEnum<never>, options?: GenerateMockOptions) {
   const fakerInstance = options?.faker || faker;
   const values = zodRef._def.values as Array<z.infer<typeof zodRef>>;
   return fakerInstance.helpers.arrayElement(values);
@@ -400,8 +397,12 @@ function parseNativeEnum(
   options?: GenerateMockOptions
 ) {
   const fakerInstance = options?.faker || faker;
-  const { values } = zodRef._def;
-  return fakerInstance.helpers.objectValue(values);
+  /** See https://blog.oyam.dev/typescript-enum-values/ */
+  const enumObject = zodRef._def.values;
+  const values = Object.keys(enumObject ?? {})
+    .filter((key) => Number.isNaN(Number(key)))
+    .map((key) => enumObject[key]);
+  return fakerInstance.helpers.arrayElement(values);
 }
 
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
