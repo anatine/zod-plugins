@@ -8,6 +8,7 @@ import {
   ZodType,
   ZodString,
   ZodRecord,
+  util,
 } from 'zod';
 import {
   MockeryMapper,
@@ -400,8 +401,8 @@ function parseNativeEnum(
   options?: GenerateMockOptions
 ) {
   const fakerInstance = options?.faker || faker;
-  const { values } = zodRef._def;
-  return fakerInstance.helpers.objectValue(values);
+  const values = util.getValidEnumValues(zodRef.enum);
+  return fakerInstance.helpers.arrayElement(values);
 }
 
 function parseLiteral(zodRef: z.ZodLiteral<any>) {
