@@ -1,7 +1,7 @@
-import { SchemaObject } from 'openapi3-ts/oas31';
+import { SchemaObject } from 'openapi3-ts/oas30';
 import validator from 'validator';
 import { z } from 'zod';
-import { generateSchema, extendApi } from './zod-openapi';
+import { generateSchema, extendApi, fragmentName, generateVocabulary } from './zod-openapi';
 
 describe('zodOpenapi', () => {
   /**
@@ -68,7 +68,7 @@ describe('zodOpenapi', () => {
     );
     const schemaIn = generateSchema(zodTransform);
     expect(schemaIn.type).toEqual('string');
-    const schemaOut = generateSchema(zodTransform, true);
+    const schemaOut = generateSchema(zodTransform, {useOutput: true}) as SchemaObject;
     expect(schemaOut.type).toEqual('number');
   });
 
@@ -197,12 +197,12 @@ describe('zodOpenapi', () => {
         aNumberMin: { type: 'number', minimum: 3 },
         aNumberMax: { type: 'number', maximum: 8 },
         aNumberInt: { type: 'integer' },
-        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: 0 },
+        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: true },
         aNumberNonnegative: { type: 'number', minimum: 0 },
-        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: 0 },
+        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: true },
         aNumberNonpositive: { type: 'number', maximum: 0 },
-        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: 5 },
-        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: 5 },
+        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: true },
+        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: true },
         aNumberMultipleOf: { type: 'number', multipleOf: 2 },
       },
       description: 'Look mah, the horse can count higher than me!',
@@ -521,7 +521,7 @@ describe('zodOpenapi', () => {
         .passthrough(),
     });
 
-    const schemaTest = generateSchema(zodSchema, true);
+    const schemaTest = generateSchema(zodSchema, {useOutput: true});
 
     expect(schemaTest).toEqual({
       type: 'object',
@@ -853,5 +853,49 @@ describe('zodOpenapi', () => {
         }
       ]
     });
-  })
+  });
+
+  it('Ignores components out of its vocabulary', () => {
+    const schema = extendApi(z.string(), {
+      [fragmentName]: "coolstring"
+    });
+
+    expect(generateSchema(schema))
+      .toEqual({"type": "string"});
+    expect(generateSchema(z.object({string: schema})))
+      .toEqual({
+        "properties": {
+          "string": {
+            "type": "string"
+          }
+        },
+        "required": ["string"],
+        "type": "object"
+      });
+  });
+
+  it('Elides components in its vocabulary', () => {
+    const schema = extendApi(z.string(), {
+      [fragmentName]: "coolstring"
+    });
+
+    const [schemas, vocabulary] = generateVocabulary([schema]);
+
+    expect(schemas)
+      .toEqual({"coolstring": {"type": "string"}});
+
+    expect(generateSchema(schema, { vocabulary }))
+      .toEqual({"$ref": "#/components/schemas/coolstring"});
+
+    expect(generateSchema(z.object({string: schema}), { vocabulary }))
+      .toEqual({
+        "properties": {
+          "string": {
+            "$ref": "#/components/schemas/coolstring"
+          }
+        },
+        "required": ["string"],
+        "type": "object"
+      });
+  });
 });

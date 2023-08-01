@@ -12,7 +12,6 @@ describe('Zod Extensions', () => {
     const schema = z.object({
       one: z.string().openapi({example: 'oneOne'}),
       two: z.number(),
-
     }).openapi({example: {one: 'oneOne', two: 42}})
 
     const apiSchema = generateSchema(schema);

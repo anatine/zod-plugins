@@ -1,51 +1,58 @@
-import type {SchemaObject, SchemaObjectType} from 'openapi3-ts/oas31';
+import type {ReferenceObject, SchemaObject, SchemaObjectType} from 'openapi3-ts/oas30';
 import merge from 'ts-deepmerge';
 import {AnyZodObject, z, ZodTypeAny} from 'zod';
 
+type SchemaObjectWithName = SchemaObject & {[fragmentName]?: string};
+
 export interface OpenApiZodAny extends ZodTypeAny {
-  metaOpenApi?: SchemaObject | SchemaObject[];
+  metaOpenApi?: SchemaObjectWithName | SchemaObjectWithName[];
 }
 
 interface OpenApiZodAnyObject extends AnyZodObject {
-  metaOpenApi?: SchemaObject | SchemaObject[];
+  metaOpenApi?: SchemaObjectWithName | SchemaObjectWithName[];
 }
 
 interface ParsingArgs<T> {
   zodRef: T;
-  schemas: SchemaObject[];
-  useOutput?: boolean;
+  schemas: SchemaObjectWithName[];
+  options?: {useOutput?: boolean; vocabulary?: Set<string>;}
 }
 
 export function extendApi<T extends OpenApiZodAny>(
   schema: T,
-  SchemaObject: SchemaObject = {}
+  schemaObject: SchemaObjectWithName = {}
 ): T {
-  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, SchemaObject);
+  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, schemaObject);
   return schema;
 }
 
 function iterateZodObject({
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<OpenApiZodAnyObject>) {
   return Object.keys(zodRef.shape).reduce(
     (carry, key) => ({
       ...carry,
-      [key]: generateSchema(zodRef.shape[key], useOutput),
+      [key]: generateSchema(zodRef.shape[key], options),
     }),
-    {} as Record<string, SchemaObject>
+    {} as Record<string, SchemaObject | ReferenceObject>
   );
+}
+
+function dropFragmentNames(schemas: SchemaObjectWithName[]) {
+  return schemas.map(schema => ({...schema, [fragmentName]: undefined}));
 }
 
 function parseTransformation({
   zodRef,
   schemas,
-  useOutput,
+  options,
 }: ParsingArgs<z.ZodTransformer<never> | z.ZodEffects<never>>): SchemaObject {
-  const input = generateSchema(zodRef._def.schema, useOutput);
+  // we need to get the specific schema for the transformation
+  const input = generateSchema(zodRef._def.schema, {...options, vocabulary: undefined}) as SchemaObject;
 
   let output = 'undefined';
-  if (useOutput && zodRef._def.effect) {
+  if (options?.useOutput && zodRef._def.effect) {
     const effect =
       zodRef._def.effect.type === 'transform' ? zodRef._def.effect : null;
     if (effect && 'transform' in effect) {
@@ -81,7 +88,7 @@ function parseTransformation({
           }
         : {}),
     },
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -128,7 +135,7 @@ function parseString({
   return merge(
     baseSchema,
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -145,11 +152,11 @@ function parseNumber({
       case 'max':
         baseSchema.maximum = item.value;
         // TODO: option to make this always explicit? (false instead of non-existent)
-        if (!item.inclusive) baseSchema.exclusiveMaximum = item.value;
+        if (!item.inclusive) baseSchema.exclusiveMaximum = true;
         break;
       case 'min':
         baseSchema.minimum = item.value;
-        if (!item.inclusive) baseSchema.exclusiveMinimum = item.value;
+        if (!item.inclusive) baseSchema.exclusiveMinimum = true;
         break;
       case 'int':
         baseSchema.type = 'integer';
@@ -161,14 +168,14 @@ function parseNumber({
   return merge(
     baseSchema,
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseObject({
   zodRef,
   schemas,
-  useOutput,
+  options,
 }: ParsingArgs<
   z.ZodObject<never, 'passthrough' | 'strict' | 'strip'>
 >): SchemaObject {
@@ -181,7 +188,7 @@ function parseObject({
       zodRef._def.catchall?._def.typeName === 'ZodNever'
     )
   )
-    additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
+    additionalProperties = generateSchema(zodRef._def.catchall, options);
   else if (zodRef._def.unknownKeys === 'passthrough')
     additionalProperties = true;
   else if (zodRef._def.unknownKeys === 'strict') additionalProperties = false;
@@ -212,20 +219,20 @@ function parseObject({
       properties: iterateZodObject({
         zodRef: zodRef as OpenApiZodAnyObject,
         schemas,
-        useOutput,
+        options,
       }),
       ...required,
       ...additionalProperties,
     },
     zodRef.description ? {description: zodRef.description} : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseRecord({
   zodRef,
   schemas,
-  useOutput,
+  options,
 }: ParsingArgs<z.ZodRecord>): SchemaObject {
   return merge(
     {
@@ -233,10 +240,10 @@ function parseRecord({
       additionalProperties:
         zodRef._def.valueType instanceof z.ZodUnknown
           ? {}
-          : generateSchema(zodRef._def.valueType, useOutput),
+          : generateSchema(zodRef._def.valueType, options),
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -247,7 +254,7 @@ function parseBigInt({
   return merge(
     { type: 'integer' as SchemaObjectType, format: 'int64' },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -258,7 +265,7 @@ function parseBoolean({
   return merge(
     { type: 'boolean' as SchemaObjectType },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -266,7 +273,7 @@ function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
   return merge(
     { type: 'string' as SchemaObjectType, format: 'date-time' },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -278,43 +285,43 @@ function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
       nullable: true,
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseOptionalNullable({
   schemas,
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<
   z.ZodOptional<OpenApiZodAny> | z.ZodNullable<OpenApiZodAny>
 >): SchemaObject {
   return merge(
-    generateSchema(zodRef.unwrap(), useOutput),
+    generateSchema(zodRef.unwrap(), options),
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseDefault({
   schemas,
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<z.ZodDefault<OpenApiZodAny>>): SchemaObject {
   return merge(
     {
       default: zodRef._def.defaultValue(),
-      ...generateSchema(zodRef._def.innerType, useOutput),
+      ...generateSchema(zodRef._def.innerType, options),
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseArray({
   schemas,
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<z.ZodArray<OpenApiZodAny>>): SchemaObject {
   const constraints: SchemaObject = {};
   if (zodRef._def.exactLength != null) {
@@ -330,11 +337,11 @@ function parseArray({
   return merge(
     {
       type: 'array' as SchemaObjectType,
-      items: generateSchema(zodRef.element, useOutput),
+      items: generateSchema(zodRef.element, options),
       ...constraints,
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -348,7 +355,7 @@ function parseLiteral({
       enum: [zodRef._def.value],
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -362,31 +369,31 @@ function parseEnum({
       enum: Object.values(zodRef._def.values),
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseIntersection({
   schemas,
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<z.ZodIntersection<z.ZodTypeAny, z.ZodTypeAny>>): SchemaObject {
   return merge(
     {
       allOf: [
-        generateSchema(zodRef._def.left, useOutput),
-        generateSchema(zodRef._def.right, useOutput),
+        generateSchema(zodRef._def.left, options),
+        generateSchema(zodRef._def.right, options),
       ],
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseUnion({
   schemas,
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>>): SchemaObject {
   const contents = zodRef._def.options;
   if (contents.reduce((prev, content) => prev && content._def.typeName === 'ZodLiteral', true)) {
@@ -414,17 +421,17 @@ function parseUnion({
 
   return merge(
     {
-      oneOf: contents.map((schema) => generateSchema(schema, useOutput)),
+      oneOf: contents.map((schema) => generateSchema(schema, options)),
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
 function parseDiscriminatedUnion({
   schemas,
   zodRef,
-  useOutput,
+  options,
 }: ParsingArgs<
   z.ZodDiscriminatedUnion<string, z.ZodDiscriminatedUnionOption<string>[]>
 >): SchemaObject {
@@ -445,10 +452,10 @@ function parseDiscriminatedUnion({
             z.ZodDiscriminatedUnionOption<string>[]
           >
         )._def.options.values()
-      ).map((schema) => generateSchema(schema, useOutput)),
+      ).map((schema) => generateSchema(schema, options)),
     },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -459,7 +466,7 @@ function parseNever({
   return merge(
     { readOnly: true },
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -467,7 +474,7 @@ function parseBranded({
   schemas,
   zodRef,
 }: ParsingArgs<z.ZodBranded<z.ZodAny, string>>): SchemaObject {
-  return merge(generateSchema(zodRef._def.type), ...schemas);
+  return merge(generateSchema(zodRef._def.type), ...dropFragmentNames(schemas));
 }
 
 function catchAllParser({
@@ -476,7 +483,7 @@ function catchAllParser({
 }: ParsingArgs<ZodTypeAny>): SchemaObject {
   return merge(
     zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
+    ...dropFragmentNames(schemas)
   );
 }
 
@@ -517,15 +524,39 @@ const workerMap = {
 };
 type WorkerKeys = keyof typeof workerMap;
 
-export function generateSchema(
-  zodRef: OpenApiZodAny,
-  useOutput?: boolean
-): SchemaObject {
+function getSchemasForZodObject(zodRef: OpenApiZodAny): SchemaObjectWithName[] {
   const { metaOpenApi = {} } = zodRef;
-  const schemas = [
+  return [
     zodRef.isNullable && zodRef.isNullable() ? { nullable: true } : {},
     ...(Array.isArray(metaOpenApi) ? metaOpenApi : [metaOpenApi]),
   ];
+}
+
+function getNameFromSchemas(schemas: SchemaObjectWithName[]): string | undefined {
+  return schemas.reduce(
+    (prev, schema) => prev || schema[fragmentName], undefined as string | undefined
+  );
+}
+
+export function generateSchema(zodRef: OpenApiZodAny): SchemaObject;
+export function generateSchema(zodRef: OpenApiZodAny, options?: {useOutput?: boolean, vocabulary?: Set<string>}): SchemaObject | ReferenceObject;
+/**
+ * @deprecated Use generateSchema(zodRef, {useOutput}) instead.
+ */
+export function generateSchema(zodRef: OpenApiZodAny, useOutput: boolean): SchemaObject;
+export function generateSchema(
+  zodRef: OpenApiZodAny,
+  second?: {useOutput?: boolean, vocabulary?: Set<string>} | boolean
+): SchemaObject | ReferenceObject {
+  const options = typeof second === 'boolean' ? {useOutput: second} : second;
+  const schemas = getSchemasForZodObject(zodRef);
+  const name = getNameFromSchemas(schemas);
+
+  if (name && options?.vocabulary?.has(name)) {
+    return {
+      '$ref': `#/components/schemas/${name}`
+    };
+  }
 
   try {
     const typeName = zodRef._def.typeName as WorkerKeys;
@@ -533,13 +564,33 @@ export function generateSchema(
       return workerMap[typeName]({
         zodRef: zodRef as never,
         schemas,
-        useOutput,
+        options,
       });
     }
 
-    return catchAllParser({ zodRef, schemas });
+    return catchAllParser({ zodRef, schemas, options });
   } catch (err) {
     console.error(err);
-    return catchAllParser({ zodRef, schemas });
+    return catchAllParser({ zodRef, schemas, options });
   }
+}
+
+export const fragmentName = Symbol('fragmentName');
+
+export function generateVocabulary(objects: OpenApiZodAny[]): [{[key: string]: SchemaObject}, Set<string>] {
+  const fragments = objects.filter(object => getNameFromSchemas(getSchemasForZodObject(object)));
+  const fragmentNames = new Set(fragments.map(
+    object => getNameFromSchemas(getSchemasForZodObject(object)) as string
+  ));
+  const fragmentSchemas = Object.fromEntries(fragments.map(fragment => {
+    const name = getNameFromSchemas(getSchemasForZodObject(fragment)) as string;
+    fragmentNames.delete(name);
+    // assumption: schemas cannot have 2 different names
+    const schema = generateSchema(fragment, { vocabulary: fragmentNames }) as SchemaObject;
+    fragmentNames.add(name);
+
+    return [name, schema];
+  }));
+
+  return [fragmentSchemas, fragmentNames];
 }
