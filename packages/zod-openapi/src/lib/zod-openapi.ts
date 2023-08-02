@@ -1,40 +1,48 @@
-import type {SchemaObject, SchemaObjectType} from 'openapi3-ts/oas31';
+import type { SchemaObject, SchemaObjectType } from 'openapi3-ts/oas31';
 import merge from 'ts-deepmerge';
-import {AnyZodObject, z, ZodTypeAny} from 'zod';
+import { AnyZodObject, z, ZodTypeAny } from 'zod';
+
+type AnatineSchemaObject = SchemaObject & { hideDefinitions?: string[] };
 
 export interface OpenApiZodAny extends ZodTypeAny {
-  metaOpenApi?: SchemaObject | SchemaObject[];
+  metaOpenApi?: AnatineSchemaObject | AnatineSchemaObject[];
 }
 
 interface OpenApiZodAnyObject extends AnyZodObject {
-  metaOpenApi?: SchemaObject | SchemaObject[];
+  metaOpenApi?: AnatineSchemaObject | AnatineSchemaObject[];
 }
 
 interface ParsingArgs<T> {
   zodRef: T;
-  schemas: SchemaObject[];
+  schemas: AnatineSchemaObject[];
   useOutput?: boolean;
+  hideDefinitions?: string[];
 }
 
 export function extendApi<T extends OpenApiZodAny>(
   schema: T,
-  SchemaObject: SchemaObject = {}
+  schemaObject: AnatineSchemaObject = {}
 ): T {
-  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, SchemaObject);
+  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, schemaObject);
   return schema;
 }
 
 function iterateZodObject({
   zodRef,
   useOutput,
+  hideDefinitions,
 }: ParsingArgs<OpenApiZodAnyObject>) {
-  return Object.keys(zodRef.shape).reduce(
-    (carry, key) => ({
-      ...carry,
-      [key]: generateSchema(zodRef.shape[key], useOutput),
-    }),
-    {} as Record<string, SchemaObject>
-  );
+  const reduced = Object.keys(zodRef.shape)
+    .filter((key) => hideDefinitions?.includes(key) === false)
+    .reduce(
+      (carry, key) => ({
+        ...carry,
+        [key]: generateSchema(zodRef.shape[key], useOutput),
+      }),
+      {} as Record<string, SchemaObject>
+    );
+
+  return reduced;
 }
 
 function parseTransformation({
@@ -54,16 +62,16 @@ function parseTransformation({
           ['integer', 'number'].includes(`${input.type}`)
             ? 0
             : 'string' === input.type
-            ? ''
-            : 'boolean' === input.type
-            ? false
-            : 'object' === input.type
-            ? {}
-            : 'null' === input.type
-            ? null
-            : 'array' === input.type
-            ? []
-            : undefined,
+              ? ''
+              : 'boolean' === input.type
+                ? false
+                : 'object' === input.type
+                  ? {}
+                  : 'null' === input.type
+                    ? null
+                    : 'array' === input.type
+                      ? []
+                      : undefined,
           { addIssue: () => undefined, path: [] } // TODO: Discover if context is necessary here
         );
       } catch (e) {
@@ -77,8 +85,8 @@ function parseTransformation({
       ...input,
       ...(['number', 'string', 'boolean', 'null'].includes(output)
         ? {
-            type: output as 'number' | 'string' | 'boolean' | 'null',
-          }
+          type: output as 'number' | 'string' | 'boolean' | 'null',
+        }
         : {}),
     },
     ...schemas
@@ -165,10 +173,26 @@ function parseNumber({
   );
 }
 
+
+
+function getExcludedDefinitionsFromSchema(schemas: AnatineSchemaObject[]): string[] {
+
+
+  const excludedDefinitions = [];
+  for (const schema of schemas) {
+    if (Array.isArray(schema.hideDefinitions)) {
+      excludedDefinitions.push(...schema.hideDefinitions)
+    }
+  }
+
+  return excludedDefinitions
+}
+
 function parseObject({
   zodRef,
   schemas,
   useOutput,
+  hideDefinitions,
 }: ParsingArgs<
   z.ZodObject<never, 'passthrough' | 'strict' | 'strip'>
 >): SchemaObject {
@@ -213,11 +237,13 @@ function parseObject({
         zodRef: zodRef as OpenApiZodAnyObject,
         schemas,
         useOutput,
+        hideDefinitions: getExcludedDefinitionsFromSchema(schemas),
       }),
       ...required,
       ...additionalProperties,
+      ...hideDefinitions
     },
-    zodRef.description ? {description: zodRef.description} : {},
+    zodRef.description ? { description: zodRef.description, hideDefinitions } : {},
     ...schemas
   );
 }
@@ -389,22 +415,27 @@ function parseUnion({
   useOutput,
 }: ParsingArgs<z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>>): SchemaObject {
   const contents = zodRef._def.options;
-  if (contents.reduce((prev, content) => prev && content._def.typeName === 'ZodLiteral', true)) {
+  if (
+    contents.reduce(
+      (prev, content) => prev && content._def.typeName === 'ZodLiteral',
+      true
+    )
+  ) {
     // special case to transform unions of literals into enums
     const literals = contents as unknown as z.ZodLiteral<OpenApiZodAny>[];
-    const type = literals
-      .reduce((prev, content) =>
-        !prev || prev === typeof content._def.value ?
-          typeof content._def.value :
-          null,
-        null as null | string
-      );
+    const type = literals.reduce(
+      (prev, content) =>
+        !prev || prev === typeof content._def.value
+          ? typeof content._def.value
+          : null,
+      null as null | string
+    );
 
     if (type) {
       return merge(
         {
           type: type as 'string' | 'number' | 'boolean',
-          enum: literals.map((literal) => literal._def.value)
+          enum: literals.map((literal) => literal._def.value),
         },
         zodRef.description ? { description: zodRef.description } : {},
         ...schemas

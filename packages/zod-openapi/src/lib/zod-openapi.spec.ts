@@ -252,6 +252,83 @@ describe('zodOpenapi', () => {
     });
   });
 
+  describe('Regarding omitted schema definitions', () => {
+    it('supports schema hideDefinitions properties', () => {
+      const zodSchema = extendApi(
+        z
+          .object({
+            aArrayMin: z.array(z.string()).min(3),
+            aArrayMax: z.array(z.number()).max(8),
+            aArrayLength: z.array(z.boolean()).length(10),
+          })
+          .partial(),
+        {
+          description: 'I need arrays',
+          hideDefinitions: ['aArrayLength'],
+        }
+      );
+
+      const apiSchema = generateSchema(zodSchema);
+
+      expect(apiSchema).toEqual({
+        type: 'object',
+        properties: {
+          aArrayMin: {
+            type: 'array',
+            minItems: 3,
+            items: { type: 'string' },
+          },
+          aArrayMax: {
+            type: 'array',
+            maxItems: 8,
+            items: { type: 'number' },
+          },
+        },
+        "hideDefinitions": ["aArrayLength"],
+        description: 'I need arrays',
+      });
+    });
+
+    it('supports hideDefinitions on nested schemas', () => {
+      const zodNestedSchema = extendApi(
+        z.strictObject({
+          aString: z.string(),
+          aNumber: z.number().optional()
+        }),
+        {
+          hideDefinitions: ['aNumber']
+        }
+      )
+      const zodSchema = extendApi(
+        z.object({ data: zodNestedSchema }).partial(),
+        {
+          description: 'I need arrays',
+        }
+      );
+      const apiSchema = generateSchema(zodSchema);
+      expect(apiSchema).toEqual({
+        "description": "I need arrays",
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "aString": {
+                "type": "string",
+              },
+            },
+            "hideDefinitions": ["aNumber"],
+            "required": [
+              "aString",
+            ],
+            "type": "object",
+          },
+        },
+        "type": "object",
+      }
+      );
+    });
+  });
+
   describe('record support', () => {
     describe('with a value type', () => {
       it('adds the value type to additionalProperties', () => {
