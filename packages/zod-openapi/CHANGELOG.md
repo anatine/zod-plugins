@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [2.1.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.0.1...zod-openapi-2.1.0) (2023-08-03)
+
+
+### Features
+
+* hide definitions purposal ([469a22a](https://github.com/anatine/zod-plugins/commit/469a22ad933c9ea220b221e9d4b9fe42b63aa4f2))
+
 ### [2.0.1](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.0.0...zod-openapi-2.0.1) (2023-06-30)
 
 ## [2.0.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-1.14.2...zod-openapi-2.0.0) (2023-06-30)
