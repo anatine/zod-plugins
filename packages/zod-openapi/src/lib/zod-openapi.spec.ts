@@ -931,4 +931,34 @@ describe('zodOpenapi', () => {
       ]
     });
   })
+
+  it('should work with ZodPipeline', () => {
+    expect(
+      generateSchema(
+        z
+          .string()
+          .regex(/^\d+$/)
+          .transform(Number)
+          .pipe(z.number().min(0).max(10))
+      )
+    ).toEqual({
+      type: 'string',
+      pattern: '^\\d+$',
+    } satisfies SchemaObject);
+
+    expect(
+      generateSchema(
+        z
+          .string()
+          .regex(/^\d+$/)
+          .transform(Number)
+          .pipe(z.number().min(0).max(10)),
+        true
+      )
+    ).toEqual({
+      type: 'number',
+      minimum: 0,
+      maximum: 10,
+    } satisfies SchemaObject);
+  });
 });
