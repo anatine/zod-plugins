@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [2.2.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.1.0...zod-openapi-2.2.0) (2023-08-22)
+
+
+### Features
+
+* parse ZodPipeline ([b3e6cb7](https://github.com/anatine/zod-plugins/commit/b3e6cb77766c23326b0ffce8f62102d3096d28e2))
+
 ## [2.1.0](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.0.1...zod-openapi-2.1.0) (2023-08-03)
 
 
