@@ -511,6 +511,16 @@ function catchAllParser({
   );
 }
 
+function parsePipeline({
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodPipeline<never, never>>): SchemaObject {
+  if (useOutput) {
+    return generateSchema(zodRef._def.out, useOutput);
+  }
+  return generateSchema(zodRef._def.in, useOutput);
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -545,6 +555,7 @@ const workerMap = {
   ZodAny: catchAllParser,
   ZodUnknown: catchAllParser,
   ZodVoid: catchAllParser,
+  ZodPipeline: parsePipeline,
 };
 type WorkerKeys = keyof typeof workerMap;
 
