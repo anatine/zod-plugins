@@ -1,6 +1,6 @@
 import type { SchemaObject, SchemaObjectType } from 'openapi3-ts/oas31';
 import merge from 'ts-deepmerge';
-import { AnyZodObject, z, ZodTypeAny } from 'zod';
+import type { AnyZodObject, z, ZodTypeAny } from 'zod';
 
 type AnatineSchemaObject = SchemaObject & { hideDefinitions?: string[] };
 
@@ -201,7 +201,7 @@ function parseObject({
   // `catchall` obviates `strict`, `strip`, and `passthrough`
   if (
     !(
-      zodRef._def.catchall instanceof z.ZodNever ||
+      // zodRef._def.catchall instanceof z.ZodNever ||
       zodRef._def.catchall?._def.typeName === 'ZodNever'
     )
   )
@@ -221,9 +221,12 @@ function parseObject({
     return (
       !(
         item.isOptional() ||
-        item instanceof z.ZodDefault ||
+        // item instanceof z.ZodDefault ||
         item._def.typeName === 'ZodDefault'
-      ) && !(item instanceof z.ZodNever || item._def.typeName === 'ZodDefault')
+      ) && !(
+        // item instanceof z.ZodNever ||
+        item._def.typeName === 'ZodNever' ||
+        item._def.typeName === 'ZodDefault')
     );
   });
 
@@ -257,7 +260,9 @@ function parseRecord({
     {
       type: 'object' as SchemaObjectType,
       additionalProperties:
-        zodRef._def.valueType instanceof z.ZodUnknown
+        // @ts-expect-error This comparison appears to be unintentional because the types 'ZodFirstPartyTypeKind.ZodRecord' and '"ZodUnknown"' have no overlap.ts(2367)
+        zodRef._def.typeName === 'ZodUnknown'
+        // zodRef._def.valueType instanceof z.ZodUnknown
           ? {}
           : generateSchema(zodRef._def.valueType, useOutput),
     },
