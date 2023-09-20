@@ -62,16 +62,16 @@ function parseTransformation({
           ['integer', 'number'].includes(`${input.type}`)
             ? 0
             : 'string' === input.type
-              ? ''
-              : 'boolean' === input.type
-                ? false
-                : 'object' === input.type
-                  ? {}
-                  : 'null' === input.type
-                    ? null
-                    : 'array' === input.type
-                      ? []
-                      : undefined,
+            ? ''
+            : 'boolean' === input.type
+            ? false
+            : 'object' === input.type
+            ? {}
+            : 'null' === input.type
+            ? null
+            : 'array' === input.type
+            ? []
+            : undefined,
           { addIssue: () => undefined, path: [] } // TODO: Discover if context is necessary here
         );
       } catch (e) {
@@ -85,8 +85,8 @@ function parseTransformation({
       ...input,
       ...(['number', 'string', 'boolean', 'null'].includes(output)
         ? {
-          type: output as 'number' | 'string' | 'boolean' | 'null',
-        }
+            type: output as 'number' | 'string' | 'boolean' | 'null',
+          }
         : {}),
     },
     ...schemas
@@ -173,19 +173,17 @@ function parseNumber({
   );
 }
 
-
-
-function getExcludedDefinitionsFromSchema(schemas: AnatineSchemaObject[]): string[] {
-
-
+function getExcludedDefinitionsFromSchema(
+  schemas: AnatineSchemaObject[]
+): string[] {
   const excludedDefinitions = [];
   for (const schema of schemas) {
     if (Array.isArray(schema.hideDefinitions)) {
-      excludedDefinitions.push(...schema.hideDefinitions)
+      excludedDefinitions.push(...schema.hideDefinitions);
     }
   }
 
-  return excludedDefinitions
+  return excludedDefinitions;
 }
 
 function parseObject({
@@ -202,7 +200,7 @@ function parseObject({
   if (
     !(
       // zodRef._def.catchall instanceof z.ZodNever ||
-      zodRef._def.catchall?._def.typeName === 'ZodNever'
+      (zodRef._def.catchall?._def.typeName === 'ZodNever')
     )
   )
     additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
@@ -223,10 +221,14 @@ function parseObject({
         item.isOptional() ||
         // item instanceof z.ZodDefault ||
         item._def.typeName === 'ZodDefault'
-      ) && !(
+      ) &&
+      !(
         // item instanceof z.ZodNever ||
-        item._def.typeName === 'ZodNever' ||
-        item._def.typeName === 'ZodDefault')
+        (
+          item._def.typeName === 'ZodNever' ||
+          item._def.typeName === 'ZodDefault'
+        )
+      )
     );
   });
 
@@ -244,9 +246,11 @@ function parseObject({
       }),
       ...required,
       ...additionalProperties,
-      ...hideDefinitions
+      ...hideDefinitions,
     },
-    zodRef.description ? { description: zodRef.description, hideDefinitions } : {},
+    zodRef.description
+      ? { description: zodRef.description, hideDefinitions }
+      : {},
     ...schemas
   );
 }
@@ -260,9 +264,7 @@ function parseRecord({
     {
       type: 'object' as SchemaObjectType,
       additionalProperties:
-        // @ts-expect-error This comparison appears to be unintentional because the types 'ZodFirstPartyTypeKind.ZodRecord' and '"ZodUnknown"' have no overlap.ts(2367)
-        zodRef._def.typeName === 'ZodUnknown'
-        // zodRef._def.valueType instanceof z.ZodUnknown
+        zodRef._def.valueType._def.typeName === 'ZodUnknown'
           ? {}
           : generateSchema(zodRef._def.valueType, useOutput),
     },
