@@ -197,12 +197,7 @@ function parseObject({
   let additionalProperties: SchemaObject['additionalProperties'];
 
   // `catchall` obviates `strict`, `strip`, and `passthrough`
-  if (
-    !(
-      // zodRef._def.catchall instanceof z.ZodNever ||
-      (zodRef._def.catchall?._def.typeName === 'ZodNever')
-    )
-  )
+  if (!(zodRef._def.catchall?._def.typeName === 'ZodNever'))
     additionalProperties = generateSchema(zodRef._def.catchall, useOutput);
   else if (zodRef._def.unknownKeys === 'passthrough')
     additionalProperties = true;
@@ -217,17 +212,9 @@ function parseObject({
   ).filter((key) => {
     const item = (zodRef as z.AnyZodObject).shape[key];
     return (
+      !(item.isOptional() || item._def.typeName === 'ZodDefault') &&
       !(
-        item.isOptional() ||
-        // item instanceof z.ZodDefault ||
-        item._def.typeName === 'ZodDefault'
-      ) &&
-      !(
-        // item instanceof z.ZodNever ||
-        (
-          item._def.typeName === 'ZodNever' ||
-          item._def.typeName === 'ZodDefault'
-        )
+        item._def.typeName === 'ZodNever' || item._def.typeName === 'ZodDefault'
       )
     );
   });
