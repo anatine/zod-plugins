@@ -154,19 +154,19 @@ function parseNumber({
   checks.forEach((item) => {
     switch (item.kind) {
       case 'max':
-        baseSchema.maximum = item.value;
-        // TODO: option to make this always explicit? (false instead of non-existent)
-        if (!item.inclusive) baseSchema.exclusiveMaximum = item.value;
+        if (item.inclusive) baseSchema.maximum = item.value;
+        else baseSchema.exclusiveMaximum = item.value;
         break;
       case 'min':
-        baseSchema.minimum = item.value;
-        if (!item.inclusive) baseSchema.exclusiveMinimum = item.value;
+        if (item.inclusive) baseSchema.minimum = item.value;
+        else baseSchema.exclusiveMinimum = item.value;
         break;
       case 'int':
         baseSchema.type = ['integer'];
         break;
       case 'multipleOf':
         baseSchema.multipleOf = item.value;
+        break;
     }
   });
   return merge(
