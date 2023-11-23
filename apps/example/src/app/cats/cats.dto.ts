@@ -40,7 +40,7 @@ export const GetCatsParamsZ = extendApi(
     id: z.string(),
   }),
   {
-    example: { id: 'mouse-terminator-2000' },
+    examples: [{ id: 'mouse-terminator-2000' }],
   }
 );
 

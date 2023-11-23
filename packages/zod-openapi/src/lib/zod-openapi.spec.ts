@@ -831,7 +831,7 @@ describe('zodOpenapi', () => {
         email: z.string().email(),
         phoneNumber: extendApi(z.string().min(10), {
           description: 'US Phone numbers only',
-          example: '555-555-5555',
+          examples: ['555-555-5555'],
         }),
       }),
       {
@@ -858,7 +858,7 @@ describe('zodOpenapi', () => {
           type: ['string'],
           minLength: 10,
           description: 'US Phone numbers only',
-          example: '555-555-5555',
+          examples: ['555-555-5555'],
         },
       },
       required: ['uid', 'firstName', 'email', 'phoneNumber'],
