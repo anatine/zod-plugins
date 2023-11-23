@@ -65,7 +65,7 @@ describe('Cats', () => {
       .set('Accept', 'application/json')
       .expect(200)
       .expect({
-        // todo: this should report 3.1.0
+        // todo: this should report 3.1.0 (or use openapi 3.0.0 supporting zod-openapi)
         openapi: '3.0.0',
         paths: {
           '/': {
@@ -136,8 +136,7 @@ describe('Cats', () => {
                   name: 'id',
                   required: true,
                   in: 'path',
-                  // schema: { type: 'array', items: {'type': 'string'} },
-                  schema: { type: ['string'] },
+                  schema: { type: 'string' },
                 },
               ],
               responses: {
