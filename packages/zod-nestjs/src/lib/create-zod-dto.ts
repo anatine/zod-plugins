@@ -78,7 +78,10 @@ export const createZodDto = <T extends OpenApiZodAny>(
         const schemaObject = properties[key] as SchemaObjectForMetadataFactory;
         const schemaObjectWithFixedFields = {
           ...schemaObject,
-          type: schemaObject.type ? schemaObject.type[0] : schemaObject.type
+          type: schemaObject.type ? schemaObject.type[0] : schemaObject.type,
+          nullable: schemaObject.type ? schemaObject.type.includes('null') : false,
+          exclusiveMinimum: schemaObject.exclusiveMinimum ? true : schemaObject.exclusiveMinimum,
+          exclusiveMaximum: schemaObject.exclusiveMaximum ? true : schemaObject.exclusiveMaximum,
         };
         schemaObjectWithFixedFields.required = !!(generatedSchema.required !== undefined,
           generatedSchema.required?.includes(key));
