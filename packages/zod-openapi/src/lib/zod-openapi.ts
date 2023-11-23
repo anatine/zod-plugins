@@ -58,18 +58,21 @@ function parseTransformation({
       zodRef._def.effect.type === 'transform' ? zodRef._def.effect : null;
     if (effect && 'transform' in effect) {
       try {
+        // todo: this doesn't deal with nullable types very well
+        // @ts-expect-error because we try/catch for a missing type
+        const type = input.type[0];
         output = typeof effect.transform(
-          ['integer', 'number'].includes(`${input.type}`)
+          ['integer', 'number'].includes(`${type}`)
             ? 0
-            : 'string' === input.type
+            : 'string' === type
               ? ''
-              : 'boolean' === input.type
+              : 'boolean' === type
                 ? false
-                : 'object' === input.type
+                : 'object' === type
                   ? {}
-                  : 'null' === input.type
+                  : 'null' === type
                     ? null
-                    : 'array' === input.type
+                    : 'array' === type
                       ? []
                       : undefined,
           { addIssue: () => undefined, path: [] } // TODO: Discover if context is necessary here
@@ -85,7 +88,7 @@ function parseTransformation({
       ...input,
       ...(['number', 'string', 'boolean', 'null'].includes(output)
         ? {
-          type: output as 'number' | 'string' | 'boolean' | 'null',
+          type: [output as 'number' | 'string' | 'boolean' | 'null'],
         }
         : {}),
     },
@@ -98,7 +101,7 @@ function parseString({
   schemas,
 }: ParsingArgs<z.ZodString>): SchemaObject {
   const baseSchema: SchemaObject = {
-    type: 'string',
+    type: ['string'],
   };
   const { checks = [] } = zodRef._def;
   checks.forEach((item) => {
@@ -145,7 +148,7 @@ function parseNumber({
   schemas,
 }: ParsingArgs<z.ZodNumber>): SchemaObject {
   const baseSchema: SchemaObject = {
-    type: 'number',
+    type: ['number'],
   };
   const { checks = [] } = zodRef._def;
   checks.forEach((item) => {
@@ -160,7 +163,7 @@ function parseNumber({
         if (!item.inclusive) baseSchema.exclusiveMinimum = item.value;
         break;
       case 'int':
-        baseSchema.type = 'integer';
+        baseSchema.type = ['integer'];
         break;
       case 'multipleOf':
         baseSchema.multipleOf = item.value;
@@ -232,7 +235,7 @@ function parseObject({
 
   return merge(
     {
-      type: 'object' as SchemaObjectType,
+      type: ['object' as SchemaObjectType],
       properties: iterateZodObject({
         zodRef: zodRef as OpenApiZodAnyObject,
         schemas,
@@ -255,7 +258,7 @@ function parseRecord({
 }: ParsingArgs<z.ZodRecord>): SchemaObject {
   return merge(
     {
-      type: 'object' as SchemaObjectType,
+      type: ['object' as SchemaObjectType],
       additionalProperties:
         zodRef._def.valueType instanceof z.ZodUnknown
           ? {}
@@ -271,7 +274,7 @@ function parseBigInt({
   schemas,
 }: ParsingArgs<z.ZodBigInt>): SchemaObject {
   return merge(
-    { type: 'integer' as SchemaObjectType, format: 'int64' },
+    { type: ['integer' as SchemaObjectType], format: 'int64' },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -282,7 +285,7 @@ function parseBoolean({
   schemas,
 }: ParsingArgs<z.ZodBoolean>): SchemaObject {
   return merge(
-    { type: 'boolean' as SchemaObjectType },
+    { type: ['boolean' as SchemaObjectType] },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -290,7 +293,7 @@ function parseBoolean({
 
 function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
   return merge(
-    { type: 'string' as SchemaObjectType, format: 'date-time' },
+    { type: ['string' as SchemaObjectType], format: 'date-time' },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -299,9 +302,8 @@ function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
 function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   return merge(
     {
-      type: 'string' as SchemaObjectType,
-      format: 'null',
-      nullable: true,
+      type: ['string', 'null'] as SchemaObjectType[],
+      enum: ['null'],
     },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
@@ -355,7 +357,7 @@ function parseArray({
 
   return merge(
     {
-      type: 'array' as SchemaObjectType,
+      type: ['array' as SchemaObjectType],
       items: generateSchema(zodRef.element, useOutput),
       ...constraints,
     },
@@ -370,7 +372,7 @@ function parseLiteral({
 }: ParsingArgs<z.ZodLiteral<OpenApiZodAny>>): SchemaObject {
   return merge(
     {
-      type: typeof zodRef._def.value as 'string' | 'number' | 'boolean',
+      type: [typeof zodRef._def.value as 'string' | 'number' | 'boolean'],
       enum: [zodRef._def.value],
     },
     zodRef.description ? { description: zodRef.description } : {},
@@ -384,7 +386,7 @@ function parseEnum({
 }: ParsingArgs<z.ZodEnum<never> | z.ZodNativeEnum<never>>): SchemaObject {
   return merge(
     {
-      type: typeof Object.values(zodRef._def.values)[0] as 'string' | 'number',
+      type: [typeof Object.values(zodRef._def.values)[0] as 'string' | 'number'],
       enum: Object.values(zodRef._def.values),
     },
     zodRef.description ? { description: zodRef.description } : {},
@@ -434,7 +436,7 @@ function parseUnion({
     if (type) {
       return merge(
         {
-          type: type as 'string' | 'number' | 'boolean',
+          type: [type as 'string' | 'number' | 'boolean'],
           enum: literals.map((literal) => literal._def.value),
         },
         zodRef.description ? { description: zodRef.description } : {},
@@ -565,7 +567,7 @@ export function generateSchema(
 ): SchemaObject {
   const { metaOpenApi = {} } = zodRef;
   const schemas = [
-    zodRef.isNullable && zodRef.isNullable() ? { nullable: true } : {},
+    zodRef.isNullable && zodRef.isNullable() ? { type: ['null'] } as SchemaObject : {},
     ...(Array.isArray(metaOpenApi) ? metaOpenApi : [metaOpenApi]),
   ];
 

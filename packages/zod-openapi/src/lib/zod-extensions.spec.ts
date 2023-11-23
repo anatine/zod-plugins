@@ -25,17 +25,17 @@ describe('Zod Extensions', () => {
       "properties": {
         "one": {
           "example": "oneOne",
-          "type": "string"
+          "type": ["string"]
         },
         "two": {
-          "type": "number"
+          "type": ["number"]
         }
       },
       "required": [
         "one",
         "two"
       ],
-      "type": "object"
+      "type": ["object"]
     })
   })
 
