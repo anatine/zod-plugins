@@ -23,8 +23,14 @@ export function extendApi<T extends OpenApiZodAny>(
   schema: T,
   schemaObject: AnatineSchemaObject = {}
 ): T {
-  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, schemaObject);
-  return schema;
+  const This = (schema as any).constructor;
+  const newSchema = new This(schema._def);
+  newSchema.metaOpenApi = Object.assign(
+    {},
+    schema.metaOpenApi || {},
+    schemaObject
+  );
+  return newSchema;
 }
 
 function iterateZodObject({
