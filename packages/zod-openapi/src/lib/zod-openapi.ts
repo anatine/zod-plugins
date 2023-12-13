@@ -299,24 +299,33 @@ function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
 function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   return merge(
     {
-      type: 'string' as SchemaObjectType,
-      format: 'null',
-      nullable: true,
+      type: 'null' as SchemaObjectType,
     },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
 }
 
-function parseOptionalNullable({
+function parseOptional({
   schemas,
   zodRef,
   useOutput,
-}: ParsingArgs<
-  z.ZodOptional<OpenApiZodAny> | z.ZodNullable<OpenApiZodAny>
->): SchemaObject {
+}: ParsingArgs<z.ZodOptional<OpenApiZodAny>>): SchemaObject {
   return merge(
     generateSchema(zodRef.unwrap(), useOutput),
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
+}
+
+function parseNullable({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodNullable<OpenApiZodAny>>): SchemaObject {
+  const schema = generateSchema(zodRef.unwrap(), useOutput);
+  return merge(
+    { ...schema, type: [schema.type, 'null'] as SchemaObjectType[] },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -530,8 +539,8 @@ const workerMap = {
   ZodBoolean: parseBoolean,
   ZodDate: parseDate,
   ZodNull: parseNull,
-  ZodOptional: parseOptionalNullable,
-  ZodNullable: parseOptionalNullable,
+  ZodOptional: parseOptional,
+  ZodNullable: parseNullable,
   ZodDefault: parseDefault,
   ZodArray: parseArray,
   ZodLiteral: parseLiteral,
@@ -564,11 +573,9 @@ export function generateSchema(
   useOutput?: boolean
 ): SchemaObject {
   const { metaOpenApi = {} } = zodRef;
-  const schemas = [
-    zodRef.isNullable && zodRef.isNullable() ? { nullable: true } : {},
+  const schemas: AnatineSchemaObject[] = [
     ...(Array.isArray(metaOpenApi) ? metaOpenApi : [metaOpenApi]),
   ];
-
   try {
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
