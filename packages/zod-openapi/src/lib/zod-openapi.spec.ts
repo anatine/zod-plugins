@@ -53,7 +53,7 @@ describe('zodOpenapi', () => {
       type: 'object',
       properties: {
         aUndefined: {},
-        aNull: { type: 'string', format: 'null', nullable: true },
+        aNull: { type: 'null' },
         aVoid: {},
       },
       required: ['aNull'],
@@ -239,7 +239,7 @@ describe('zodOpenapi', () => {
         aArrayNonempty: {
           type: 'array',
           minItems: 1,
-          items: { type: 'string', format: 'null', nullable: true },
+          items: { type: 'null' },
         },
         aArrayMinAndMax: {
           type: 'array',
@@ -624,9 +624,9 @@ describe('zodOpenapi', () => {
         literals: {
           type: 'object',
           properties: {
-            wordOne: { nullable: true, type: 'string', enum: ['One'] },
+            wordOne: { type: ['string', 'null'], enum: ['One'] },
             numberTwo: { type: 'number', enum: [2] },
-            isThisTheEnd: { nullable: true, type: 'boolean', enum: [false] },
+            isThisTheEnd: { type: ['boolean', 'null'], enum: [false] },
           },
           required: ['wordOne'],
         },
@@ -730,7 +730,7 @@ describe('zodOpenapi', () => {
           oneOf: [{ type: 'string' }, { type: 'string' }],
           description: 'Odd pattern here',
         },
-        aNullish: { nullable: true, type: 'string' },
+        aNullish: { type: ['string', 'null'] },
         stringLengthOutput: { type: 'number' },
         favourites: {
           type: 'object',
@@ -961,6 +961,42 @@ describe('zodOpenapi', () => {
       maximum: 10,
     } satisfies SchemaObject);
   });
+
+
+  it('should work with ZodTransform and correctly set nullable and optional', () => {
+    type Type = string;
+    const schema = z.object({
+      item: extendApi(
+        z.custom<Type>((data) => true),
+        generateSchema(z.string().nullable())
+      ),
+    });
+    expect(generateSchema(schema)).toEqual({
+      properties: {
+        item: {
+          type: ['string', 'null'],
+        },
+      },
+      type: 'object',
+    });
+    const schema2 = z.object({
+      item: extendApi(
+        z.custom<Type>((data) => !!data),
+        generateSchema(z.string())
+      ),
+    });
+    expect(generateSchema(schema2)).toEqual({
+      properties: {
+        item: {
+          type: 'string',
+        },
+      },
+      required: ['item'],
+      type: 'object',
+    });
+
+  });
+    
   test('should work with ZodReadonly', () => {
     expect(generateSchema(z.object({ field: z.string() })))
       .toMatchInlineSnapshot(`
@@ -991,5 +1027,6 @@ describe('zodOpenapi', () => {
         "type": "object",
       }
     `);
+
   });
 });
