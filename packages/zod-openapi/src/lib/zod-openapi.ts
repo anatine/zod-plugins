@@ -521,6 +521,18 @@ function parsePipeline({
   return generateSchema(zodRef._def.in, useOutput);
 }
 
+function parseReadonly({
+  zodRef,
+  useOutput,
+  schemas,
+}: ParsingArgs<z.ZodReadonly<z.ZodAny>>): SchemaObject {
+  return merge(
+    generateSchema(zodRef._def.innerType, useOutput),
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -556,6 +568,7 @@ const workerMap = {
   ZodUnknown: catchAllParser,
   ZodVoid: catchAllParser,
   ZodPipeline: parsePipeline,
+  ZodReadonly: parseReadonly,
 };
 type WorkerKeys = keyof typeof workerMap;
 
