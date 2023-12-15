@@ -962,6 +962,7 @@ describe('zodOpenapi', () => {
     } satisfies SchemaObject);
   });
 
+
   it('should work with ZodTransform and correctly set nullable and optional', () => {
     type Type = string;
     const schema = z.object({
@@ -993,5 +994,37 @@ describe('zodOpenapi', () => {
       required: ['item'],
       type: 'object',
     });
+
+  test('should work with ZodReadonly', () => {
+    expect(generateSchema(z.object({ field: z.string() })))
+      .toMatchInlineSnapshot(`
+      Object {
+        "properties": Object {
+          "field": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "field",
+        ],
+        "type": "object",
+      }
+    `);
+
+    expect(generateSchema(z.object({ field: z.string() }).readonly()))
+      .toMatchInlineSnapshot(`
+      Object {
+        "properties": Object {
+          "field": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "field",
+        ],
+        "type": "object",
+      }
+    `);
+
   });
 });

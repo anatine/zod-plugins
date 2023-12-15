@@ -77,10 +77,9 @@
     "tslib": "^2.6.0",
     "typescript": "5.1.6",
     "validator": "^13.9.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "workspaces": [
     "packages/**"
   ]
 }
-
