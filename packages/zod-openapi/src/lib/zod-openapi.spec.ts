@@ -995,6 +995,8 @@ describe('zodOpenapi', () => {
       type: 'object',
     });
 
+  });
+    
   test('should work with ZodReadonly', () => {
     expect(generateSchema(z.object({ field: z.string() })))
       .toMatchInlineSnapshot(`
@@ -1010,8 +1012,6 @@ describe('zodOpenapi', () => {
         "type": "object",
       }
     `);
-
-  });
 
     expect(generateSchema(z.object({ field: z.string() }).readonly()))
       .toMatchInlineSnapshot(`
