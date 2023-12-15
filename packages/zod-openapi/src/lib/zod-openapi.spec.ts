@@ -1011,6 +1011,8 @@ describe('zodOpenapi', () => {
       }
     `);
 
+  });
+
     expect(generateSchema(z.object({ field: z.string() }).readonly()))
       .toMatchInlineSnapshot(`
       Object {
