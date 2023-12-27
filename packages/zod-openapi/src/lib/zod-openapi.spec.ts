@@ -100,19 +100,23 @@ describe('zodOpenapi', () => {
     expect((apiSchema.properties?.aNever as SchemaObject).readOnly).toEqual(
       true
     );
-  })
+  });
 
   it('should support branded types', () => {
     const zodSchema = extendApi(
       z.object({
-        aBrandedString: z.string().describe('A branded test string').brand('BrandedString').optional(),
+        aBrandedString: z
+          .string()
+          .describe('A branded test string')
+          .brand('BrandedString')
+          .optional(),
         aBrandedNumber: z.number().brand('BrandedNumber').optional(),
         aBrandedBigInt: z.bigint().brand('BrandedBigInt'),
         aBrandedBoolean: z.boolean().brand('BrandedBoolean'),
         aBrandedDate: z.date().brand('BrandedDate'),
       }),
       {
-        description: `Branded primitives`
+        description: `Branded primitives`,
       }
     );
     const apiSchema = generateSchema(zodSchema);
@@ -120,7 +124,10 @@ describe('zodOpenapi', () => {
     expect(apiSchema).toEqual({
       type: 'object',
       properties: {
-        aBrandedString: { description: 'A branded test string', type: 'string' },
+        aBrandedString: {
+          description: 'A branded test string',
+          type: 'string',
+        },
         aBrandedNumber: { type: 'number' },
         aBrandedBigInt: { type: 'integer', format: 'int64' },
         aBrandedBoolean: { type: 'boolean' },
@@ -284,7 +291,7 @@ describe('zodOpenapi', () => {
             items: { type: 'number' },
           },
         },
-        "hideDefinitions": ["aArrayLength"],
+        hideDefinitions: ['aArrayLength'],
         description: 'I need arrays',
       });
     });
@@ -293,12 +300,12 @@ describe('zodOpenapi', () => {
       const zodNestedSchema = extendApi(
         z.strictObject({
           aString: z.string(),
-          aNumber: z.number().optional()
+          aNumber: z.number().optional(),
         }),
         {
-          hideDefinitions: ['aNumber']
+          hideDefinitions: ['aNumber'],
         }
-      )
+      );
       const zodSchema = extendApi(
         z.object({ data: zodNestedSchema }).partial(),
         {
@@ -307,25 +314,22 @@ describe('zodOpenapi', () => {
       );
       const apiSchema = generateSchema(zodSchema);
       expect(apiSchema).toEqual({
-        "description": "I need arrays",
-        "properties": {
-          "data": {
-            "additionalProperties": false,
-            "properties": {
-              "aString": {
-                "type": "string",
+        description: 'I need arrays',
+        properties: {
+          data: {
+            additionalProperties: false,
+            properties: {
+              aString: {
+                type: 'string',
               },
             },
-            "hideDefinitions": ["aNumber"],
-            "required": [
-              "aString",
-            ],
-            "type": "object",
+            hideDefinitions: ['aNumber'],
+            required: ['aString'],
+            type: 'object',
           },
         },
-        "type": "object",
-      }
-      );
+        type: 'object',
+      });
     });
   });
 
@@ -501,7 +505,7 @@ describe('zodOpenapi', () => {
         })
         .strict(),
       {
-        description: "Super strict",
+        description: 'Super strict',
       }
     );
     const apiSchema = generateSchema(zodSchema);
@@ -513,7 +517,7 @@ describe('zodOpenapi', () => {
         aNumber: { type: 'number' },
       },
       additionalProperties: false,
-      description: "Super strict",
+      description: 'Super strict',
     });
   });
 
@@ -904,33 +908,35 @@ describe('zodOpenapi', () => {
   it('can summarize unions of zod literals as an enum', () => {
     expect(generateSchema(z.union([z.literal('h'), z.literal('i')]))).toEqual({
       type: 'string',
-      enum: ['h', 'i']
+      enum: ['h', 'i'],
     });
 
     expect(generateSchema(z.union([z.literal(3), z.literal(4)]))).toEqual({
       type: 'number',
-      enum: [3, 4]
+      enum: [3, 4],
     });
 
     // should this just remove the enum? true | false is exhaustive...
-    expect(generateSchema(z.union([z.literal(true), z.literal(false)]))).toEqual({
+    expect(
+      generateSchema(z.union([z.literal(true), z.literal(false)]))
+    ).toEqual({
       type: 'boolean',
-      enum: [true, false]
+      enum: [true, false],
     });
 
     expect(generateSchema(z.union([z.literal(5), z.literal('i')]))).toEqual({
       oneOf: [
         {
           type: 'number',
-          enum: [5]
+          enum: [5],
         },
         {
           type: 'string',
-          enum: ['i']
-        }
-      ]
+          enum: ['i'],
+        },
+      ],
     });
-  })
+  });
 
   it('should work with ZodPipeline', () => {
     expect(
@@ -961,7 +967,6 @@ describe('zodOpenapi', () => {
       maximum: 10,
     } satisfies SchemaObject);
   });
-
 
   it('should work with ZodTransform and correctly set nullable and optional', () => {
     type Type = string;
@@ -994,9 +999,8 @@ describe('zodOpenapi', () => {
       required: ['item'],
       type: 'object',
     });
-
   });
-    
+
   test('should work with ZodReadonly', () => {
     expect(generateSchema(z.object({ field: z.string() })))
       .toMatchInlineSnapshot(`
@@ -1027,6 +1031,37 @@ describe('zodOpenapi', () => {
         "type": "object",
       }
     `);
+  });
 
+  test('should parse front matter', () => {
+    expect(
+      generateSchema(
+        z.object({
+          field: z.string().describe(`
+      ---
+      title: "Test"
+      deprecated: because reasons
+      ---
+      This is a description    
+    `),
+        })
+      )
+    ).toMatchInlineSnapshot(`
+      Object {
+        "properties": Object {
+          "field": Object {
+            "deprecated": true,
+            "description": "This is a description",
+            "type": "string",
+            "x-deprecated": "because reasons",
+            "x-title": "Test",
+          },
+        },
+        "required": Array [
+          "field",
+        ],
+        "type": "object",
+      }
+    `);
   });
 });

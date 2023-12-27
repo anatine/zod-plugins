@@ -1,6 +1,8 @@
 import type { SchemaObject, SchemaObjectType } from 'openapi3-ts/oas31';
 import merge from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
+import * as frontMatter from 'front-matter';
+import dedent from 'dedent';
 
 type AnatineSchemaObject = SchemaObject & { hideDefinitions?: string[] };
 
@@ -45,6 +47,27 @@ function iterateZodObject({
   return reduced;
 }
 
+function parseDescription(zodRef: OpenApiZodAny): SchemaObject {
+  if (!zodRef.description) return {};
+  const trimmedDescription = dedent(zodRef.description);
+  // @ts-expect-error front-matter types are incorrect, see https://github.com/jxson/front-matter/pull/77
+  if (!frontMatter.test(trimmedDescription))
+    return { description: zodRef.description };
+  // @ts-expect-error front-matter types are incorrect, see https://github.com/jxson/front-matter/pull/77
+  const { attributes, body } = frontMatter(trimmedDescription);
+  const output: SchemaObject = {};
+  if (body.trim()) output.description = body.trim();
+  if (typeof attributes === 'object' && attributes !== null) {
+    if ('deprecated' in attributes && attributes.deprecated) {
+      output.deprecated = true;
+    }
+    for (const [key, value] of Object.entries(attributes)) {
+      output[`x-${key}`] = value;
+    }
+  }
+  return output;
+}
+
 function parseTransformation({
   zodRef,
   schemas,
@@ -62,16 +85,16 @@ function parseTransformation({
           ['integer', 'number'].includes(`${input.type}`)
             ? 0
             : 'string' === input.type
-              ? ''
-              : 'boolean' === input.type
-                ? false
-                : 'object' === input.type
-                  ? {}
-                  : 'null' === input.type
-                    ? null
-                    : 'array' === input.type
-                      ? []
-                      : undefined,
+            ? ''
+            : 'boolean' === input.type
+            ? false
+            : 'object' === input.type
+            ? {}
+            : 'null' === input.type
+            ? null
+            : 'array' === input.type
+            ? []
+            : undefined,
           { addIssue: () => undefined, path: [] } // TODO: Discover if context is necessary here
         );
       } catch (e) {
@@ -85,8 +108,8 @@ function parseTransformation({
       ...input,
       ...(['number', 'string', 'boolean', 'null'].includes(output)
         ? {
-          type: output as 'number' | 'string' | 'boolean' | 'null',
-        }
+            type: output as 'number' | 'string' | 'boolean' | 'null',
+          }
         : {}),
     },
     ...schemas
@@ -133,11 +156,7 @@ function parseString({
         break;
     }
   });
-  return merge(
-    baseSchema,
-    zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
-  );
+  return merge(baseSchema, parseDescription(zodRef), ...schemas);
 }
 
 function parseNumber({
@@ -166,26 +185,20 @@ function parseNumber({
         baseSchema.multipleOf = item.value;
     }
   });
-  return merge(
-    baseSchema,
-    zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
-  );
+  return merge(baseSchema, parseDescription(zodRef), ...schemas);
 }
 
-
-
-function getExcludedDefinitionsFromSchema(schemas: AnatineSchemaObject[]): string[] {
-
-
+function getExcludedDefinitionsFromSchema(
+  schemas: AnatineSchemaObject[]
+): string[] {
   const excludedDefinitions = [];
   for (const schema of schemas) {
     if (Array.isArray(schema.hideDefinitions)) {
-      excludedDefinitions.push(...schema.hideDefinitions)
+      excludedDefinitions.push(...schema.hideDefinitions);
     }
   }
 
-  return excludedDefinitions
+  return excludedDefinitions;
 }
 
 function parseObject({
@@ -241,9 +254,11 @@ function parseObject({
       }),
       ...required,
       ...additionalProperties,
-      ...hideDefinitions
+      ...hideDefinitions,
     },
-    zodRef.description ? { description: zodRef.description, hideDefinitions } : {},
+    zodRef.description
+      ? { description: zodRef.description, hideDefinitions }
+      : {},
     ...schemas
   );
 }
@@ -261,7 +276,7 @@ function parseRecord({
           ? {}
           : generateSchema(zodRef._def.valueType, useOutput),
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -272,7 +287,7 @@ function parseBigInt({
 }: ParsingArgs<z.ZodBigInt>): SchemaObject {
   return merge(
     { type: 'integer' as SchemaObjectType, format: 'int64' },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -283,7 +298,7 @@ function parseBoolean({
 }: ParsingArgs<z.ZodBoolean>): SchemaObject {
   return merge(
     { type: 'boolean' as SchemaObjectType },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -291,7 +306,7 @@ function parseBoolean({
 function parseDate({ zodRef, schemas }: ParsingArgs<z.ZodDate>): SchemaObject {
   return merge(
     { type: 'string' as SchemaObjectType, format: 'date-time' },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -301,7 +316,7 @@ function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
     {
       type: 'null' as SchemaObjectType,
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -313,7 +328,7 @@ function parseOptional({
 }: ParsingArgs<z.ZodOptional<OpenApiZodAny>>): SchemaObject {
   return merge(
     generateSchema(zodRef.unwrap(), useOutput),
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -326,7 +341,7 @@ function parseNullable({
   const schema = generateSchema(zodRef.unwrap(), useOutput);
   return merge(
     { ...schema, type: [schema.type, 'null'] as SchemaObjectType[] },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -341,7 +356,7 @@ function parseDefault({
       default: zodRef._def.defaultValue(),
       ...generateSchema(zodRef._def.innerType, useOutput),
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -368,7 +383,7 @@ function parseArray({
       items: generateSchema(zodRef.element, useOutput),
       ...constraints,
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -382,7 +397,7 @@ function parseLiteral({
       type: typeof zodRef._def.value as 'string' | 'number' | 'boolean',
       enum: [zodRef._def.value],
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -396,7 +411,7 @@ function parseEnum({
       type: typeof Object.values(zodRef._def.values)[0] as 'string' | 'number',
       enum: Object.values(zodRef._def.values),
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -413,7 +428,7 @@ function parseIntersection({
         generateSchema(zodRef._def.right, useOutput),
       ],
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -446,7 +461,7 @@ function parseUnion({
           type: type as 'string' | 'number' | 'boolean',
           enum: literals.map((literal) => literal._def.value),
         },
-        zodRef.description ? { description: zodRef.description } : {},
+        parseDescription(zodRef),
         ...schemas
       );
     }
@@ -456,7 +471,7 @@ function parseUnion({
     {
       oneOf: contents.map((schema) => generateSchema(schema, useOutput)),
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -487,7 +502,7 @@ function parseDiscriminatedUnion({
         )._def.options.values()
       ).map((schema) => generateSchema(schema, useOutput)),
     },
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
@@ -496,11 +511,7 @@ function parseNever({
   zodRef,
   schemas,
 }: ParsingArgs<z.ZodNever>): SchemaObject {
-  return merge(
-    { readOnly: true },
-    zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
-  );
+  return merge({ readOnly: true }, parseDescription(zodRef), ...schemas);
 }
 
 function parseBranded({
@@ -514,10 +525,7 @@ function catchAllParser({
   zodRef,
   schemas,
 }: ParsingArgs<ZodTypeAny>): SchemaObject {
-  return merge(
-    zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
-  );
+  return merge(parseDescription(zodRef), ...schemas);
 }
 
 function parsePipeline({
@@ -537,7 +545,7 @@ function parseReadonly({
 }: ParsingArgs<z.ZodReadonly<z.ZodAny>>): SchemaObject {
   return merge(
     generateSchema(zodRef._def.innerType, useOutput),
-    zodRef.description ? { description: zodRef.description } : {},
+    parseDescription(zodRef),
     ...schemas
   );
 }
