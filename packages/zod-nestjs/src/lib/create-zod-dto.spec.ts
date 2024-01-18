@@ -2,6 +2,8 @@ import * as z from 'zod';
 import { ZodError } from 'zod';
 
 import { createZodDto } from './create-zod-dto';
+import { SchemaObject as SchemaObject30 } from 'openapi3-ts/oas30';
+import { OpenApiZodAny } from '@anatine/zod-openapi';
 
 describe('zod-nesjs create-zod-dto', () => {
   const testDtoSchema = z.object({
@@ -31,42 +33,66 @@ describe('zod-nesjs create-zod-dto', () => {
   });
 
   it('should merge a discriminated union types for class', () => {
-    enum Kind { A, B };
-    const discriminatedSchema = z
-      .discriminatedUnion('kind', [
-        z.object({
-          kind: z.literal(Kind.A),
-          value: z.number()
-        }),
-        z.object({
-          kind: z.literal(Kind.B),
-          value: z.string()
-        })
-      ]);
+    enum Kind {
+      A,
+      B,
+    }
+    const discriminatedSchema = z.discriminatedUnion('kind', [
+      z.object({
+        kind: z.literal(Kind.A),
+        value: z.number(),
+      }),
+      z.object({
+        kind: z.literal(Kind.B),
+        value: z.string(),
+      }),
+    ]);
 
     class TestDto extends createZodDto(discriminatedSchema) {}
 
-    const result = TestDto.create({kind: Kind.A, value: 1})
+    const result = TestDto.create({ kind: Kind.A, value: 1 });
     expect(result).toEqual({ kind: Kind.A, value: 1 });
   });
 
   it('should merge the union types for class', () => {
-    enum Kind { A, B };
-    const unionSchema = z
-      .union([
-        z.object({
-          kind: z.literal(Kind.A),
-          value: z.number()
-        }),
-        z.object({
-          kind: z.literal(Kind.B),
-          value: z.string()
-        })
-      ]);
+    enum Kind {
+      A,
+      B,
+    }
+    const unionSchema = z.union([
+      z.object({
+        kind: z.literal(Kind.A),
+        value: z.number(),
+      }),
+      z.object({
+        kind: z.literal(Kind.B),
+        value: z.string(),
+      }),
+    ]);
 
     class TestDto extends createZodDto(unionSchema) {}
 
-    const result = TestDto.create({kind: Kind.B, value: 'val'})
+    const result = TestDto.create({ kind: Kind.B, value: 'val' });
     expect(result).toEqual({ kind: Kind.B, value: 'val' });
   });
+
+  it('should output OpenAPI 3.0-style nullable types', () => {
+    const schema = z.object({
+      name: z.string().nullable(),
+    });
+    const metadataFactory = getMetadataFactory(schema);
+
+    const generatedSchema = metadataFactory();
+
+    expect(generatedSchema).toBeDefined();
+    expect(generatedSchema?.name.type).toEqual(['string']);
+    expect(generatedSchema?.name.nullable).toBe(true);
+  });
 });
+
+function getMetadataFactory(zodRef: OpenApiZodAny) {
+  const schemaHolderClass = createZodDto(zodRef) as unknown as {
+    _OPENAPI_METADATA_FACTORY: () => Record<string, SchemaObject30> | undefined;
+  };
+  return schemaHolderClass._OPENAPI_METADATA_FACTORY;
+}

@@ -1,4 +1,5 @@
-import type { SchemaObject } from 'openapi3-ts/oas31';
+import type { SchemaObject as SchemaObject30 } from 'openapi3-ts/oas30';
+import type { SchemaObject as SchemaObject31 } from 'openapi3-ts/oas31';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
 
@@ -27,12 +28,26 @@ export type CompatibleZodInfer<T extends CompatibleZodType> = T['_output'];
 
 export type MergeZodSchemaOutput<T extends CompatibleZodType> =
   T extends z.ZodDiscriminatedUnion<string, infer Options>
-    ? Merge<object, TupleToUnion<{[X in keyof Options]: Options[X] extends z.ZodType ? Options[X]['_output'] : Options[X]}>>
-      : T extends z.ZodUnion<infer UnionTypes>
-        ? UnionTypes extends z.ZodType[]
-          ? Merge<object, TupleToUnion<{[X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType ? UnionTypes[X]['_output'] : UnionTypes[X]}>>
-          : T['_output']
-        : T['_output'];
+    ? Merge<
+        object,
+        TupleToUnion<{
+          [X in keyof Options]: Options[X] extends z.ZodType
+            ? Options[X]['_output']
+            : Options[X];
+        }>
+      >
+    : T extends z.ZodUnion<infer UnionTypes>
+    ? UnionTypes extends z.ZodType[]
+      ? Merge<
+          object,
+          TupleToUnion<{
+            [X in keyof UnionTypes]: UnionTypes[X] extends z.ZodType
+              ? UnionTypes[X]['_output']
+              : UnionTypes[X];
+          }>
+        >
+      : T['_output']
+    : T['_output'];
 
 export type ZodDtoStatic<T extends CompatibleZodType = CompatibleZodType> = {
   new (): MergeZodSchemaOutput<T>;
@@ -41,7 +56,7 @@ export type ZodDtoStatic<T extends CompatibleZodType = CompatibleZodType> = {
 };
 
 // Used for transforming the SchemaObject in _OPENAPI_METADATA_FACTORY
-type SchemaObjectForMetadataFactory = Omit<SchemaObject, 'required'> & {
+type SchemaObjectForMetadataFactory = Omit<SchemaObject30, 'required'> & {
   required: boolean | string[];
 };
 
@@ -50,7 +65,7 @@ export const createZodDto = <T extends OpenApiZodAny>(
 ): ZodDtoStatic<T> => {
   class SchemaHolderClass {
     public static zodSchema = zodSchema;
-    schema: SchemaObject | undefined;
+    schema: SchemaObject31 | undefined;
 
     constructor() {
       this.schema = generateSchema(zodSchema);
@@ -63,7 +78,7 @@ export const createZodDto = <T extends OpenApiZodAny>(
      * https://github.com/nestjs/swagger/blob/491b168cbff3003191e55ee96e77e69d8c1deb66/lib/plugin/plugin-constants.ts
      */
     public static _OPENAPI_METADATA_FACTORY():
-      | Record<string, SchemaObject>
+      | Record<string, SchemaObject30>
       | undefined {
       const generatedSchema = generateSchema(zodSchema);
       const properties = generatedSchema.properties ?? {};
@@ -76,14 +91,27 @@ export const createZodDto = <T extends OpenApiZodAny>(
          * array to a boolean.
          */
         const schemaObject = properties[key] as SchemaObjectForMetadataFactory;
-        const schemaObjectWithRequiredField = {
+        const convertedSchemaObject = {
           ...schemaObject,
         };
-        schemaObjectWithRequiredField.required = !!(generatedSchema.required !== undefined,
-          generatedSchema.required?.includes(key));
-        properties[key] = schemaObjectWithRequiredField as any; // TODO: Fix this
+        convertedSchemaObject.required = !!(generatedSchema.required !==
+          undefined,
+        generatedSchema.required?.includes(key));
+
+        // @nestjs/swagger expects OpenAPI 3.0-style schema objects
+        if (Array.isArray(convertedSchemaObject.type)) {
+          const nullTypeIndex = convertedSchemaObject.type.findIndex(
+            (type) => type === 'null'
+          );
+          if (nullTypeIndex > -1) {
+            convertedSchemaObject.type.splice(nullTypeIndex, 1);
+            convertedSchemaObject.nullable = true;
+          }
+        }
+
+        properties[key] = convertedSchemaObject as any; // TODO: Fix this
       }
-      return properties as Record<string, SchemaObject>;
+      return properties as Record<string, SchemaObject30>;
     }
 
     public static create(input: unknown): CompatibleZodInfer<T> {
