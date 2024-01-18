@@ -310,26 +310,13 @@ function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   );
 }
 
-function parseOptional({
+function parseOptionalNullable({
   schemas,
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodOptional<OpenApiZodAny>>): SchemaObject {
   return merge(
     generateSchema(zodRef.unwrap(), useOutput),
-    zodRef.description ? { description: zodRef.description } : {},
-    ...schemas
-  );
-}
-
-function parseNullable({
-  schemas,
-  zodRef,
-  useOutput,
-}: ParsingArgs<z.ZodNullable<OpenApiZodAny>>): SchemaObject {
-  const schema = generateSchema(zodRef.unwrap(), useOutput);
-  return merge(
-    { ...schema, type: [schema.type, 'null'] as SchemaObjectType[] },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -555,8 +542,8 @@ const workerMap = {
   ZodBoolean: parseBoolean,
   ZodDate: parseDate,
   ZodNull: parseNull,
-  ZodOptional: parseOptional,
-  ZodNullable: parseNullable,
+  ZodOptional: parseOptionalNullable,
+  ZodNullable: parseOptionalNullable,
   ZodDefault: parseDefault,
   ZodArray: parseArray,
   ZodLiteral: parseLiteral,
