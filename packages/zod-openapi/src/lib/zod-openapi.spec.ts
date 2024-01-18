@@ -977,7 +977,7 @@ describe('zodOpenapi', () => {
           type: ['string', 'null'],
         },
       },
-      type: 'object',
+      type: ['object'],
     });
     const schema2 = z.object({
       item: extendApi(
@@ -988,11 +988,11 @@ describe('zodOpenapi', () => {
     expect(generateSchema(schema2)).toEqual({
       properties: {
         item: {
-          type: 'string',
+          type: ['string'],
         },
       },
       required: ['item'],
-      type: 'object',
+      type: ['object'],
     });
 
   });
@@ -1003,13 +1003,17 @@ describe('zodOpenapi', () => {
       Object {
         "properties": Object {
           "field": Object {
-            "type": "string",
+            "type": Array [
+              "string",
+            ],
           },
         },
         "required": Array [
           "field",
         ],
-        "type": "object",
+        "type": Array [
+          "object",
+        ],
       }
     `);
 
@@ -1018,13 +1022,17 @@ describe('zodOpenapi', () => {
       Object {
         "properties": Object {
           "field": Object {
-            "type": "string",
+            "type": Array [
+              "string",
+            ],
           },
         },
         "required": Array [
           "field",
         ],
-        "type": "object",
+        "type": Array [
+          "object",
+        ],
       }
     `);
 
