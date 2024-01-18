@@ -961,4 +961,72 @@ describe('zodOpenapi', () => {
       maximum: 10,
     } satisfies SchemaObject);
   });
+
+
+  it('should work with ZodTransform and correctly set nullable and optional', () => {
+    type Type = string;
+    const schema = z.object({
+      item: extendApi(
+        z.custom<Type>((data) => true),
+        generateSchema(z.string().nullable())
+      ),
+    });
+    expect(generateSchema(schema)).toEqual({
+      properties: {
+        item: {
+          type: ['string', 'null'],
+        },
+      },
+      type: 'object',
+    });
+    const schema2 = z.object({
+      item: extendApi(
+        z.custom<Type>((data) => !!data),
+        generateSchema(z.string())
+      ),
+    });
+    expect(generateSchema(schema2)).toEqual({
+      properties: {
+        item: {
+          type: 'string',
+        },
+      },
+      required: ['item'],
+      type: 'object',
+    });
+
+  });
+    
+  test('should work with ZodReadonly', () => {
+    expect(generateSchema(z.object({ field: z.string() })))
+      .toMatchInlineSnapshot(`
+      Object {
+        "properties": Object {
+          "field": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "field",
+        ],
+        "type": "object",
+      }
+    `);
+
+    expect(generateSchema(z.object({ field: z.string() }).readonly()))
+      .toMatchInlineSnapshot(`
+      Object {
+        "properties": Object {
+          "field": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "field",
+        ],
+        "type": "object",
+      }
+    `);
+
+  });
 });

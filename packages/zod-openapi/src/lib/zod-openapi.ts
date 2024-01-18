@@ -310,15 +310,26 @@ function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   );
 }
 
-function parseOptionalNullable({
+function parseOptional({
   schemas,
   zodRef,
   useOutput,
-}: ParsingArgs<
-  z.ZodOptional<OpenApiZodAny> | z.ZodNullable<OpenApiZodAny>
->): SchemaObject {
+}: ParsingArgs<z.ZodOptional<OpenApiZodAny>>): SchemaObject {
   return merge(
     generateSchema(zodRef.unwrap(), useOutput),
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
+}
+
+function parseNullable({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodNullable<OpenApiZodAny>>): SchemaObject {
+  const schema = generateSchema(zodRef.unwrap(), useOutput);
+  return merge(
+    { ...schema, type: [schema.type, 'null'] as SchemaObjectType[] },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -523,6 +534,18 @@ function parsePipeline({
   return generateSchema(zodRef._def.in, useOutput);
 }
 
+function parseReadonly({
+  zodRef,
+  useOutput,
+  schemas,
+}: ParsingArgs<z.ZodReadonly<z.ZodAny>>): SchemaObject {
+  return merge(
+    generateSchema(zodRef._def.innerType, useOutput),
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -532,8 +555,8 @@ const workerMap = {
   ZodBoolean: parseBoolean,
   ZodDate: parseDate,
   ZodNull: parseNull,
-  ZodOptional: parseOptionalNullable,
-  ZodNullable: parseOptionalNullable,
+  ZodOptional: parseOptional,
+  ZodNullable: parseNullable,
   ZodDefault: parseDefault,
   ZodArray: parseArray,
   ZodLiteral: parseLiteral,
@@ -558,6 +581,7 @@ const workerMap = {
   ZodUnknown: catchAllParser,
   ZodVoid: catchAllParser,
   ZodPipeline: parsePipeline,
+  ZodReadonly: parseReadonly,
 };
 type WorkerKeys = keyof typeof workerMap;
 
@@ -567,10 +591,10 @@ export function generateSchema(
 ): SchemaObject {
   const { metaOpenApi = {} } = zodRef;
   const schemas = [
+    // todo: is this necessary?
     zodRef.isNullable && zodRef.isNullable() ? { type: ['null'] } as SchemaObject : {},
     ...(Array.isArray(metaOpenApi) ? metaOpenApi : [metaOpenApi]),
   ];
-
   try {
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
