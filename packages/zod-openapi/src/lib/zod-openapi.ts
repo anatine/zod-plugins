@@ -310,13 +310,27 @@ function parseNull({ zodRef, schemas }: ParsingArgs<z.ZodNull>): SchemaObject {
   );
 }
 
-function parseOptionalNullable({
+function parseOptional({
   schemas,
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodOptional<OpenApiZodAny>>): SchemaObject {
   return merge(
     generateSchema(zodRef.unwrap(), useOutput),
+    zodRef.description ? { description: zodRef.description } : {},
+    ...schemas
+  );
+}
+
+function parseNullable({
+  schemas,
+  zodRef,
+  useOutput,
+}: ParsingArgs<z.ZodNullable<OpenApiZodAny>>): SchemaObject {
+  const schema = generateSchema(zodRef.unwrap(), useOutput);
+  return merge(
+    { type: ['null'] as SchemaObjectType[] },
+    schema,
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
@@ -542,8 +556,8 @@ const workerMap = {
   ZodBoolean: parseBoolean,
   ZodDate: parseDate,
   ZodNull: parseNull,
-  ZodOptional: parseOptionalNullable,
-  ZodNullable: parseOptionalNullable,
+  ZodOptional: parseOptional,
+  ZodNullable: parseNullable,
   ZodDefault: parseDefault,
   ZodArray: parseArray,
   ZodLiteral: parseLiteral,
@@ -578,8 +592,6 @@ export function generateSchema(
 ): SchemaObject {
   const { metaOpenApi = {} } = zodRef;
   const schemas = [
-    // todo: is this necessary?
-    zodRef.isNullable && zodRef.isNullable() ? { type: ['null'] } as SchemaObject : {},
     ...(Array.isArray(metaOpenApi) ? metaOpenApi : [metaOpenApi]),
   ];
   try {
