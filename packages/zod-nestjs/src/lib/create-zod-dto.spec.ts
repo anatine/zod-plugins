@@ -88,6 +88,31 @@ describe('zod-nesjs create-zod-dto', () => {
     expect(generatedSchema?.name.type).toEqual(['string']);
     expect(generatedSchema?.name.nullable).toBe(true);
   });
+
+  it('should output OpenAPI 3.0-style exclusive minimum and maximum types', () => {
+    const schema = z.object({
+      inclusive: z.number().min(1).max(10),
+      exclusive: z.number().gt(1).lt(10),
+      unlimited: z.number(),
+    });
+    const metadataFactory = getMetadataFactory(schema);
+
+    const generatedSchema = metadataFactory();
+
+    expect(generatedSchema).toBeDefined();
+    expect(generatedSchema?.inclusive.minimum).toBe(1);
+    expect(generatedSchema?.inclusive.exclusiveMinimum).toBeUndefined();
+    expect(generatedSchema?.inclusive.maximum).toBe(10);
+    expect(generatedSchema?.inclusive.exclusiveMaximum).toBeUndefined();
+    expect(generatedSchema?.exclusive.minimum).toBe(1);
+    expect(generatedSchema?.exclusive.exclusiveMinimum).toBe(true);
+    expect(generatedSchema?.exclusive.maximum).toBe(10);
+    expect(generatedSchema?.exclusive.exclusiveMaximum).toBe(true);
+    expect(generatedSchema?.unlimited.minimum).toBeUndefined();
+    expect(generatedSchema?.unlimited.exclusiveMinimum).toBeUndefined();
+    expect(generatedSchema?.unlimited.maximum).toBeUndefined();
+    expect(generatedSchema?.unlimited.exclusiveMaximum).toBeUndefined();
+  });
 });
 
 function getMetadataFactory(zodRef: OpenApiZodAny) {

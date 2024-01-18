@@ -90,15 +90,20 @@ export const createZodDto = <T extends OpenApiZodAny>(
          * This logic takes the SchemaObject, and turns the required field from an
          * array to a boolean.
          */
-        const schemaObject = properties[key] as SchemaObjectForMetadataFactory;
+        const schemaObject = properties[key];
+        if ('$ref' in schemaObject) {
+          continue;
+        }
+
         const convertedSchemaObject = {
           ...schemaObject,
-        };
+        } as SchemaObjectForMetadataFactory;
         convertedSchemaObject.required = !!(generatedSchema.required !==
           undefined,
         generatedSchema.required?.includes(key));
 
         // @nestjs/swagger expects OpenAPI 3.0-style schema objects
+        // Nullable
         if (Array.isArray(convertedSchemaObject.type)) {
           const nullTypeIndex = convertedSchemaObject.type.findIndex(
             (type) => type === 'null'
@@ -107,6 +112,16 @@ export const createZodDto = <T extends OpenApiZodAny>(
             convertedSchemaObject.type.splice(nullTypeIndex, 1);
             convertedSchemaObject.nullable = true;
           }
+        }
+        // Exclusive minimum and maximum
+        const { exclusiveMinimum, exclusiveMaximum } = schemaObject;
+        if (exclusiveMinimum !== undefined) {
+          convertedSchemaObject.minimum = exclusiveMinimum;
+          convertedSchemaObject.exclusiveMinimum = true;
+        }
+        if (exclusiveMaximum !== undefined) {
+          convertedSchemaObject.maximum = exclusiveMaximum;
+          convertedSchemaObject.exclusiveMaximum = true;
         }
 
         properties[key] = convertedSchemaObject as any; // TODO: Fix this
