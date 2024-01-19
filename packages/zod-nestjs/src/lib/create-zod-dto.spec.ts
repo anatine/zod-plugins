@@ -85,7 +85,7 @@ describe('zod-nesjs create-zod-dto', () => {
     const generatedSchema = metadataFactory();
 
     expect(generatedSchema).toBeDefined();
-    expect(generatedSchema?.name.type).toEqual(['string']);
+    expect(generatedSchema?.name.type).toEqual('string');
     expect(generatedSchema?.name.nullable).toBe(true);
   });
 

@@ -104,14 +104,12 @@ export const createZodDto = <T extends OpenApiZodAny>(
 
         // @nestjs/swagger expects OpenAPI 3.0-style schema objects
         // Nullable
-        if (Array.isArray(convertedSchemaObject.type)) {
-          const nullTypeIndex = convertedSchemaObject.type.findIndex(
-            (type) => type === 'null'
+        if (Array.isArray(schemaObject.type)) {
+          convertedSchemaObject.type = schemaObject.type.find(
+            (t) => t !== 'null'
           );
-          if (nullTypeIndex > -1) {
-            convertedSchemaObject.type.splice(nullTypeIndex, 1);
-            convertedSchemaObject.nullable = true;
-          }
+          convertedSchemaObject.nullable =
+            schemaObject.type.includes('null') || undefined;
         }
         // Exclusive minimum and maximum
         const { exclusiveMinimum, exclusiveMaximum } = schemaObject;
