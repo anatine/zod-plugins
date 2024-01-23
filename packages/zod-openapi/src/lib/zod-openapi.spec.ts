@@ -1027,6 +1027,14 @@ describe('zodOpenapi', () => {
         "type": "object",
       }
     `);
+  });
 
+  it('should not mutate the original schema', () => {
+    const s1 = extendApi(z.string(), { description: 's1' });
+    const s2 = extendApi(s1, { description: 's2' });
+    const apiSchema1 = generateSchema(s1);
+    const apiSchema2 = generateSchema(s2);
+    expect(apiSchema1.description).toEqual('s1');
+    expect(apiSchema2.description).toEqual('s2');
   });
 });
