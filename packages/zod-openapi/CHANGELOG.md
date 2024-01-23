@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [2.2.3](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.2...zod-openapi-2.2.3) (2024-01-23)
+
+
+### Bug Fixes
+
+* **zod-openapi:** do not mutate original schema with extendApi ([6684ca6](https://github.com/anatine/zod-plugins/commit/6684ca6b54e49afc1ccedc701e9b7e289e2e9b42))
+
 ### [2.2.2](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.1...zod-openapi-2.2.2) (2023-12-15)
 
 ### [2.2.1](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.0...zod-openapi-2.2.1) (2023-10-31)
