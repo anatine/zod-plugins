@@ -113,6 +113,43 @@ describe('zod-nesjs create-zod-dto', () => {
     expect(generatedSchema?.unlimited.maximum).toBeUndefined();
     expect(generatedSchema?.unlimited.exclusiveMaximum).toBeUndefined();
   });
+
+  it('should convert to OpenAPI 3.0 in deep objects and arrays', () => {
+    const schema = z.object({
+      person: z.object({
+        name: z.string().nullable(),
+        tags: z.array(
+          z.object({ id: z.string(), name: z.string().nullable() })
+        ),
+      }),
+    });
+    const metadataFactory = getMetadataFactory(schema);
+
+    const generatedSchema = metadataFactory();
+    const personName = generatedSchema?.person.properties?.name as SchemaObject30
+    const tags = generatedSchema?.person.properties?.tags as SchemaObject30
+    const tagsItems = tags.items as SchemaObject30
+    const tagName = tagsItems.properties?.name as SchemaObject30
+
+    expect(generatedSchema).toBeDefined();
+    expect(personName.type).toEqual('string');
+    expect(personName.nullable).toBe(true);
+    expect(tagName.type).toBe('string');
+    expect(tagName.nullable).toBe(true);
+  });
+
+  it('should convert literal null value to OpenAPI 3.0', () => {
+    const schema = z.object({
+      name: z.null(),
+    });
+    const metadataFactory = getMetadataFactory(schema);
+
+    const generatedSchema = metadataFactory();
+
+    expect(generatedSchema).toBeDefined();
+    expect(generatedSchema?.name.type).toEqual('string');
+    expect(generatedSchema?.name.nullable).toBe(true);
+  });
 });
 
 function getMetadataFactory(zodRef: OpenApiZodAny) {
