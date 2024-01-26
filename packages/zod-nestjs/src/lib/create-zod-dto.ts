@@ -1,5 +1,8 @@
 import type { SchemaObject as SchemaObject30 } from 'openapi3-ts/oas30';
-import type { SchemaObject as SchemaObject31 } from 'openapi3-ts/oas31';
+import type {
+  ReferenceObject,
+  SchemaObject as SchemaObject31,
+} from 'openapi3-ts/oas31';
 import { generateSchema, OpenApiZodAny } from '@anatine/zod-openapi';
 import * as z from 'zod';
 
@@ -81,50 +84,80 @@ export const createZodDto = <T extends OpenApiZodAny>(
       | Record<string, SchemaObject30>
       | undefined {
       const generatedSchema = generateSchema(zodSchema);
-      const properties = generatedSchema.properties ?? {};
-      for (const key in properties) {
-        /** For some reason the SchemaObject model has everything except for the
-         * required field, which is an array.
-         * The NestJS swagger module requires this to be a boolean representative
-         * of each property.
-         * This logic takes the SchemaObject, and turns the required field from an
-         * array to a boolean.
-         */
-        const schemaObject = properties[key];
-        if ('$ref' in schemaObject) {
-          continue;
-        }
+      SchemaHolderClass.convertSchemaObject(generatedSchema);
+      return generatedSchema.properties as Record<string, SchemaObject30>;
+    }
 
-        const convertedSchemaObject = {
-          ...schemaObject,
-        } as SchemaObjectForMetadataFactory;
-        convertedSchemaObject.required = !!(generatedSchema.required !==
-          undefined,
-        generatedSchema.required?.includes(key));
-
-        // @nestjs/swagger expects OpenAPI 3.0-style schema objects
-        // Nullable
-        if (Array.isArray(schemaObject.type)) {
-          convertedSchemaObject.type = schemaObject.type.find(
-            (t) => t !== 'null'
-          );
-          convertedSchemaObject.nullable =
-            schemaObject.type.includes('null') || undefined;
-        }
-        // Exclusive minimum and maximum
-        const { exclusiveMinimum, exclusiveMaximum } = schemaObject;
-        if (exclusiveMinimum !== undefined) {
-          convertedSchemaObject.minimum = exclusiveMinimum;
-          convertedSchemaObject.exclusiveMinimum = true;
-        }
-        if (exclusiveMaximum !== undefined) {
-          convertedSchemaObject.maximum = exclusiveMaximum;
-          convertedSchemaObject.exclusiveMaximum = true;
-        }
-
-        properties[key] = convertedSchemaObject as any; // TODO: Fix this
+    private static convertSchemaObject(
+      schemaObject: SchemaObject31 | ReferenceObject,
+      required?: boolean
+    ): void {
+      if ('$ref' in schemaObject) {
+        return;
       }
-      return properties as Record<string, SchemaObject30>;
+
+      // Recursively convert all sub-schemas
+      const subSchemaObjects = [
+        ...(schemaObject.allOf ?? []),
+        ...(schemaObject.oneOf ?? []),
+        ...(schemaObject.anyOf ?? []),
+        ...(schemaObject.not ? [schemaObject.not] : []),
+        ...(schemaObject.items ? [schemaObject.items] : []),
+        ...(typeof schemaObject.additionalProperties === 'object'
+          ? [schemaObject.additionalProperties]
+          : []),
+        ...(schemaObject.prefixItems ?? []),
+      ];
+      for (const subSchemaObject of subSchemaObjects) {
+        SchemaHolderClass.convertSchemaObject(subSchemaObject);
+      }
+
+      for (const [key, subSchemaObject] of Object.entries(
+        schemaObject.properties ?? {}
+      )) {
+        SchemaHolderClass.convertSchemaObject(
+          subSchemaObject,
+          schemaObject.required?.includes(key)
+        );
+      }
+
+      /** For some reason the SchemaObject model has everything except for the
+       * required field, which is an array.
+       * The NestJS swagger module requires this to be a boolean representative
+       * of each property.
+       * This logic takes the SchemaObject, and turns the required field from an
+       * array to a boolean.
+       */
+
+      const convertedSchemaObject =
+        schemaObject as SchemaObjectForMetadataFactory;
+
+      if (required !== undefined) {
+        convertedSchemaObject.required = required;
+      }
+
+      // @nestjs/swagger expects OpenAPI 3.0-style schema objects
+      // Nullable
+      if (Array.isArray(convertedSchemaObject.type)) {
+        convertedSchemaObject.nullable =
+          convertedSchemaObject.type.includes('null') || undefined;
+        convertedSchemaObject.type = convertedSchemaObject.type.find(
+          (item) => item !== 'null'
+        );
+      } else if (convertedSchemaObject.type === 'null') {
+        convertedSchemaObject.type = 'string'; // There ist no explicit null value in OpenAPI 3.0
+        convertedSchemaObject.nullable = true;
+      }
+      // Exclusive minimum and maximum
+      const { exclusiveMinimum, exclusiveMaximum } = schemaObject;
+      if (exclusiveMinimum !== undefined) {
+        convertedSchemaObject.minimum = exclusiveMinimum;
+        convertedSchemaObject.exclusiveMinimum = true;
+      }
+      if (exclusiveMaximum !== undefined) {
+        convertedSchemaObject.maximum = exclusiveMaximum;
+        convertedSchemaObject.exclusiveMaximum = true;
+      }
     }
 
     public static create(input: unknown): CompatibleZodInfer<T> {
