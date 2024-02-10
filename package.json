@@ -25,7 +25,6 @@
     "@graphql-tools/utils": "^10.0.1",
     "axios": "^1.4.0",
     "randexp": "^0.5.3",
-    "ts-deepmerge": "^6.1.0",
     "tslib": "^2.6.0"
   },
   "devDependencies": {
@@ -83,4 +82,3 @@
     "packages/**"
   ]
 }
-
