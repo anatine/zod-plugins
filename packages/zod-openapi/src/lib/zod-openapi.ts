@@ -527,13 +527,14 @@ function catchAllParser({
 }
 
 function parsePipeline({
+  schemas,
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodPipeline<never, never>>): SchemaObject {
-  if (useOutput) {
-    return generateSchema(zodRef._def.out, useOutput);
-  }
-  return generateSchema(zodRef._def.in, useOutput);
+  return merge(
+    generateSchema(useOutput ? zodRef._def.out : zodRef._def.in, useOutput),
+    ...schemas,
+  );
 }
 
 function parseReadonly({
