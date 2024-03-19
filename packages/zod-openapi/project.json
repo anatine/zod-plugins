@@ -37,7 +37,11 @@
         "push": true,
         "preset": "conventional",
         "skipCommitTypes": ["ci"],
-        "postTargets": ["zod-openapi:publish", "zod-openapi:github"]
+        "postTargets": [
+          "zod-openapi:build",
+          "zod-openapi:publish",
+          "zod-openapi:github"
+        ]
       }
     },
     "github": {
@@ -50,8 +54,10 @@
     "publish": {
       "executor": "ngx-deploy-npm:deploy",
       "options": {
-        "access": "public"
-      }
+        "access": "public",
+        "distFolderPath": "dist/packages/zod-openapi"
+      },
+      "dependsOn": ["build"]
     }
   },
   "tags": []

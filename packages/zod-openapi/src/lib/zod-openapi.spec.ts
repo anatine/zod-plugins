@@ -962,6 +962,48 @@ describe('zodOpenapi', () => {
     } satisfies SchemaObject);
   });
 
+  it('should work with ZodPipeline and additional extendApi', () => {
+    expect(
+      generateSchema(
+        extendApi(
+          z
+            .string()
+            .regex(/^\d+$/)
+            .transform(Number)
+            .pipe(z.number().min(0).max(10)),
+          {
+            description: 'Foo description',
+          }
+        )
+      )
+    ).toEqual({
+      type: 'string',
+      pattern: '^\\d+$',
+      description: 'Foo description',
+    } satisfies SchemaObject);
+
+    expect(
+      generateSchema(
+        extendApi(
+          z
+            .string()
+            .regex(/^\d+$/)
+            .transform(Number)
+            .pipe(z.number().min(0).max(10)),
+          {
+            description: 'Foo description',
+          }
+        ),
+        true
+      )
+    ).toEqual({
+      type: 'number',
+      minimum: 0,
+      maximum: 10,
+      description: 'Foo description',
+    } satisfies SchemaObject);
+  });
+
 
   it('should work with ZodTransform and correctly set nullable and optional', () => {
     type Type = string;
@@ -1035,6 +1077,14 @@ describe('zodOpenapi', () => {
         ],
       }
     `);
+  });
 
+  it('should not mutate the original schema', () => {
+    const s1 = extendApi(z.string(), { description: 's1' });
+    const s2 = extendApi(s1, { description: 's2' });
+    const apiSchema1 = generateSchema(s1);
+    const apiSchema2 = generateSchema(s2);
+    expect(apiSchema1.description).toEqual('s1');
+    expect(apiSchema2.description).toEqual('s2');
   });
 });

@@ -23,8 +23,14 @@ export function extendApi<T extends OpenApiZodAny>(
   schema: T,
   schemaObject: AnatineSchemaObject = {}
 ): T {
-  schema.metaOpenApi = Object.assign(schema.metaOpenApi || {}, schemaObject);
-  return schema;
+  const This = (schema as any).constructor;
+  const newSchema = new This(schema._def);
+  newSchema.metaOpenApi = Object.assign(
+    {},
+    schema.metaOpenApi || {},
+    schemaObject
+  );
+  return newSchema;
 }
 
 function iterateZodObject({
@@ -526,13 +532,14 @@ function catchAllParser({
 }
 
 function parsePipeline({
+  schemas,
   zodRef,
   useOutput,
 }: ParsingArgs<z.ZodPipeline<never, never>>): SchemaObject {
-  if (useOutput) {
-    return generateSchema(zodRef._def.out, useOutput);
-  }
-  return generateSchema(zodRef._def.in, useOutput);
+  return merge(
+    generateSchema(useOutput ? zodRef._def.out : zodRef._def.in, useOutput),
+    ...schemas,
+  );
 }
 
 function parseReadonly({
