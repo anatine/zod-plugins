@@ -962,6 +962,48 @@ describe('zodOpenapi', () => {
     } satisfies SchemaObject);
   });
 
+  it('should work with ZodPipeline and additional extendApi', () => {
+    expect(
+      generateSchema(
+        extendApi(
+          z
+            .string()
+            .regex(/^\d+$/)
+            .transform(Number)
+            .pipe(z.number().min(0).max(10)),
+          {
+            description: 'Foo description',
+          }
+        )
+      )
+    ).toEqual({
+      type: 'string',
+      pattern: '^\\d+$',
+      description: 'Foo description',
+    } satisfies SchemaObject);
+
+    expect(
+      generateSchema(
+        extendApi(
+          z
+            .string()
+            .regex(/^\d+$/)
+            .transform(Number)
+            .pipe(z.number().min(0).max(10)),
+          {
+            description: 'Foo description',
+          }
+        ),
+        true
+      )
+    ).toEqual({
+      type: 'number',
+      minimum: 0,
+      maximum: 10,
+      description: 'Foo description',
+    } satisfies SchemaObject);
+  });
+
 
   it('should work with ZodTransform and correctly set nullable and optional', () => {
     type Type = string;
