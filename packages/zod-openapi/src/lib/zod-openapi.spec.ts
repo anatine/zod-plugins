@@ -977,7 +977,7 @@ describe('zodOpenapi', () => {
         )
       )
     ).toEqual({
-      type: 'string',
+      type: ['string'],
       pattern: '^\\d+$',
       description: 'Foo description',
     } satisfies SchemaObject);
@@ -997,7 +997,7 @@ describe('zodOpenapi', () => {
         true
       )
     ).toEqual({
-      type: 'number',
+      type: ['number'],
       minimum: 0,
       maximum: 10,
       description: 'Foo description',
