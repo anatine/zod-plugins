@@ -143,7 +143,7 @@ export const createZodDto = <T extends OpenApiZodAny>(
           convertedSchemaObject.type.includes('null') || undefined;
         convertedSchemaObject.type = convertedSchemaObject.type.find(
           (item) => item !== 'null'
-        );
+        ) || 'string';
       } else if (convertedSchemaObject.type === 'null') {
         convertedSchemaObject.type = 'string'; // There ist no explicit null value in OpenAPI 3.0
         convertedSchemaObject.nullable = true;

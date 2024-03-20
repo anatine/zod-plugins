@@ -24,13 +24,13 @@ describe('zodOpenapi', () => {
     const apiSchema = generateSchema(zodSchema);
 
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aString: { description: 'A test string', type: 'string' },
-        aNumber: { type: 'number' },
-        aBigInt: { type: 'integer', format: 'int64' },
-        aBoolean: { type: 'boolean' },
-        aDate: { type: 'string', format: 'date-time' },
+        aString: { description: 'A test string', type: ['string'] },
+        aNumber: { type: ['number'] },
+        aBigInt: { type: ['integer'], format: 'int64' },
+        aBoolean: { type: ['boolean'] },
+        aDate: { type: ['string'], format: 'date-time' },
       },
       required: ['aBigInt', 'aBoolean', 'aDate', 'aNumber'],
       description: 'Primitives also testing overwriting of "required"',
@@ -50,10 +50,10 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
         aUndefined: {},
-        aNull: { type: 'null' },
+        aNull: { type: ['string', 'null'], enum: ['null'] },
         aVoid: {},
       },
       required: ['aNull'],
@@ -67,9 +67,9 @@ describe('zodOpenapi', () => {
       { description: 'Will take in a string, returning the length' }
     );
     const schemaIn = generateSchema(zodTransform);
-    expect(schemaIn.type).toEqual('string');
+    expect(schemaIn.type).toEqual(['string']);
     const schemaOut = generateSchema(zodTransform, true);
-    expect(schemaOut.type).toEqual('number');
+    expect(schemaOut.type).toEqual(['number']);
   });
 
   it('should support catch-all types', () => {
@@ -118,13 +118,13 @@ describe('zodOpenapi', () => {
     const apiSchema = generateSchema(zodSchema);
 
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aBrandedString: { description: 'A branded test string', type: 'string' },
-        aBrandedNumber: { type: 'number' },
-        aBrandedBigInt: { type: 'integer', format: 'int64' },
-        aBrandedBoolean: { type: 'boolean' },
-        aBrandedDate: { type: 'string', format: 'date-time' },
+        aBrandedString: { description: 'A branded test string', type: ['string'] },
+        aBrandedNumber: { type: ['number'] },
+        aBrandedBigInt: { type: ['integer'], format: 'int64' },
+        aBrandedBoolean: { type: ['boolean'] },
+        aBrandedDate: { type: ['string'], format: 'date-time' },
       },
       required: ['aBrandedBigInt', 'aBrandedBoolean', 'aBrandedDate'],
       description: 'Branded primitives',
@@ -153,18 +153,18 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aStringMax: { type: 'string', maxLength: 5 },
-        aStringMin: { type: 'string', minLength: 3 },
-        aStringLength: { maxLength: 10, minLength: 10, type: 'string' },
-        aStringEmail: { type: 'string', format: 'email' },
-        aStringUrl: { type: 'string', format: 'uri' },
-        aStringUUID: { type: 'string', format: 'uuid' },
-        aStringCUID: { type: 'string', format: 'cuid' },
-        aStringDatetime: { type: 'string', format: 'date-time' },
-        aStringRegex: { type: 'string', pattern: '^[a-zA-Z]+$' },
-        aStringNonEmpty: { type: 'string', minLength: 1 },
+        aStringMax: { type: ['string'], maxLength: 5 },
+        aStringMin: { type: ['string'], minLength: 3 },
+        aStringLength: { maxLength: 10, minLength: 10, type: ['string'] },
+        aStringEmail: { type: ['string'], format: 'email' },
+        aStringUrl: { type: ['string'], format: 'uri' },
+        aStringUUID: { type: ['string'], format: 'uuid' },
+        aStringCUID: { type: ['string'], format: 'cuid' },
+        aStringDatetime: { type: ['string'], format: 'date-time' },
+        aStringRegex: { type: ['string'], pattern: '^[a-zA-Z]+$' },
+        aStringNonEmpty: { type: ['string'], minLength: 1 },
       },
       description: 'This is totally unlike String Theory',
     });
@@ -192,18 +192,18 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aNumberMin: { type: 'number', minimum: 3 },
-        aNumberMax: { type: 'number', maximum: 8 },
-        aNumberInt: { type: 'integer' },
-        aNumberPositive: { type: 'number', minimum: 0, exclusiveMinimum: 0 },
-        aNumberNonnegative: { type: 'number', minimum: 0 },
-        aNumberNegative: { type: 'number', maximum: 0, exclusiveMaximum: 0 },
-        aNumberNonpositive: { type: 'number', maximum: 0 },
-        aNumberGt: { type: 'number', minimum: 5, exclusiveMinimum: 5 },
-        aNumberLt: { type: 'number', maximum: 5, exclusiveMaximum: 5 },
-        aNumberMultipleOf: { type: 'number', multipleOf: 2 },
+        aNumberMin: { type: ['number'], minimum: 3 },
+        aNumberMax: { type: ['number'], maximum: 8 },
+        aNumberInt: { type: ['integer'] },
+        aNumberPositive: { type: ['number'], exclusiveMinimum: 0 },
+        aNumberNonnegative: { type: ['number'], minimum: 0 },
+        aNumberNegative: { type: ['number'], exclusiveMaximum: 0 },
+        aNumberNonpositive: { type: ['number'], maximum: 0 },
+        aNumberGt: { type: ['number'], exclusiveMinimum: 5 },
+        aNumberLt: { type: ['number'], exclusiveMaximum: 5 },
+        aNumberMultipleOf: { type: ['number'], multipleOf: 2 },
       },
       description: 'Look mah, the horse can count higher than me!',
     });
@@ -226,26 +226,26 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aArrayMin: { type: 'array', minItems: 3, items: { type: 'string' } },
-        aArrayMax: { type: 'array', maxItems: 8, items: { type: 'number' } },
+        aArrayMin: { type: ['array'], minItems: 3, items: { type: ['string'] } },
+        aArrayMax: { type: ['array'], maxItems: 8, items: { type: ['number'] } },
         aArrayLength: {
-          type: 'array',
+          type: ['array'],
           minItems: 10,
           maxItems: 10,
-          items: { type: 'boolean' },
+          items: { type: ['boolean'] },
         },
         aArrayNonempty: {
-          type: 'array',
+          type: ['array'],
           minItems: 1,
-          items: { type: 'null' },
+          items: { type: ['string', 'null'], enum: ['null'] },
         },
         aArrayMinAndMax: {
-          type: 'array',
+          type: ['array'],
           minItems: 3,
           maxItems: 8,
-          items: { type: 'number' },
+          items: { type: ['number'] },
         },
       },
       description: 'I need arrays',
@@ -271,17 +271,17 @@ describe('zodOpenapi', () => {
       const apiSchema = generateSchema(zodSchema);
 
       expect(apiSchema).toEqual({
-        type: 'object',
+        type: ['object'],
         properties: {
           aArrayMin: {
-            type: 'array',
+            type: ['array'],
             minItems: 3,
-            items: { type: 'string' },
+            items: { type: ['string'] },
           },
           aArrayMax: {
-            type: 'array',
+            type: ['array'],
             maxItems: 8,
-            items: { type: 'number' },
+            items: { type: ['number'] },
           },
         },
         "hideDefinitions": ["aArrayLength"],
@@ -313,17 +313,17 @@ describe('zodOpenapi', () => {
             "additionalProperties": false,
             "properties": {
               "aString": {
-                "type": "string",
+                "type": ["string"],
               },
             },
             "hideDefinitions": ["aNumber"],
             "required": [
               "aString",
             ],
-            "type": "object",
+            "type": ["object"],
           },
         },
-        "type": "object",
+        "type": ["object"],
       }
       );
     });
@@ -337,8 +337,8 @@ describe('zodOpenapi', () => {
         });
         const apiSchema = generateSchema(zodSchema);
         expect(apiSchema).toEqual({
-          type: 'object',
-          additionalProperties: { type: 'number', minimum: 2, maximum: 42 },
+          type: ['object'],
+          additionalProperties: { type: ['number'], minimum: 2, maximum: 42 },
           description: 'Record this one for me.',
         });
       });
@@ -351,7 +351,7 @@ describe('zodOpenapi', () => {
         });
         const apiSchema = generateSchema(zodSchema);
         expect(apiSchema).toEqual({
-          type: 'object',
+          type: ['object'],
           additionalProperties: {},
           description: 'Record this one for me.',
         });
@@ -375,24 +375,24 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aString: { type: 'string', default: 'hello' },
+        aString: { type: ['string'], default: 'hello' },
         aStringWithConstraints: {
-          type: 'string',
+          type: ['string'],
           format: 'email',
           maxLength: 100,
           default: 'hello',
         },
-        aNumber: { type: 'number', default: 42 },
+        aNumber: { type: ['number'], default: 42 },
         aNumberWithRestrictions: {
-          type: 'number',
+          type: ['number'],
           minimum: 2,
           maximum: 42,
           default: 42,
         },
-        aBoolean: { type: 'boolean', default: false },
-        nonDefaulted: { type: 'string' },
+        aBoolean: { type: ['boolean'], default: false },
+        nonDefaulted: { type: ['string'] },
       },
       required: ['nonDefaulted'],
       description: 'I defaulted on my debt',
@@ -416,10 +416,10 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        aString: { type: 'string' },
-        aNumber: { type: 'number' },
+        aString: { type: ['string'] },
+        aNumber: { type: ['number'] },
       },
       default: {
         aString: 'hello',
@@ -449,17 +449,17 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       required: ['aString', 'aNumber'],
       properties: {
-        aString: { type: 'string' },
-        aNumber: { type: 'number' },
+        aString: { type: ['string'] },
+        aNumber: { type: ['number'] },
       },
       additionalProperties: {
-        type: 'object',
+        type: ['object'],
         properties: {
-          email: { type: 'string', format: 'email' },
-          available: { type: 'boolean' },
+          email: { type: ['string'], format: 'email' },
+          available: { type: ['boolean'] },
         },
         required: ['email', 'available'],
       },
@@ -481,11 +481,11 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       required: ['aString', 'aNumber'],
       properties: {
-        aString: { type: 'string' },
-        aNumber: { type: 'number' },
+        aString: { type: ['string'] },
+        aNumber: { type: ['number'] },
       },
       additionalProperties: true,
       description: "Gotta catch 'em all!",
@@ -506,11 +506,11 @@ describe('zodOpenapi', () => {
     );
     const apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       required: ['aString', 'aNumber'],
       properties: {
-        aString: { type: 'string' },
-        aNumber: { type: 'number' },
+        aString: { type: ['string'] },
+        aNumber: { type: ['number'] },
       },
       additionalProperties: false,
       description: "Super strict",
@@ -601,66 +601,66 @@ describe('zodOpenapi', () => {
     const schemaTest = generateSchema(zodSchema, true);
 
     expect(schemaTest).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        name: { type: 'string', description: 'User full name' },
+        name: { type: ['string'], description: 'User full name' },
         email: {
-          type: 'string',
+          type: ['string'],
           format: 'email',
           minLength: 4,
           description: 'User email',
         },
-        whatever: { type: 'string' },
+        whatever: { type: ['string'] },
         myCollection: {
-          type: 'array',
+          type: ['array'],
           items: {
-            type: 'object',
-            properties: { name: { type: 'string' }, count: { type: 'number' } },
+            type: ['object'],
+            properties: { name: { type: ['string'] }, count: { type: ['number'] } },
             required: ['name', 'count'],
           },
           maxItems: 10,
         },
-        timeStamp: { type: 'string' },
+        timeStamp: { type: ['string'] },
         literals: {
-          type: 'object',
+          type: ['object'],
           properties: {
             wordOne: { type: ['string', 'null'], enum: ['One'] },
-            numberTwo: { type: 'number', enum: [2] },
+            numberTwo: { type: ['number'], enum: [2] },
             isThisTheEnd: { type: ['boolean', 'null'], enum: [false] },
           },
           required: ['wordOne'],
         },
         catchall: {
-          type: 'object',
+          type: ['object'],
           properties: {
-            email: { type: 'string', format: 'email' },
-            joined: { type: 'string', format: 'date-time' },
+            email: { type: ['string'], format: 'email' },
+            joined: { type: ['string'], format: 'date-time' },
           },
           required: ['email'],
           additionalProperties: {
-            type: 'object',
+            type: ['object'],
             properties: {
-              name: { type: 'string' },
-              value: { type: 'string' },
+              name: { type: ['string'] },
+              value: { type: ['string'] },
             },
             required: ['name', 'value'],
           },
         },
         foodTest: {
-          type: 'object',
+          type: ['object'],
           properties: {
             fishEnum: {
-              type: 'string',
+              type: ['string'],
               enum: ['Salmon', 'Tuna', 'Trout'],
               description: 'Choose your fish',
               default: 'Salmon',
             },
             fruitEnum: {
-              type: 'string',
+              type: ['string'],
               enum: ['Apple', 'Banana', 0, 1],
               default: 1,
             },
-            moreFruitsEnum: { type: 'string', enum: ['pear', 'plumb', 3] },
+            moreFruitsEnum: { type: ['string'], enum: ['pear', 'plumb', 3] },
           },
           required: ['fishEnum', 'moreFruitsEnum'],
           description: 'Have some lunch',
@@ -668,15 +668,15 @@ describe('zodOpenapi', () => {
         employedPerson: {
           allOf: [
             {
-              type: 'object',
-              properties: { name: { type: 'string' } },
+              type: ['object'],
+              properties: { name: { type: ['string'] } },
               required: ['name'],
             },
             {
-              type: 'object',
+              type: ['object'],
               properties: {
                 role: {
-                  type: 'string',
+                  type: ['string'],
                   enum: ['manager', 'employee', 'intern', 'hopeful'],
                 },
               },
@@ -687,8 +687,8 @@ describe('zodOpenapi', () => {
         },
         makeAChoice: {
           oneOf: [
-            { type: 'string', enum: ['One'] },
-            { type: 'number', enum: [2] },
+            { type: ['string'], enum: ['One'] },
+            { type: ['number'], enum: [2] },
           ],
         },
         chooseAPet: {
@@ -700,54 +700,54 @@ describe('zodOpenapi', () => {
               properties: {
                 animal: {
                   enum: ['dog'],
-                  type: 'string',
+                  type: ['string'],
                 },
                 theBestQuality: {
                   enum: ['fleas'],
-                  type: 'string',
+                  type: ['string'],
                 },
               },
               required: ['animal', 'theBestQuality'],
-              type: 'object',
+              type: ['object'],
             },
             {
               properties: {
                 animal: {
                   enum: ['cat'],
-                  type: 'string',
+                  type: ['string'],
                 },
                 theBestQuality: {
                   enum: ['stink'],
-                  type: 'string',
+                  type: ['string'],
                 },
               },
               required: ['animal', 'theBestQuality'],
-              type: 'object',
+              type: ['object'],
             },
           ],
         },
         openChoice: {
-          oneOf: [{ type: 'string' }, { type: 'string' }],
+          oneOf: [{ type: ['string'] }, { type: ['string'] }],
           description: 'Odd pattern here',
         },
         aNullish: { type: ['string', 'null'] },
-        stringLengthOutput: { type: 'number' },
+        stringLengthOutput: { type: ['number'] },
         favourites: {
-          type: 'object',
+          type: ['object'],
           additionalProperties: {
-            type: 'object',
+            type: ['object'],
             properties: {
-              name: { type: 'string' },
-              watchCount: { type: 'number' },
+              name: { type: ['string'] },
+              watchCount: { type: ['number'] },
             },
             required: ['name', 'watchCount'],
           },
         },
-        limit: { type: 'number', default: 200 },
+        limit: { type: ['number'], default: 200 },
         freeform: {
-          type: 'object',
+          type: ['object'],
           properties: {
-            name: { type: 'string' },
+            name: { type: ['string'] },
           },
           additionalProperties: true,
           required: ['name'],
@@ -807,13 +807,13 @@ describe('zodOpenapi', () => {
     const myOpenApiSchema = generateSchema(aZodSchema);
 
     expect(myOpenApiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
-        uid: { type: 'string', minLength: 1 },
-        firstName: { type: 'string', minLength: 2 },
-        lastName: { type: 'string' },
-        email: { type: 'string', format: 'email' },
-        phoneNumber: { type: 'string', minLength: 10 },
+        uid: { type: ['string'], minLength: 1 },
+        firstName: { type: ['string'], minLength: 2 },
+        lastName: { type: ['string'] },
+        email: { type: ['string'], format: 'email' },
+        phoneNumber: { type: ['string'], minLength: 10 },
       },
       required: ['uid', 'firstName', 'email'],
     });
@@ -831,7 +831,7 @@ describe('zodOpenapi', () => {
         email: z.string().email(),
         phoneNumber: extendApi(z.string().min(10), {
           description: 'US Phone numbers only',
-          example: '555-555-5555',
+          examples: ['555-555-5555'],
         }),
       }),
       {
@@ -843,22 +843,22 @@ describe('zodOpenapi', () => {
     const myOpenApiSchema = generateSchema(aZodExtendedSchema);
 
     expect(myOpenApiSchema).toEqual({
-      type: 'object',
+      type: ['object'],
       properties: {
         uid: {
-          type: 'string',
+          type: ['string'],
           minLength: 1,
           title: 'Unique ID',
           description: 'A UUID generated by the server',
         },
-        firstName: { type: 'string', minLength: 2 },
-        lastName: { type: 'string' },
-        email: { type: 'string', format: 'email' },
+        firstName: { type: ['string'], minLength: 2 },
+        lastName: { type: ['string'] },
+        email: { type: ['string'], format: 'email' },
         phoneNumber: {
-          type: 'string',
+          type: ['string'],
           minLength: 10,
           description: 'US Phone numbers only',
-          example: '555-555-5555',
+          examples: ['555-555-5555'],
         },
       },
       required: ['uid', 'firstName', 'email', 'phoneNumber'],
@@ -882,7 +882,7 @@ describe('zodOpenapi', () => {
     const openapiSchema = generateSchema(overriddenSchema);
 
     expect(openapiSchema).toMatchObject({
-      type: 'string',
+      type: ['string'],
       format: 'date-time',
       description: newDescription,
     });
@@ -896,36 +896,36 @@ describe('zodOpenapi', () => {
     const openapiSchema = generateSchema(binarySchema);
 
     expect(openapiSchema).toMatchObject({
-      type: 'string',
+      type: ['string'],
       format: 'binary',
     });
   });
 
   it('can summarize unions of zod literals as an enum', () => {
     expect(generateSchema(z.union([z.literal('h'), z.literal('i')]))).toEqual({
-      type: 'string',
+      type: ['string'],
       enum: ['h', 'i']
     });
 
     expect(generateSchema(z.union([z.literal(3), z.literal(4)]))).toEqual({
-      type: 'number',
+      type: ['number'],
       enum: [3, 4]
     });
 
     // should this just remove the enum? true | false is exhaustive...
     expect(generateSchema(z.union([z.literal(true), z.literal(false)]))).toEqual({
-      type: 'boolean',
+      type: ['boolean'],
       enum: [true, false]
     });
 
     expect(generateSchema(z.union([z.literal(5), z.literal('i')]))).toEqual({
       oneOf: [
         {
-          type: 'number',
+          type: ['number'],
           enum: [5]
         },
         {
-          type: 'string',
+          type: ['string'],
           enum: ['i']
         }
       ]
@@ -942,7 +942,7 @@ describe('zodOpenapi', () => {
           .pipe(z.number().min(0).max(10))
       )
     ).toEqual({
-      type: 'string',
+      type: ['string'],
       pattern: '^\\d+$',
     } satisfies SchemaObject);
 
@@ -956,7 +956,7 @@ describe('zodOpenapi', () => {
         true
       )
     ).toEqual({
-      type: 'number',
+      type: ['number'],
       minimum: 0,
       maximum: 10,
     } satisfies SchemaObject);
@@ -977,7 +977,7 @@ describe('zodOpenapi', () => {
         )
       )
     ).toEqual({
-      type: 'string',
+      type: ['string'],
       pattern: '^\\d+$',
       description: 'Foo description',
     } satisfies SchemaObject);
@@ -997,7 +997,7 @@ describe('zodOpenapi', () => {
         true
       )
     ).toEqual({
-      type: 'number',
+      type: ['number'],
       minimum: 0,
       maximum: 10,
       description: 'Foo description',
@@ -1019,7 +1019,7 @@ describe('zodOpenapi', () => {
           type: ['string', 'null'],
         },
       },
-      type: 'object',
+      type: ['object'],
     });
     const schema2 = z.object({
       item: extendApi(
@@ -1030,11 +1030,11 @@ describe('zodOpenapi', () => {
     expect(generateSchema(schema2)).toEqual({
       properties: {
         item: {
-          type: 'string',
+          type: ['string'],
         },
       },
       required: ['item'],
-      type: 'object',
+      type: ['object'],
     });
 
   });
@@ -1045,13 +1045,17 @@ describe('zodOpenapi', () => {
       Object {
         "properties": Object {
           "field": Object {
-            "type": "string",
+            "type": Array [
+              "string",
+            ],
           },
         },
         "required": Array [
           "field",
         ],
-        "type": "object",
+        "type": Array [
+          "object",
+        ],
       }
     `);
 
@@ -1060,13 +1064,17 @@ describe('zodOpenapi', () => {
       Object {
         "properties": Object {
           "field": Object {
-            "type": "string",
+            "type": Array [
+              "string",
+            ],
           },
         },
         "required": Array [
           "field",
         ],
-        "type": "object",
+        "type": Array [
+          "object",
+        ],
       }
     `);
   });

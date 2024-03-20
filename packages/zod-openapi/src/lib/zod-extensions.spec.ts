@@ -10,32 +10,32 @@ describe('Zod Extensions', () => {
     extendZodWithOpenApi(z, true)
 
     const schema = z.object({
-      one: z.string().openapi({example: 'oneOne'}),
+      one: z.string().openapi({examples: ['oneOne']}),
       two: z.number(),
 
-    }).openapi({example: {one: 'oneOne', two: 42}})
+    }).openapi({examples: [{one: 'oneOne', two: 42}]})
 
     const apiSchema = generateSchema(schema);
 
     expect(apiSchema).toEqual({
-      "example": {
+      "examples": [{
         "one": "oneOne",
         "two": 42
-      },
+      }],
       "properties": {
         "one": {
-          "example": "oneOne",
-          "type": "string"
+          "examples": ["oneOne"],
+          "type": ["string"]
         },
         "two": {
-          "type": "number"
+          "type": ["number"]
         }
       },
       "required": [
         "one",
         "two"
       ],
-      "type": "object"
+      "type": ["object"]
     })
   })
 
