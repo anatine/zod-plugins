@@ -126,10 +126,11 @@ describe('zod-nesjs create-zod-dto', () => {
     const metadataFactory = getMetadataFactory(schema);
 
     const generatedSchema = metadataFactory();
-    const personName = generatedSchema?.person.properties?.name as SchemaObject30
-    const tags = generatedSchema?.person.properties?.tags as SchemaObject30
-    const tagsItems = tags.items as SchemaObject30
-    const tagName = tagsItems.properties?.name as SchemaObject30
+    const personName = generatedSchema?.person.properties
+      ?.name as SchemaObject30;
+    const tags = generatedSchema?.person.properties?.tags as SchemaObject30;
+    const tagsItems = tags.items as SchemaObject30;
+    const tagName = tagsItems.properties?.name as SchemaObject30;
 
     expect(generatedSchema).toBeDefined();
     expect(personName.type).toEqual('string');
@@ -149,6 +150,62 @@ describe('zod-nesjs create-zod-dto', () => {
     expect(generatedSchema).toBeDefined();
     expect(generatedSchema?.name.type).toEqual('string');
     expect(generatedSchema?.name.nullable).toBe(true);
+  });
+
+  it('should correct work with optional fields and make required fields false', () => {
+    const schema = z.object({
+      pagination: z
+        .object({
+          limit: z.number(),
+          offset: z.number(),
+        })
+        .optional(),
+      filter: z
+        .object({
+          category: z.string().uuid(),
+          userId: z.string().uuid(),
+        })
+        .optional(),
+      sort: z
+        .object({
+          field: z.string(),
+          order: z.string(),
+        })
+        .optional(),
+    });
+    const metadataFactory = getMetadataFactory(schema);
+
+    const generatedSchema = metadataFactory();
+    expect(generatedSchema?.pagination.required).toEqual(false);
+    expect(generatedSchema?.sort.required).toEqual(false);
+    expect(generatedSchema?.filter.required).toEqual(false);
+  });
+
+  it('should correct work with optional fields and make required field true and optional field false', () => {
+    const schema = z.object({
+      pagination: z
+        .object({
+          limit: z.number(),
+          offset: z.number(),
+        })
+        .optional(),
+      filter: z
+        .object({
+          category: z.string().uuid(),
+          userId: z.string().uuid(),
+        })
+        .optional(),
+      sort: z.object({
+        field: z.string(),
+        order: z.string(),
+      }),
+    });
+    const metadataFactory = getMetadataFactory(schema);
+
+    const generatedSchema = metadataFactory();
+    expect(generatedSchema?.pagination.required).toEqual(false);
+    expect(generatedSchema?.sort.required).toEqual(true);
+    expect(generatedSchema?.filter.required).toEqual(false);
   });
 });
 
