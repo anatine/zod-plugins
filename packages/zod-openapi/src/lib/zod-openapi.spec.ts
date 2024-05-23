@@ -37,6 +37,36 @@ describe('zodOpenapi', () => {
     });
   });
 
+  it('should support basic primitives for OpenAPI v3.0', () => {
+    const zodSchema = extendApi(
+      z.object({
+        aString: z.string().describe('A test string').optional(),
+        aNumber: z.number().optional(),
+        aBigInt: z.bigint(),
+        aBoolean: z.boolean(),
+        aDate: z.date(),
+      }),
+      {
+        description: `Primitives also testing overwriting of "required"`,
+        required: ['aNumber'], // All schema settings "merge"
+      }
+    );
+    const apiSchema = generateSchema(zodSchema, false, '3.0');
+
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aString: { description: 'A test string', type: 'string' },
+        aNumber: { type: 'number' },
+        aBigInt: { type: 'integer', format: 'int64' },
+        aBoolean: { type: 'boolean' },
+        aDate: { type: 'string', format: 'date-time' },
+      },
+      required: ['aBigInt', 'aBoolean', 'aDate', 'aNumber'],
+      description: 'Primitives also testing overwriting of "required"',
+    });
+  });
+
   it('should support empty types', () => {
     const zodSchema = extendApi(
       z.object({

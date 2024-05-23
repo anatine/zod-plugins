@@ -59,7 +59,7 @@ describe('Cats', () => {
   //   console.log(inspect(body, false, 10, true));
   // });
 
-  it(`Swagger Test`, () => {
+  it(`Swagger Test`, async () => {
     return request(app.getHttpServer())
       .get('/api-json')
       .set('Accept', 'application/json')
@@ -163,11 +163,11 @@ describe('Cats', () => {
         components: {
           schemas: {
             GetCatsDto: {
-              type: ['object'],
+              type: 'object',
               properties: {
                 cats: {
-                  type: ['array'],
-                  items: { type: ['string'] },
+                  type: 'array',
+                  items: { type: 'string' },
                   description: 'List of cats',
                 },
               },
@@ -175,30 +175,30 @@ describe('Cats', () => {
               title: 'Get Cat Response',
             },
             CatDto: {
-              type: ['object'],
+              type: 'object',
               properties: {
-                name: { type: ['string'] },
-                age: { type: ['number'] },
-                breed: { type: ['string'] },
+                name: { type: 'string' },
+                age: { type: 'number' },
+                breed: { type: 'string' },
               },
               required: ['name', 'age', 'breed'],
               title: 'Cat',
               description: 'A cat',
             },
             CreateCatResponseDto: {
-              type: ['object'],
+              type: 'object',
               properties: {
-                success: { type: ['boolean'] },
-                message: { type: ['string'] },
-                name: { type: ['string'] },
+                success: { type: 'boolean' },
+                message: { type: 'string' },
+                name: { type: 'string' },
               },
               required: ['success', 'message', 'name'],
             },
             UpdateCatDto: {
-              type: ['object'],
+              type: 'object',
               properties: {
-                age: { type: ['number'] },
-                breed: { type: ['string'] },
+                age: { type: 'number' },
+                breed: { type: 'string' },
               },
               required: ['age', 'breed'],
             },
