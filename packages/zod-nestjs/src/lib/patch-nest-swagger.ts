@@ -12,11 +12,15 @@ interface Type<T = any> extends Function {
   new (...args: any[]): T;
 }
 
+type SchemaObjectFactoryModule =
+  typeof import('@nestjs/swagger/dist/services/schema-object-factory');
+
 export const patchNestjsSwagger = (
-  schemaObjectFactoryModule = require('@nestjs/swagger/dist/services/schema-object-factory')
+  schemaObjectFactoryModule: SchemaObjectFactoryModule | undefined = undefined,
+  openApiVersion: '3.0' | '3.1' = '3.0'
 ): void => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/naming-convention
-  const { SchemaObjectFactory } = schemaObjectFactoryModule;
+  const { SchemaObjectFactory } = (schemaObjectFactoryModule ??
+    require('@nestjs/swagger/dist/services/schema-object-factory')) as SchemaObjectFactoryModule;
 
   const orgExploreModelSchema =
     SchemaObjectFactory.prototype.exploreModelSchema;
@@ -29,6 +33,7 @@ export const patchNestjsSwagger = (
     // schemas: Record<string, SchemaObject>,
     // schemaRefsStack: string[] = []
   ) {
+    // @ts-expect-error Reported as private, but since we are patching, we will be able to reach it
     if (this.isLazyTypeFunc(type)) {
       // eslint-disable-next-line @typescript-eslint/ban-types
       type = (type as Function)();
@@ -38,7 +43,7 @@ export const patchNestjsSwagger = (
       return orgExploreModelSchema.call(this, type, schemas, schemaRefsStack);
     }
 
-    schemas[type.name] = generateSchema(type.zodSchema);
+    schemas[type.name] = generateSchema(type.zodSchema, false, openApiVersion);
 
     return type.name;
   };
