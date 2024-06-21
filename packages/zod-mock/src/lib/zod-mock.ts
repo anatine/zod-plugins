@@ -336,7 +336,10 @@ function parseArray(zodRef: z.ZodArray<never>, options?: GenerateMockOptions) {
   if (min > max) {
     min = max;
   }
-  const targetLength = fakerInstance.number.int({ min, max });
+  // if arrayItemsLength is already configured in options, use that
+  const targetLength =
+    options?.mapArrayItemsLength ?? fakerInstance.number.int({ min, max });
+
   const results: ZodTypeAny[] = [];
   for (let index = 0; index < targetLength; index++) {
     results.push(generateMock<ZodTypeAny>(zodRef._def.type, options));
@@ -570,6 +573,11 @@ export interface GenerateMockOptions {
    * How many entries to create for Maps
    */
   mapEntriesLength?: number;
+
+  /**
+   * How items to create for Arrays
+   */
+  mapArrayItemsLength?: number;
 
   /**
    * Set to true to throw an exception instead of returning undefined when encountering an unknown `ZodType`
