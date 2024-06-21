@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [2.0.9](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.8...zod-nestjs-2.0.9) (2024-06-21)
+
 ### [2.0.8](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.7...zod-nestjs-2.0.8) (2024-03-29)
 
 ### [2.0.7](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.6...zod-nestjs-2.0.7) (2024-03-20)
