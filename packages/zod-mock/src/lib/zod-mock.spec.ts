@@ -113,6 +113,22 @@ describe('zod-mock', () => {
     return;
   });
 
+  it('Should manually mock string key names to set values when the validation has regex', () => {
+    const schema = z.object({
+      telephone: z.string().regex(/^\+[1-9]\d{1,14}$/)
+    });
+
+    const stringMap = {
+      telephone: () => '+919367788755',
+    };
+
+    const mockData = generateMock(schema, { stringMap });
+
+    expect(mockData.telephone).toEqual('+919367788755');
+
+    return;
+  });
+
   it('should convert values produced by Faker to string when the schema type is string.', () => {
     const schema = z.object({
       number: z.string(),
