@@ -195,7 +195,8 @@ function parseString(
     targetStringLength > 10
       ? fakerInstance.lorem.word()
       : fakerInstance.lorem.word({ length: targetStringLength });
-  const dateGenerator = () => fakerInstance.date.recent().toISOString();
+  const dateGenerator = () => fakerInstance.date.recent().toISOString().substring(0,10);
+  const datetimeGenerator = () => fakerInstance.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
     email: fakerInstance.internet.exampleEmail,
@@ -204,7 +205,7 @@ function parseString(
     url: fakerInstance.internet.url,
     name: fakerInstance.person.fullName,
     date: dateGenerator,
-    dateTime: dateGenerator,
+    dateTime: datetimeGenerator,
     colorHex: fakerInstance.internet.color,
     color: fakerInstance.internet.color,
     backgroundColor: fakerInstance.internet.color,
