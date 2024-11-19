@@ -13,7 +13,7 @@ Various modules to help leverage zod in all sort so places
 - ### [@anatine/zod-mock](./packages/zod-mock/README.md)
 
   - Generates a mock object for testing.
-  - Fake data generated from the peer dependency [faker.js](https://www.npmjs.com/package/faker)
+  - Fake data generated from the peer dependency [faker.js](https://fakerjs.dev/)
 
 - ### [@anatine/zod-nestjs](./packages/zod-nestjs/README.md)
 
