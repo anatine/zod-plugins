@@ -359,7 +359,9 @@ function parseNullable({
   const schema = generateSchema(zodRef.unwrap(), useOutput, openApiVersion);
   return merge(
     schema,
-    { type: typeFormat('null', openApiVersion) },
+    openApiVersion === '3.0'
+      ? { nullable: true }
+      : { type: typeFormat('null', openApiVersion) },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
