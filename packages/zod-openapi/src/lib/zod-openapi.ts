@@ -170,12 +170,30 @@ function parseNumber({
   checks.forEach((item) => {
     switch (item.kind) {
       case 'max':
-        if (item.inclusive) baseSchema.maximum = item.value;
-        else baseSchema.exclusiveMaximum = item.value;
+        if (item.inclusive || openApiVersion === '3.0') {
+          baseSchema.maximum = item.value;
+        }
+        if (!item.inclusive) {
+          if (openApiVersion === '3.0') {
+            // exclusiveMaximum has conflicting types in oas31 and oas30
+            baseSchema.exclusiveMaximum = true as unknown as number;
+          } else {
+            baseSchema.exclusiveMaximum = item.value;
+          }
+        }
         break;
       case 'min':
-        if (item.inclusive) baseSchema.minimum = item.value;
-        else baseSchema.exclusiveMinimum = item.value;
+        if (item.inclusive || openApiVersion === '3.0') {
+          baseSchema.minimum = item.value;
+        }
+        if (!item.inclusive) {
+          if (openApiVersion === '3.0') {
+            // exclusiveMinimum has conflicting types in oas31 and oas30
+            baseSchema.exclusiveMinimum = true as unknown as number;
+          } else {
+            baseSchema.exclusiveMinimum = item.value;
+          }
+        }
         break;
       case 'int':
         baseSchema.type = typeFormat('integer', openApiVersion);
