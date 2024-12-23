@@ -46,6 +46,7 @@ describe('zodOpenapi', () => {
         aBoolean: z.boolean(),
         aDate: z.date(),
         aNullableString: z.string().nullable(),
+        aUnionIncludingNull: z.union([z.string(), z.null(), z.number()]),
       }),
       {
         description: `Primitives also testing overwriting of "required"`,
@@ -63,8 +64,9 @@ describe('zodOpenapi', () => {
         aBoolean: { type: 'boolean' },
         aDate: { type: 'string', format: 'date-time' },
         aNullableString: { type: 'string', nullable: true },
+        aUnionIncludingNull: { oneOf: [{ type: 'string' }, { type: 'number' }], nullable: true },
       },
-      required: ['aBigInt', 'aBoolean', 'aDate', 'aNullableString', 'aNumber'],
+      required: ['aBigInt', 'aBoolean', 'aDate', 'aNullableString', 'aUnionIncludingNull', 'aNumber'],
       description: 'Primitives also testing overwriting of "required"',
     });
   });

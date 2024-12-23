@@ -496,10 +496,17 @@ function parseUnion({
     }
   }
 
+  const oneOfContents =
+    openApiVersion === '3.0'
+      ? contents.filter((content) => content._def.typeName !== 'ZodNull')
+      : contents;
+  const contentsHasNull = contents.length != oneOfContents.length;
+
   return merge(
     {
-      oneOf: contents.map((schema) => generateSchema(schema, useOutput, openApiVersion)),
+      oneOf: oneOfContents.map((schema) => generateSchema(schema, useOutput, openApiVersion)),
     },
+    contentsHasNull ? { nullable: true } : {},
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
