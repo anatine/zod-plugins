@@ -61,6 +61,7 @@ export type ZodDtoStatic<T extends CompatibleZodType = CompatibleZodType> = {
 // Used for transforming the SchemaObject in _OPENAPI_METADATA_FACTORY
 type SchemaObjectForMetadataFactory = Omit<SchemaObject30, 'required'> & {
   required: boolean | string[];
+  isArray?: boolean;
 };
 
 export const createZodDto = <T extends OpenApiZodAny>(
@@ -147,6 +148,10 @@ export const createZodDto = <T extends OpenApiZodAny>(
       } else if (convertedSchemaObject.type === 'null') {
         convertedSchemaObject.type = 'string'; // There ist no explicit null value in OpenAPI 3.0
         convertedSchemaObject.nullable = true;
+      }
+      // Array handling (NestJS references 'isArray' boolean)
+      if (convertedSchemaObject.type === 'array') {
+        convertedSchemaObject.isArray = true;
       }
       // Exclusive minimum and maximum
       const { exclusiveMinimum, exclusiveMaximum } = schemaObject;
