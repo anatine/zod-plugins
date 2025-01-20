@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [3.13.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.13.4...zod-mock-3.13.5) (2025-01-20)
+
+
+### Bug Fixes
+
+* **zod-mock:** [[#172](https://github.com/anatine/zod-plugins/issues/172)] add support for mockeryMapper to be used for numbers, dates and booleans ([cd50715](https://github.com/anatine/zod-plugins/commit/cd50715c27d9fdb55a32b208357f07568d7ce82e))
+
 ### [3.13.4](https://github.com/anatine/zod-plugins/compare/zod-mock-3.13.3...zod-mock-3.13.4) (2024-03-19)
 
 ### [3.13.3](https://github.com/anatine/zod-plugins/compare/zod-mock-3.13.2...zod-mock-3.13.3) (2023-10-31)
