@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [2.0.10](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.9...zod-nestjs-2.0.10) (2025-01-20)
+
+
+### Bug Fixes
+
+* Improve array handling not fully functional (misses item type) [#215](https://github.com/anatine/zod-plugins/issues/215) ([deecf7b](https://github.com/anatine/zod-plugins/commit/deecf7b728d5a80a63c7814dd4607d369ebb8667))
+
 ### [2.0.9](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.8...zod-nestjs-2.0.9) (2024-06-21)
 
 ### [2.0.8](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.7...zod-nestjs-2.0.8) (2024-03-29)
