@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { generateMock, ZodMockError } from './zod-mock';
-import { faker } from '@faker-js/faker';
+import { faker, Faker } from '@faker-js/faker';
+import { FakerFunction } from './zod-mockery-map';
 
 describe('zod-mock', () => {
   it('should generate a mock object using faker', () => {
@@ -749,5 +750,58 @@ describe('zod-mock', () => {
     expect(mockedFlight.marketing_airline.arrival.airport.length).toEqual(3);
     expect(mockedFlight.operating_airline.departure.time).toBeInstanceOf(Date);
     expect(mockedFlight.operating_airline.flightNumber.length).toBeLessThan(5);
+  });
+
+  describe('mockeryMapper', () => {
+    const quota = z.object({
+      id: z.number(),
+      created: z.date(),
+      territoryName: z.string(),
+      enabled: z.boolean(),
+    });
+
+    const mockeryMapper = (
+      keyName: string,
+      fakerInstance: Faker
+    ): FakerFunction | undefined => {
+      const keyToFnMap: Record<string, FakerFunction> = {
+        id: () => fakerInstance.number.int({ min: 3, max: 22 }),
+        enabled: () => fakerInstance.datatype.boolean({ probability: 1 }),
+        territoryName: () => fakerInstance.string.fromCharacters('abcdef', 20),
+        created: () => fakerInstance.date.past(),
+      };
+      return keyName && keyName.toLowerCase() in keyToFnMap
+        ? keyToFnMap[keyName.toLowerCase() as never]
+        : undefined;
+    };
+
+    // generate multiple records to ensure consistency
+    const mockedQuotas = generateMock(quota.array().length(10), {
+      mockeryMapper,
+    });
+
+    describe.each(mockedQuotas)(
+      '%#. quota with id $id mock data unit tests',
+      (mockedQuota, index) => {
+        it(`uses the id faker function in the mockeryMapper to generate ${mockedQuota.id}`, () => {
+          // the value should always be in the range [3, 22] as pert hge mockery mapper function
+          expect(mockedQuota.id).toBeGreaterThanOrEqual(3);
+          expect(mockedQuota.id).toBeLessThanOrEqual(22);
+        });
+
+        it(`uses the enabled faker function in the mockeryMapper to generate ${mockedQuota.enabled}`, () => {
+          // the value should always be true as per the mockery mapper function
+          expect(mockedQuota.enabled).toBe(true);
+        });
+
+        it(`uses the created faker function in the mockeryMapper to generate ${mockedQuota.created.toISOString()}`, () => {
+          // the date should always be in the past as per the mockery mapper function
+          expect(mockedQuota.created).toBeInstanceOf(Date);
+          expect(mockedQuota.created.getTime()).toBeLessThan(
+            new Date().getTime()
+          );
+        });
+      }
+    );
   });
 });

@@ -121,6 +121,21 @@ function findMatchingFaker(
   }
 }
 
+/**
+ * Generate mock value from a matching faker function extracted from the mockeryMapper
+ * @param options mock generator options
+ * @returns a mock value if a faker function is found in the mockeryMapper passed
+ */
+function generateMockFromMatchingFaker(options?: GenerateMockOptions) {
+  // check if there exists a faker for the given key in the mockery mapper
+  const foundMockeryMapperFaker = options?.keyName
+    ? findMatchingFaker(options?.keyName, options.faker, options.mockeryMapper)
+    : undefined;
+
+  // generate the mock value from the faker function found
+  return foundMockeryMapperFaker?.() ?? undefined;
+}
+
 function parseString(
   zodRef: z.ZodString,
   options?: GenerateMockOptions
@@ -266,6 +281,12 @@ function parseString(
 
 function parseBoolean(zodRef: z.ZodBoolean, options?: GenerateMockOptions) {
   const fakerInstance = options?.faker || faker;
+
+  // generate the mock boolean from the mockery mapper
+  const mockBoolean = generateMockFromMatchingFaker(options);
+  // verify that the return type of the mock data is a boolean for it to be acceptable
+  if (typeof mockBoolean === 'boolean') return mockBoolean;
+
   return fakerInstance.datatype.boolean();
 }
 
@@ -285,6 +306,11 @@ function parseDate(zodRef: z.ZodDate, options?: GenerateMockOptions) {
         break;
     }
   });
+
+  // generate the mock date from the mockery mapper
+  const mockDate = generateMockFromMatchingFaker(options);
+  // verify that the return type of the mock data is a valid date for it to be acceptable
+  if (mockDate instanceof Date) return mockDate;
 
   if (min !== undefined && max !== undefined) {
     return fakerInstance.date.between({ from: min, to: max });
@@ -317,6 +343,12 @@ function parseNumber(
         break;
     }
   });
+
+  // generate the mock number from the mockeryMapper
+  const mockNumber = generateMockFromMatchingFaker(options);
+  // verify that the return type of the mock data is a number for it to be acceptable
+  if (typeof mockNumber === 'number') return mockNumber;
+
   return fakerInstance.number.int(fakerOptions);
 }
 
