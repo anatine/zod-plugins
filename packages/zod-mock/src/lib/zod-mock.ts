@@ -125,6 +125,15 @@ function parseString(
   zodRef: z.ZodString,
   options?: GenerateMockOptions
 ): string | number | boolean {
+  // Prioritize user provided generators.
+  if (options?.keyName && options.stringMap) {
+    // min/max length handling is not applied here
+    const generator = options.stringMap[options.keyName];
+    if (generator) {
+      return generator();
+    }
+  }
+
   const fakerInstance = options?.faker || faker;
   const { checks = [] } = zodRef._def;
 
@@ -142,14 +151,6 @@ function parseString(
   }
 
   const lowerCaseKeyName = options?.keyName?.toLowerCase();
-  // Prioritize user provided generators.
-  if (options?.keyName && options.stringMap) {
-    // min/max length handling is not applied here
-    const generator = options.stringMap[options.keyName];
-    if (generator) {
-      return generator();
-    }
-  }
   const stringOptions: {
     min?: number;
     max?: number;
