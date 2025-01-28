@@ -12,8 +12,11 @@ describe('Zod Extensions', () => {
     const schema = z.object({
       one: z.string().openapi({examples: ['oneOne']}),
       two: z.number(),
-
-    }).openapi({examples: [{one: 'oneOne', two: 42}]})
+      three: z.number().optional(),
+    }).openapi({
+      examples: [{one: 'oneOne', two: 42}],
+      hideDefinitions: ['three']
+    })
 
     const apiSchema = generateSchema(schema);
 
@@ -35,7 +38,8 @@ describe('Zod Extensions', () => {
         "one",
         "two"
       ],
-      "type": ["object"]
+      "type": ["object"],
+      "hideDefinitions": ["three"],
     })
   })
 
