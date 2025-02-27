@@ -32,6 +32,7 @@ describe('zod-mock', () => {
         z.object({ discriminator: z.literal('a'), a: z.boolean() }),
         z.object({ discriminator: z.literal('b'), b: z.string() }),
       ]),
+      readonly: z.boolean().readonly(),
     });
 
     const mockData = generateMock(schema);
@@ -58,6 +59,7 @@ describe('zod-mock', () => {
     expect(mockData.set).toBeTruthy();
     expect(mockData.map).toBeTruthy();
     expect(mockData.discriminatedUnion).toBeTruthy();
+    expect(typeof mockData.readonly).toEqual('boolean');
   });
 
   it('should generate mock data of the appropriate type when the field names overlap Faker properties that are not valid functions', () => {
