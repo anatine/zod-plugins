@@ -65,7 +65,6 @@ describe('Cats', () => {
       .set('Accept', 'application/json')
       .expect(200)
       .expect({
-        // todo: this should report 3.1.0 (or use openapi 3.0.0 supporting zod-openapi)
         openapi: '3.0.0',
         paths: {
           '/': {
@@ -73,6 +72,7 @@ describe('Cats', () => {
               operationId: 'AppController_getData',
               parameters: [],
               responses: { '200': { description: '' } },
+              tags: ['App']
             },
           },
           '/cats': {
@@ -89,6 +89,7 @@ describe('Cats', () => {
                   },
                 },
               },
+              tags: [`Cats`],
             },
             post: {
               operationId: 'CatsController_create',
@@ -113,6 +114,7 @@ describe('Cats', () => {
                   },
                 },
               },
+              tags: ['Cats'],
             },
             patch: {
               operationId: 'CatsController_update',
@@ -126,6 +128,7 @@ describe('Cats', () => {
                 },
               },
               responses: { '200': { description: '' } },
+              tags: ['Cats'],
             },
           },
           '/cats/{id}': {
@@ -149,6 +152,7 @@ describe('Cats', () => {
                   },
                 },
               },
+              tags: ['Cats'],
             },
           },
         },
