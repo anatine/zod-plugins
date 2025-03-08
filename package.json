@@ -38,7 +38,7 @@
     "@nestjs/core": "11.0.11",
     "@nestjs/platform-express": "11.0.11",
     "@nestjs/schematics": "11.0.2",
-    "@nestjs/swagger": "8.1.1",
+    "@nestjs/swagger": "11.0.6",
     "@nestjs/testing": "11.0.11",
     "@nx/eslint-plugin": "16.4.1",
     "@nx/jest": "16.4.1",
