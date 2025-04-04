@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [2.2.8](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.7...zod-openapi-2.2.8) (2025-04-04)
+
+
+### Bug Fixes
+
+* Use AnatineSchemaObject in openapi extension method ([cbf5985](https://github.com/anatine/zod-plugins/commit/cbf59851ed2ce9dbd0c0230fa2ad4cd3844746ae))
+
 ### [2.2.7](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.6...zod-openapi-2.2.7) (2025-01-20)
 
 ### [2.2.6](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.5...zod-openapi-2.2.6) (2024-06-21)
