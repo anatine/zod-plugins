@@ -2,7 +2,7 @@ import type { SchemaObject, SchemaObjectType } from 'openapi3-ts/oas31';
 import merge from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
-type AnatineSchemaObject = SchemaObject & { hideDefinitions?: string[] };
+export type AnatineSchemaObject = SchemaObject & { hideDefinitions?: string[] };
 
 export interface OpenApiZodAny extends ZodTypeAny {
   metaOpenApi?: AnatineSchemaObject | AnatineSchemaObject[];
@@ -312,7 +312,7 @@ function parseBigInt({
   openApiVersion,
 }: ParsingArgs<z.ZodBigInt>): SchemaObject {
   return merge(
-    { 
+    {
       type: typeFormat('integer', openApiVersion),
       format: 'int64'
     },
