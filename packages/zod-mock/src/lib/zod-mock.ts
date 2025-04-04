@@ -536,6 +536,13 @@ function parseLazy(
   return generateMock(zodRef._def.getter(), options);
 }
 
+function parseReadonly(
+  zodRef: z.ZodReadonly<ZodTypeAny>,
+  options?: GenerateMockOptions
+) {
+  return generateMock(zodRef._def.innerType, options);
+}
+
 const workerMap = {
   ZodObject: parseObject,
   ZodRecord: parseRecord,
@@ -565,6 +572,7 @@ const workerMap = {
   ZodBranded: parseBranded,
   ZodNull: () => null,
   ZodNaN: () => NaN,
+  ZodReadonly: parseReadonly,
 };
 
 type WorkerKeys = keyof typeof workerMap;
