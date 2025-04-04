@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [3.14.0](https://github.com/anatine/zod-plugins/compare/zod-mock-3.13.5...zod-mock-3.14.0) (2025-04-04)
+
+
+### Features
+
+* **zod-mock:** add support for readonly fields ([486eb3a](https://github.com/anatine/zod-plugins/commit/486eb3a1f6d3239609388fff5c74c9ed73c5a099))
+
+
+### Bug Fixes
+
+* **zod-mock:** update peer dependency range for @faker-js/faker to include ^9.x ([6a89566](https://github.com/anatine/zod-plugins/commit/6a89566d1baae63e20675a703d8318939a5db66e))
+
 ### [3.13.5](https://github.com/anatine/zod-plugins/compare/zod-mock-3.13.4...zod-mock-3.13.5) (2025-01-20)
 
 
