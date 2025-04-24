@@ -346,10 +346,10 @@ function parseDate({ zodRef, schemas, openApiVersion }: ParsingArgs<z.ZodDate>):
 
 function parseNull({ zodRef, schemas, openApiVersion }: ParsingArgs<z.ZodNull>): SchemaObject {
   return merge(
-    openApiVersion === '3.0' ? { type: 'null' as SchemaObjectType } : {
-      type: ['string', 'null'] as SchemaObjectType[],
-      enum: ['null'],
-    },
+    openApiVersion === '3.0' ? {
+      type: 'string' as SchemaObjectType,
+      enum: [null],
+    } : { type: 'null' as SchemaObjectType },
     zodRef.description ? { description: zodRef.description } : {},
     ...schemas
   );
