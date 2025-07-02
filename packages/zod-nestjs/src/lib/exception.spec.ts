@@ -11,7 +11,6 @@ describe('ZodValidationException', () => {
       throw new Error('Expected parseResult to be error');
     }
     const exception = new ZodValidationException(parseResult.error, 'Custom message');
-    // instanceof check
     expect(exception).toBeInstanceOf(ZodValidationException);
     // Prefer custom message for exception.message
     expect(exception.message).toEqual('Custom message');

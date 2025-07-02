@@ -19,8 +19,12 @@ describe('ZodValidationPipe', () => {
     expect(pipe.transform(input, metadata)).toEqual(input);
   });
 
-  it('should throw ZodValidationException by default on invalid data', () => {
-    const pipe = new ZodValidationPipe();
+  it('should throw ZodValidationException when useZodValidationException=true', () => {
+    const options: ZodValidationPipeOptions = {
+      useZodValidationException: true,
+      errorHttpStatusCode: 400,
+    };
+    const pipe = new ZodValidationPipe(options);
     const input = { num: 'a' };
     expect(() => pipe.transform(input, metadata)).toThrow(
       ZodValidationException
@@ -33,8 +37,9 @@ describe('ZodValidationPipe', () => {
       errorHttpStatusCode: 400,
     };
     const pipe = new ZodValidationPipe(options);
+    const input = { num: 'a' };
     try {
-      pipe.transform({ num: 'a' }, metadata);
+      pipe.transform(input, metadata);
       throw new Error('Expected exception');
     } catch (err) {
       expect(err).toBeInstanceOf(BadRequestException);
@@ -43,5 +48,11 @@ describe('ZodValidationPipe', () => {
       // message should be in array<string> format
       expect(Array.isArray((err as any).response?.message)).toBe(true);
     }
+  });
+
+  it('should throw HTTP error by default on invalid data', () => {
+    const pipe = new ZodValidationPipe();
+    const input = { num: 'a' };
+    expect(() => pipe.transform(input, metadata)).toThrow(BadRequestException);
   });
 });

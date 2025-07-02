@@ -27,7 +27,7 @@ export class ZodValidationPipe implements PipeTransform {
   constructor(@Optional() options?: ZodValidationPipeOptions) {
     this.errorHttpStatusCode =
       options?.errorHttpStatusCode || HttpStatus.BAD_REQUEST;
-    this.useZodValidationException = options?.useZodValidationException ?? true;
+    this.useZodValidationException = options?.useZodValidationException ?? false;
   }
 
   public transform(value: unknown, metadata: ArgumentMetadata): unknown {
