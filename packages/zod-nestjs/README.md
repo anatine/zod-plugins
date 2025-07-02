@@ -136,6 +136,20 @@ export class CatsController {
 
 NOTE: Responses have to use the `ApiCreatedResponse` decorator when using the `@nestjs/swagger` module.
 
+#### Advanced Error Handling with ZodValidationException
+
+By default, `ZodValidationPipe` throws standard `BadRequestException` when validation fails. If you need access to the original Zod error information for custom error handling, you can enable `useZodValidationException`:
+
+```ts
+// Enable ZodValidationException for detailed error information
+@UsePipes(new ZodValidationPipe({ useZodValidationException: true }))
+```
+
+**Available methods on ZodValidationException:**
+
+- `getZodError()`: Returns the original `ZodError` object
+- `getFormattedZodError()`: Returns a formatted object with field paths as keys and error messages as values
+
 ### Set up your app
 
 Patch the swagger so that it can use Zod types before you create the document.
