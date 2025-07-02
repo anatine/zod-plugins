@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { ArgumentMetadata, BadRequestException } from '@nestjs/common';
 import { z } from 'zod';
 import { ZodValidationException } from './exception';
 import {
@@ -11,7 +11,7 @@ class DummyDto {
 }
 
 describe('ZodValidationPipe', () => {
-  const metadata = { metatype: DummyDto, type: 'body' } as any;
+  const metadata = { metatype: DummyDto, type: 'body' } as ArgumentMetadata;
 
   it('should pass valid data through', () => {
     const pipe = new ZodValidationPipe();
