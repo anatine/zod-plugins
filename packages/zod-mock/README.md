@@ -90,6 +90,8 @@ const mockData = generateMock(schema, {
 });
 ```
 
+If a supplied string value maps to a `Discriminator` field for a `ZodDiscriminatedUnion`, the generator will produce a mock of the appropriate discriminated variant.
+
 ----
 
 ## Adding a seed generator
