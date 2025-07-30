@@ -8,6 +8,7 @@ import {
   ZodType,
   ZodString,
   ZodRecord,
+  ZodDiscriminatedUnionOption,
   util,
 } from 'zod';
 import {
@@ -426,6 +427,23 @@ function parseDiscriminatedUnion(
   const fakerInstance = options?.faker || faker;
   // Map the options to various possible union cases
   const potentialCases = [...zodRef._def.options.values()];
+  const discriminatorField = zodRef._def.discriminator as string;
+  const hasSpecifiedDiscrimination = typeof options?.stringMap === 'object' && Object.prototype.hasOwnProperty.call(options?.stringMap, discriminatorField);
+
+  // If a discriminator field value is specified in the stringMap options, generate mock values in alignment with that discriminated shape
+  if (hasSpecifiedDiscrimination) {
+    const desiredDescriminationValueFunction = options?.stringMap?.[discriminatorField];
+    const desiredValue = typeof desiredDescriminationValueFunction === 'function' ? desiredDescriminationValueFunction() : undefined;
+    if (desiredValue !== undefined) {
+      const mocked = (zodRef._def.options as ZodDiscriminatedUnionOption<typeof desiredValue>[]).find((option) => {
+          return option._def.shape()[discriminatorField]?._def?.value === desiredValue;
+      })
+      // if the desired discriminated variant is not found, fall back to random generation
+      if (mocked !== undefined) {
+        return generateMock(mocked as ZodTypeAny, options);
+      }
+    }
+  }
   const mocked = fakerInstance.helpers.arrayElement(potentialCases);
   return generateMock(mocked, options);
 }
