@@ -1,6 +1,6 @@
+import { faker, Faker } from '@faker-js/faker';
 import { z } from 'zod';
 import { generateMock, ZodMockError } from './zod-mock';
-import { faker, Faker } from '@faker-js/faker';
 import { FakerFunction } from './zod-mockery-map';
 
 describe('zod-mock', () => {
@@ -118,7 +118,7 @@ describe('zod-mock', () => {
 
   it('Should manually mock string key names to set values when the validation has regex', () => {
     const schema = z.object({
-      telephone: z.string().regex(/^\+[1-9]\d{1,14}$/)
+      telephone: z.string().regex(/^\+[1-9]\d{1,14}$/),
     });
 
     const stringMap = {
@@ -638,6 +638,30 @@ describe('zod-mock', () => {
   });
   it('ZodLazy', () => {
     expect(generateMock(z.lazy(() => z.string()))).toBeTruthy();
+  });
+
+  describe('recursion levelLimit', () => {
+    it('defaults to 1 and prevents infinite recursion', () => {
+      const Node: z.ZodType<any> = z.lazy(() =>
+        z.object({ value: z.string(), next: Node.optional() })
+      );
+
+      const mock = generateMock(Node);
+      expect(mock.value).toBeTruthy();
+      expect(mock.next).toBeUndefined();
+    });
+
+    it('allows deeper expansion when levelLimit is increased', () => {
+      const Node: z.ZodType<any> = z.lazy(() =>
+        z.object({ value: z.string(), next: Node.optional() })
+      );
+
+      const mock = generateMock(Node, { levelLimit: 2 });
+      expect(mock.value).toBeTruthy();
+      expect(mock.next).toBeDefined();
+      expect(mock.next.value).toBeTruthy();
+      expect(mock.next.next).toBeUndefined();
+    });
   });
 
   it('Options seed value will return the same random numbers', () => {
