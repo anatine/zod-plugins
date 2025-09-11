@@ -3,12 +3,12 @@ import { faker } from '@faker-js/faker';
 import * as randExp from 'randexp';
 import {
   AnyZodObject,
-  z,
-  ZodTypeAny,
-  ZodType,
-  ZodString,
   ZodRecord,
+  ZodString,
+  ZodType,
+  ZodTypeAny,
   util,
+  z,
 } from 'zod';
 import {
   MockeryMapper,
@@ -211,7 +211,8 @@ function parseString(
     targetStringLength > 10
       ? fakerInstance.lorem.word()
       : fakerInstance.lorem.word({ length: targetStringLength });
-  const dateGenerator = () => fakerInstance.date.recent().toISOString().substring(0,10);
+  const dateGenerator = () =>
+    fakerInstance.date.recent().toISOString().substring(0, 10);
   const datetimeGenerator = () => fakerInstance.date.recent().toISOString();
   const stringGenerators = {
     default: defaultGenerator,
@@ -627,6 +628,17 @@ export interface GenerateMockOptions {
    * Faker class instance for mocking
    */
   faker?: FakerClass;
+
+  /**
+   * Limit how many times the same schema instance can be expanded within a single generation path.
+   * Helps prevent infinite recursion for self-referential schemas. Default: 1
+   */
+  levelLimit?: number;
+
+  /**
+   * INTERNAL: Tracks expansion counts per schema instance during a single generateMock call.
+   */
+  __levelsMap__?: WeakMap<ZodTypeAny, number>;
 }
 
 export function generateMock<T extends ZodTypeAny>(
@@ -634,6 +646,16 @@ export function generateMock<T extends ZodTypeAny>(
   options?: GenerateMockOptions
 ): z.infer<typeof zodRef> {
   try {
+    // initialize recursion tracking
+    const levelLimit = options?.levelLimit ?? 1;
+    if (!options) options = {};
+    if (!options.__levelsMap__) options.__levelsMap__ = new WeakMap();
+    const currentLevel = options.__levelsMap__.get(zodRef) ?? 0;
+    if (currentLevel >= levelLimit) {
+      return undefined as unknown as z.infer<typeof zodRef>;
+    }
+    options.__levelsMap__.set(zodRef, currentLevel + 1);
+
     const fakerInstance = options?.faker || faker;
     if (options?.seed) {
       fakerInstance.seed(
@@ -642,24 +664,36 @@ export function generateMock<T extends ZodTypeAny>(
     }
     const typeName = zodRef._def.typeName as WorkerKeys;
     if (typeName in workerMap) {
-      return workerMap[typeName](zodRef as never, options);
+      const result = workerMap[typeName](zodRef as never, options);
+      return result as z.infer<typeof zodRef>;
     } else if (options?.backupMocks && typeName in options.backupMocks) {
       // check for a generator match in the options.
       // workaround for unimplemented Zod types
       const generator = options.backupMocks[typeName];
       if (generator) {
-        return generator(zodRef as never, options);
+        const result = generator(zodRef as never, options);
+        return result as z.infer<typeof zodRef>;
       }
     } else if (options?.throwOnUnknownType) {
       throw new ZodMockError(typeName);
     }
-    return undefined;
+    return undefined as unknown as z.infer<typeof zodRef>;
   } catch (err) {
     if (err instanceof ZodMockError) {
       throw err;
     }
     console.error(err);
-    return undefined;
+    return undefined as unknown as z.infer<typeof zodRef>;
+  } finally {
+    // decrement recursion tracking for this node
+    if (options?.__levelsMap__) {
+      const curr = options.__levelsMap__.get(zodRef) ?? 0;
+      if (curr <= 1) {
+        options.__levelsMap__.delete(zodRef);
+      } else {
+        options.__levelsMap__.set(zodRef, curr - 1);
+      }
+    }
   }
 }
 

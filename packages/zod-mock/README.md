@@ -2,7 +2,7 @@
 
 Generates a mock data object using [faker.js](https://www.npmjs.com/package/@faker-js/faker) from a [Zod](https://github.com/colinhacks/zod) schema.
 
-----
+---
 
 ## Installation
 
@@ -12,7 +12,7 @@ Generates a mock data object using [faker.js](https://www.npmjs.com/package/@fak
 npm install zod @faker-js/faker @anatine/zod-mock
 ```
 
-----
+---
 
 ## Usage
 
@@ -21,18 +21,18 @@ npm install zod @faker-js/faker @anatine/zod-mock
 ```typescript
 import { generateMock } from '@anatine/zod-mock';
 const schema = z.object({
-      uid: z.string().nonempty(),
-      theme: z.enum([`light`, `dark`]),
-      email: z.string().email().optional(),
-      phoneNumber: z.string().min(10).optional(),
-      avatar: z.string().url().optional(),
-      jobTitle: z.string().optional(),
-      otherUserEmails: z.array(z.string().email()),
-      stringArrays: z.array(z.string()),
-      stringLength: z.string().transform((val) => val.length),
-      numberCount: z.number().transform((item) => `total value = ${item}`),
-      age: z.number().min(18).max(120),
-    });
+  uid: z.string().nonempty(),
+  theme: z.enum([`light`, `dark`]),
+  email: z.string().email().optional(),
+  phoneNumber: z.string().min(10).optional(),
+  avatar: z.string().url().optional(),
+  jobTitle: z.string().optional(),
+  otherUserEmails: z.array(z.string().email()),
+  stringArrays: z.array(z.string()),
+  stringLength: z.string().transform((val) => val.length),
+  numberCount: z.number().transform((item) => `total value = ${item}`),
+  age: z.number().min(18).max(120),
+});
 const mockData = generateMock(schema);
 // ...
 ```
@@ -47,27 +47,15 @@ This will generate mock data similar to:
   "phoneNumber": "1-665-405-2226",
   "avatar": "https://cdn.fakercloud.com/avatars/olaolusoga_128.jpg",
   "jobTitle": "Lead Brand Facilitator",
-  "otherUserEmails": [
-    "Wyman58@example.net",
-    "Ignacio_Nader@example.org",
-    "Jorge_Bradtke@example.org",
-    "Elena.Torphy33@example.org",
-    "Kelli_Bartoletti@example.com"
-  ],
-  "stringArrays": [
-    "quisquam",
-    "corrupti",
-    "atque",
-    "sunt",
-    "voluptatem"
-  ],
+  "otherUserEmails": ["Wyman58@example.net", "Ignacio_Nader@example.org", "Jorge_Bradtke@example.org", "Elena.Torphy33@example.org", "Kelli_Bartoletti@example.com"],
+  "stringArrays": ["quisquam", "corrupti", "atque", "sunt", "voluptatem"],
   "stringLength": 4,
   "numberCount": "total value = 25430",
   "age": 110
 }
 ```
 
-----
+---
 
 ## Overriding string mocks
 
@@ -90,7 +78,7 @@ const mockData = generateMock(schema, {
 });
 ```
 
-----
+---
 
 ## Adding a seed generator
 
@@ -107,7 +95,7 @@ const second = generateMock(schema, { seed });
 expect(first).toEqual(second);
 ```
 
-----
+---
 
 ## Adding a custom mock mapper
 
@@ -116,11 +104,7 @@ Once drilled down to deliver a string, number, boolean, or other primitive value
 You can add your own key/fn mapper in the options.
 
 ```typescript
-
-export function mockeryMapper(
-  keyName: string,
-  fakerInstance: Faker
-): FakerFunction | undefined {
+export function mockeryMapper(keyName: string, fakerInstance: Faker): FakerFunction | undefined {
   const keyToFnMap: Record<string, FakerFunction> = {
     image: fakerInstance.image.url,
     imageurl: fakerInstance.image.url,
@@ -130,11 +114,9 @@ export function mockeryMapper(
     uuid: fakerInstance.string.uuid,
     boolean: fakerInstance.datatype.boolean,
     // Email more guaranteed to be random for testing
-    email: () => fakerInstance.database.mongodbObjectId() + '@example.com'
+    email: () => fakerInstance.database.mongodbObjectId() + '@example.com',
   };
-  return keyName && keyName.toLowerCase() in keyToFnMap
-    ? keyToFnMap[keyName.toLowerCase() as never]
-    : undefined;
+  return keyName && keyName.toLowerCase() in keyToFnMap ? keyToFnMap[keyName.toLowerCase() as never] : undefined;
 }
 
 const schema = z.object({
@@ -144,10 +126,28 @@ const schema = z.object({
 });
 
 const result = generateMock(schema, { mockeryMapper });
-
 ```
 
-----
+---
+
+## Controlling recursion depth for self-referential schemas
+
+When a schema references itself (directly or via `z.lazy`), mocking can recurse indefinitely. Use the `levelLimit` option to cap how many times the same schema instance can expand along a single path. The default is `1`.
+
+```typescript
+// a simple linked-list like schema
+const Node: z.ZodType<any> = z.lazy(() => z.object({ value: z.string(), next: Node.optional() }));
+
+// default: stops at one expansion, Node.next will be undefined
+const mock1 = generateMock(Node);
+
+// allow one nested next node (two levels total)
+const mock2 = generateMock(Node, { levelLimit: 2 });
+```
+
+This limit applies per schema instance along a single generation path and prevents infinite loops while still allowing controlled depth.
+
+---
 
 ## Behind the Scenes
 
@@ -167,18 +167,18 @@ const result = generateMock(schema, { mockeryMapper });
 
   If **`zod-mock`** does not yet support a Zod type used in your schema, you may provide a backup mock function to use for that particular type.
 
-  ``` typescript
+  ```typescript
   const schema = z.object({
-    anyVal: z.any()
+    anyVal: z.any(),
   });
   const mockData = generateMock(schema, {
     backupMocks: {
-      ZodAny: () => 'a value'
-    }
+      ZodAny: () => 'a value',
+    },
   });
   ```
 
-----
+---
 
 ## Missing Features
 
@@ -195,7 +195,7 @@ const result = generateMock(schema, { mockeryMapper });
   - ZodUnion
   - ZodUnknown
 
-----
+---
 
 ## Credits
 
@@ -203,6 +203,6 @@ const result = generateMock(schema, { mockeryMapper });
 
   A great lib that provided some insights on dealing with various zod types.
 
-----
+---
 
 This library is part of a nx monorepo [@anatine/zod-plugins](https://github.com/anatine/zod-plugins).
