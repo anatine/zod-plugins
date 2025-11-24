@@ -109,6 +109,29 @@ expect(first).toEqual(second);
 
 ----
 
+## Generating only required fields
+
+You can generate mock data with only required fields by setting the `requiredOnly` option to `true`. This will skip generating values for optional and nullable fields.
+
+```typescript
+const schema = z.object({
+  requiredField: z.string(),
+  optionalField: z.string().optional(),
+  nullableField: z.string().nullable(),
+});
+const mockData = generateMock(schema, { requiredOnly: true });
+// mockData will be:
+// {
+//   requiredField: "some string",
+//   optionalField: undefined,
+//   nullableField: undefined
+// }
+```
+
+This is useful when you want to test with minimal data or ensure your code handles missing optional fields correctly.
+
+----
+
 ## Adding a custom mock mapper
 
 Once drilled down to deliver a string, number, boolean, or other primitive value a function with a matching name is searched for in faker.

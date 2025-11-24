@@ -806,4 +806,90 @@ describe('zod-mock', () => {
       }
     );
   });
+
+  describe('requiredOnly option', () => {
+    it('should only generate required fields when requiredOnly is true', () => {
+      const schema = z.object({
+        requiredString: z.string(),
+        requiredNumber: z.number(),
+        optionalString: z.string().optional(),
+        optionalNumber: z.number().optional(),
+        nullableString: z.string().nullable(),
+        nullableNumber: z.number().nullable(),
+      });
+
+      const mockData = generateMock(schema, { requiredOnly: true });
+
+      // Required fields should be generated
+      expect(typeof mockData.requiredString).toEqual('string');
+      expect(typeof mockData.requiredNumber).toEqual('number');
+
+      // Optional and nullable fields should be undefined
+      expect(mockData.optionalString).toBeUndefined();
+      expect(mockData.optionalNumber).toBeUndefined();
+      expect(mockData.nullableString).toBeUndefined();
+      expect(mockData.nullableNumber).toBeUndefined();
+    });
+
+    it('should generate all fields when requiredOnly is false or not set', () => {
+      const schema = z.object({
+        requiredString: z.string(),
+        optionalString: z.string().optional(),
+        nullableString: z.string().nullable(),
+      });
+
+      const mockData = generateMock(schema, { requiredOnly: false });
+
+      // All fields should be generated
+      expect(typeof mockData.requiredString).toEqual('string');
+      expect(typeof mockData.optionalString).toEqual('string');
+      expect(typeof mockData.nullableString).toEqual('string');
+    });
+
+    it('should work with nested objects when requiredOnly is true', () => {
+      const schema = z.object({
+        required: z.string(),
+        optional: z.string().optional(),
+        nested: z.object({
+          requiredNested: z.number(),
+          optionalNested: z.number().optional(),
+        }),
+      });
+
+      const mockData = generateMock(schema, { requiredOnly: true });
+
+      expect(typeof mockData.required).toEqual('string');
+      expect(mockData.optional).toBeUndefined();
+      expect(typeof mockData.nested.requiredNested).toEqual('number');
+      expect(mockData.nested.optionalNested).toBeUndefined();
+    });
+
+    it('should work with arrays when requiredOnly is true', () => {
+      const schema = z.object({
+        requiredArray: z.array(z.string()),
+        optionalArray: z.array(z.string()).optional(),
+      });
+
+      const mockData = generateMock(schema, { requiredOnly: true });
+
+      expect(Array.isArray(mockData.requiredArray)).toBeTruthy();
+      expect(mockData.requiredArray.length).toBeGreaterThan(0);
+      expect(mockData.optionalArray).toBeUndefined();
+    });
+
+    it('should handle default values with requiredOnly option', () => {
+      const schema = z.object({
+        requiredField: z.string(),
+        optionalField: z.string().optional(),
+        defaultField: z.string().default('default value'),
+      });
+
+      const mockData = generateMock(schema, { requiredOnly: true });
+
+      expect(typeof mockData.requiredField).toEqual('string');
+      expect(mockData.optionalField).toBeUndefined();
+      // Default fields are still generated even with requiredOnly
+      expect(typeof mockData.defaultField).toEqual('string');
+    });
+  });
 });
