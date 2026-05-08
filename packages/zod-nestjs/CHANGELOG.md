@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [2.0.13](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.12...zod-nestjs-2.0.13) (2026-05-08)
+
+
+### Bug Fixes
+
+* @ApiSchema inheritance ([38f0460](https://github.com/anatine/zod-plugins/commit/38f04601b3632796ddc648ed4d717d73b0b7a428))
+
 ### [2.0.12](https://github.com/anatine/zod-plugins/compare/zod-nestjs-2.0.11...zod-nestjs-2.0.12) (2025-04-05)
 
 
