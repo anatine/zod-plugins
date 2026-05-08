@@ -5,8 +5,8 @@
  * This file was copied from:
  *   https://github.com/kbkk/abitia/blob/master/packages/zod-dto/src/OpenApi/patchNestjsSwagger.ts
  */
-import {generateSchema} from '@anatine/zod-openapi';
-import type {SchemaObject} from 'openapi3-ts/oas31';
+import { generateSchema } from '@anatine/zod-openapi';
+import type { SchemaObject } from 'openapi3-ts/oas31';
 
 interface Type<T = any> extends Function {
   new (...args: any[]): T;
@@ -43,8 +43,10 @@ export const patchNestjsSwagger = (
       return orgExploreModelSchema.call(this, type, schemas, schemaRefsStack);
     }
 
-    schemas[type.name] = generateSchema(type.zodSchema, false, openApiVersion);
+    const { schemaName } = this.getSchemaMetadata(type);
 
-    return type.name;
+    schemas[schemaName] = generateSchema(type.zodSchema, false, openApiVersion);
+
+    return schemaName;
   };
 };
