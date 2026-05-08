@@ -357,6 +357,9 @@ function parseOptional(
   zodRef: z.ZodOptional<ZodTypeAny> | z.ZodNullable<ZodTypeAny>,
   options?: GenerateMockOptions
 ) {
+  if (options?.requiredOnly) {
+    return undefined;
+  }
   return generateMock<ZodTypeAny>(zodRef.unwrap(), options);
 }
 
@@ -627,6 +630,11 @@ export interface GenerateMockOptions {
    * Faker class instance for mocking
    */
   faker?: FakerClass;
+
+  /**
+   * Set to true to only generate required fields (skip optional and nullable fields)
+   */
+  requiredOnly?: boolean;
 }
 
 export function generateMock<T extends ZodTypeAny>(
