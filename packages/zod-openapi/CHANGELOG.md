@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [2.2.9](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.8...zod-openapi-2.2.9) (2026-05-08)
+
+
+### Bug Fixes
+
+* **zod-openapi:** fix handling of nulls ([9f8cbb3](https://github.com/anatine/zod-plugins/commit/9f8cbb30e7fec5929c2c11c20a50d10f88634856))
+
 ### [2.2.8](https://github.com/anatine/zod-plugins/compare/zod-openapi-2.2.7...zod-openapi-2.2.8) (2025-04-04)
 
 
