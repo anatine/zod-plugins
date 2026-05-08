@@ -86,12 +86,23 @@ describe('zodOpenapi', () => {
         description: `Empty types in a schema`,
       }
     );
-    const apiSchema = generateSchema(zodSchema);
+    let apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
       type: ['object'],
       properties: {
         aUndefined: {},
-        aNull: { type: ['string', 'null'], enum: ['null'] },
+        aNull: { type: 'null' },
+        aVoid: {},
+      },
+      required: ['aNull'],
+      description: 'Empty types in a schema',
+    });
+    apiSchema = generateSchema(zodSchema, false, '3.0');
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aUndefined: {},
+        aNull: { type: 'string', enum: [null] },
         aVoid: {},
       },
       required: ['aNull'],
@@ -262,7 +273,7 @@ describe('zodOpenapi', () => {
         description: 'I need arrays',
       }
     );
-    const apiSchema = generateSchema(zodSchema);
+    let apiSchema = generateSchema(zodSchema);
     expect(apiSchema).toEqual({
       type: ['object'],
       properties: {
@@ -277,13 +288,39 @@ describe('zodOpenapi', () => {
         aArrayNonempty: {
           type: ['array'],
           minItems: 1,
-          items: { type: ['string', 'null'], enum: ['null'] },
+          items: { type: 'null' },
         },
         aArrayMinAndMax: {
           type: ['array'],
           minItems: 3,
           maxItems: 8,
           items: { type: ['number'] },
+        },
+      },
+      description: 'I need arrays',
+    });
+    apiSchema = generateSchema(zodSchema, false, '3.0');
+    expect(apiSchema).toEqual({
+      type: 'object',
+      properties: {
+        aArrayMin: { type: 'array', minItems: 3, items: { type: 'string' } },
+        aArrayMax: { type: 'array', maxItems: 8, items: { type: 'number' } },
+        aArrayLength: {
+          type: 'array',
+          minItems: 10,
+          maxItems: 10,
+          items: { type: 'boolean' },
+        },
+        aArrayNonempty: {
+          type: 'array',
+          minItems: 1,
+          items: { type: 'string', enum: [null] },
+        },
+        aArrayMinAndMax: {
+          type: 'array',
+          minItems: 3,
+          maxItems: 8,
+          items: { type: 'number' },
         },
       },
       description: 'I need arrays',
