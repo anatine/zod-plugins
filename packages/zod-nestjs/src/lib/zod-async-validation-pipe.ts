@@ -1,6 +1,5 @@
 /**
- * This file was originally taken directly from:
- *   https://github.com/kbkk/abitia/blob/master/packages/zod-dto/src/ZodValidationPipe.ts
+ * Support async validation for zod-schemas
  */
 
 import {
@@ -10,13 +9,15 @@ import {
   HttpStatus,
   Optional,
 } from '@nestjs/common';
-
 import { ZodDtoStatic } from './create-zod-dto';
+import { ZodType } from 'zod';
 import { HTTP_ERRORS_BY_CODE } from './http-errors';
 import { ZodValidationPipeOptions } from './interfaces';
 
 @Injectable()
-export class ZodValidationPipe implements PipeTransform {
+export class ZodAsyncValidationPipe
+  implements PipeTransform<unknown, Promise<unknown>>
+{
   private readonly errorHttpStatusCode: keyof typeof HTTP_ERRORS_BY_CODE;
 
   constructor(@Optional() options?: ZodValidationPipeOptions) {
@@ -24,16 +25,20 @@ export class ZodValidationPipe implements PipeTransform {
       options?.errorHttpStatusCode || HttpStatus.BAD_REQUEST;
   }
 
-  public transform(value: unknown, metadata: ArgumentMetadata): unknown {
-    const zodSchema = (metadata?.metatype as ZodDtoStatic)?.zodSchema;
+  public async transform(
+    value: unknown,
+    metadata: ArgumentMetadata
+  ): Promise<unknown> {
+    const zodSchema = (metadata?.metatype as ZodDtoStatic)?.zodSchema as
+      | ZodType
+      | undefined;
 
     if (zodSchema) {
-      const parseResult = zodSchema.safeParse(value);
+      const parseResult = await zodSchema.safeParseAsync(value);
 
       if (!parseResult.success) {
-        const { error } = parseResult;
-        const message = error.errors.map(
-          (error) => `${error.path.join('.')}: ${error.message}`
+        const message = parseResult.error.errors.map(
+          (err) => `${err.path.join('.')}: ${err.message}`
         );
 
         throw new HTTP_ERRORS_BY_CODE[this.errorHttpStatusCode](message);

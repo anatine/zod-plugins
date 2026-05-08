@@ -5,7 +5,7 @@ Helper methods for using [Zod](https://github.com/colinhacks/zod) in a NestJS pr
 - Validation pipe on data
 - Patch to Swagger module
 
-----
+---
 
 ## Installation
 
@@ -13,10 +13,10 @@ Helper methods for using [Zod](https://github.com/colinhacks/zod) in a NestJS pr
 While `zod` is necessary for operation, `openapi3-ts` is for type-casting. `@anatine/zod-openapi` does the actual conversion
 
 ```shell
-npm install openapi3-ts zod @anatine/zod-openapi @anatine/zod-nestjs 
+npm install openapi3-ts zod @anatine/zod-openapi @anatine/zod-nestjs
 ```
 
-----
+---
 
 ## Usage
 
@@ -57,9 +57,7 @@ export const CreateCatResponseZ = z.object({
   name: z.string(),
 });
 export class CreateCatResponseDto extends createZodDto(CreateCatResponseZ) {}
-export class UpdateCatResponseDto extends createZodDto(
-  CreateCatResponseZ.omit({ name: true })
-) {}
+export class UpdateCatResponseDto extends createZodDto(CreateCatResponseZ.omit({ name: true })) {}
 ```
 
 ### Use the schema in your controller
@@ -72,23 +70,9 @@ Example Controller
 
 ```typescript
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UsePipes,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UsePipes } from '@nestjs/common';
 import { ApiCreatedResponse } from '@nestjs/swagger';
-import {
-  CatDto,
-  CreateCatResponseDto,
-  GetCatsDto,
-  UpdateCatDto,
-  UpdateCatResponseDto,
-} from './cats.dto';
+import { CatDto, CreateCatResponseDto, GetCatsDto, UpdateCatDto, UpdateCatResponseDto } from './cats.dto';
 @Controller('cats')
 @UsePipes(ZodValidationPipe)
 export class CatsController {
@@ -123,9 +107,7 @@ export class CatsController {
     };
   }
   @Patch()
-  async update(
-    @Body() updateCatDto: UpdateCatDto
-  ): Promise<UpdateCatResponseDto> {
+  async update(@Body() updateCatDto: UpdateCatDto): Promise<UpdateCatResponseDto> {
     return {
       success: true,
       message: `Cat's age of ${updateCatDto.age} updated`,
@@ -135,6 +117,62 @@ export class CatsController {
 ```
 
 NOTE: Responses have to use the `ApiCreatedResponse` decorator when using the `@nestjs/swagger` module.
+
+Example - Async Validation
+Controller
+
+```typescript
+import { ZodAsyncValidationPipe } from '@anatine/zod-nestjs';
+import { Body, Controller, Get, UsePipes } from '@nestjs/common';
+import { ApiCreatedResponse } from '@nestjs/swagger';
+import { CatDto, GetAsyncCatZDto } from './cats.dto';
+@Controller('cats')
+@UsePipes(ZodAsyncValidationPipe)
+export class CatsController {
+  @Get(':id')
+  @ApiCreatedResponse({
+    type: CatDto,
+  })
+  async findOne(@Param() param: GetAsyncCatZDto): Promise<CatDto> {
+    return {
+      name: `Cat-${id}`,
+      age: 8,
+      breed: 'Unknown',
+    };
+  }
+}
+```
+
+Example Schema
+
+```ts
+import { createZodDto } from '@anatine/zod-nestjs';
+import { extendApi } from '@anatine/zod-openapi';
+import { z } from 'zod';
+export const AsyncCatZ = extendApi(
+  z
+    .object({
+      id: z.string().uuid(),
+    })
+    .superRefine(async (data, ctx) => {
+      // Do some async operation
+      const value = await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (!isomeCondition(value)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Error message here`,
+          fatal: true,
+        });
+        return;
+      }
+    }),
+  {
+    title: 'My async catz schema',
+  }
+);
+export class GetAsyncCatZDto extends createZodDto(AsyncCatZ) {}
+```
 
 ### Set up your app
 
@@ -152,12 +190,7 @@ async function bootstrap() {
   const app = await NestFactory.create(CatsModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-  const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
-    .setVersion('1.0')
-    .addTag('cats')
-    .build();
+  const config = new DocumentBuilder().setTitle('Cats example').setDescription('The cats API description').setVersion('1.0').addTag('cats').build();
   patchNestjsSwagger(); // <--- This is the hacky patch using prototypes (for now)
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
@@ -180,4 +213,3 @@ bootstrap();
 - ### [zod-dto](https://github.com/kbkk/abitia/tree/master/packages/zod-dto)
 
   Extensive use and inspiration from zod-dto.
-  
