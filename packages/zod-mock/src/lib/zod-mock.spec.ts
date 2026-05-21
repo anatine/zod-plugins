@@ -594,27 +594,91 @@ describe('zod-mock', () => {
     expect(transformResult.items).toBeLessThan(101);
   });
 
-  it('should handle discriminated unions', () => {
-    const FirstType = z.object({
-      hasEmail: z.literal(false),
-      userName: z.string(),
+  describe('ZodDiscriminatedUnion', () => {
+
+    it('should handle discriminated unions', () => {
+
+      const FirstType = z.object({
+        hasEmail: z.literal(false),
+        userName: z.string(),
+      });
+
+      const SecondType = z.object({
+        hasEmail: z.literal(true),
+        email: z.string(),
+      });
+
+      const Union = z.discriminatedUnion('hasEmail', [FirstType, SecondType]);
+
+      const result = generateMock(Union);
+      expect(result).toBeDefined();
+  
+      if (result.hasEmail) {
+        expect(result.email).toBeTruthy();
+      } else {
+        expect(result.userName).toBeTruthy();
+      }
     });
 
-    const SecondType = z.object({
-      hasEmail: z.literal(true),
-      email: z.string(),
+
+    describe('when the discriminator value is specified in stringMap options', () => {
+      const FirstType = z.object({
+        userType: z.literal('type-1'),
+        userName: z.string(),
+      });
+
+      const SecondType = z.object({
+        userType: z.literal('type-2'),
+        email: z.string(),
+      });
+
+      const Union = z.discriminatedUnion('userType', [FirstType, SecondType]);
+
+      it('should generate the variant defined by the discriminator value', () => {
+        // validate that we always generate 'type-1' when specified
+        [...Array(10).keys()].forEach(() => {
+          const result = generateMock(Union, { stringMap: {
+            userType: () => 'type-1',
+          }});
+          expect(result).toBeDefined();
+          expect(result).toEqual(expect.objectContaining({
+            userType: 'type-1',
+            userName: expect.any(String),
+          }));
+          expect(result).not.toEqual(expect.objectContaining({
+            email: expect.anything(),
+          }));
+        });
+  
+        // validate that we always generate 'type-2' when specified
+        [...Array(10).keys()].forEach(() => {
+          const result = generateMock(Union, { stringMap: {
+            userType: () => 'type-2',
+          }});
+          expect(result).toBeDefined();
+          expect(result).toEqual(expect.objectContaining({
+            userType: 'type-2',
+            email: expect.any(String),
+          }));
+          expect(result).not.toEqual(expect.objectContaining({
+            userName: expect.anything(),
+          }));
+        });
+      });
+  
+      it('should fall back to random variant generation if the desired discriminator value is not present in the schema', () => {
+        let result;
+        expect(() => {
+          result = generateMock(Union, { stringMap: {
+            userType: () => 'type-3',
+          }});
+        }).not.toThrow();
+  
+        expect(result).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        expect(['type-1', 'type-2']).toContain(result!.userType);
+      });
     });
-
-    const Union = z.discriminatedUnion('hasEmail', [FirstType, SecondType]);
-
-    const result = generateMock(Union);
-    expect(result).toBeDefined();
-
-    if (result.hasEmail) {
-      expect(result.email).toBeTruthy();
-    } else {
-      expect(result.userName).toBeTruthy();
-    }
   });
 
   it('should handle branded types', () => {
