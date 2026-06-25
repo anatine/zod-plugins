@@ -1,5 +1,5 @@
 import type { SchemaObject, SchemaObjectType } from 'openapi3-ts/oas31';
-import merge from 'ts-deepmerge';
+import { merge } from 'ts-deepmerge';
 import { AnyZodObject, z, ZodTypeAny } from 'zod';
 
 export type AnatineSchemaObject = SchemaObject & { hideDefinitions?: string[] };
