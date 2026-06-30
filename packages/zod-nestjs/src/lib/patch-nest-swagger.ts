@@ -5,6 +5,7 @@
  * This file was copied from:
  *   https://github.com/kbkk/abitia/blob/master/packages/zod-dto/src/OpenApi/patchNestjsSwagger.ts
  */
+import * as path from 'path';
 import { generateSchema } from '@anatine/zod-openapi';
 import type { SchemaObject } from 'openapi3-ts/oas31';
 
@@ -19,8 +20,15 @@ export const patchNestjsSwagger = (
   schemaObjectFactoryModule: SchemaObjectFactoryModule | undefined = undefined,
   openApiVersion: '3.0' | '3.1' = '3.0'
 ): void => {
+  // @nestjs/swagger 11.4.3+ "exports" map hides this subpath; resolve absolutely.
+  const swaggerRoot = path.dirname(
+    require.resolve('@nestjs/swagger/package.json')
+  );
   const { SchemaObjectFactory } = (schemaObjectFactoryModule ??
-    require('@nestjs/swagger/dist/services/schema-object-factory')) as SchemaObjectFactoryModule;
+    require(path.join(
+      swaggerRoot,
+      'dist/services/schema-object-factory'
+    ))) as SchemaObjectFactoryModule;
 
   const orgExploreModelSchema =
     SchemaObjectFactory.prototype.exploreModelSchema;
